@@ -337,9 +337,11 @@ export async function getSkillsForSitemap() {
       indexedAt: skills.indexedAt,
       status: skills.status,
       stars: skills.stars,
+      avatarUrl: skills.avatarUrl,
     })
     .from(skills)
     .where(ne(skills.status, "rejected"))
+    .orderBy(desc(skills.stars), desc(skills.indexedAt))
 
   return dedupeSkillsByOwnerSlug(skillsList)
 }
