@@ -1,0 +1,29 @@
+{
+  "name": "AGNXI - Agent Skills Directory",
+  "short_name": "AGNXI",
+  "description": "Find agent skills for Claude Code, Cursor, Windsurf and other AI coding tools.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["developer tools", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/brand/logo-symbol-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

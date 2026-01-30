@@ -1,0 +1,51 @@
+"use client"
+
+import * as React from "react"
+import Link from "next/link"
+import dynamic from "next/dynamic"
+
+import { Button } from "@/components/ui/button"
+import { SiteLogo } from "@/components/ui/site-logo"
+import { SubmitSkillDialog } from "@/features/submissions/submit-skill-dialog"
+
+const HeaderAuth = dynamic(
+  () => import("@/components/layouts/header-auth").then((mod) => mod.HeaderAuth),
+  {
+    ssr: false,
+    loading: () => <div className="ml-2 w-16 h-8" />,
+  },
+)
+
+function Header() {
+  const navItems: Array<{ label: string; href: string }> = [
+    { label: "Browse", href: "/skills" },
+    { label: "Categories", href: "/categories" },
+    { label: "Favorites", href: "/favorites" },
+  ];
+
+  return (
+    <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" prefetch={false} className="flex items-center gap-2.5">
+          <SiteLogo size={32} className="shadow-sm" />
+          <div className="leading-tight">
+            <span className="block text-sm font-bold tracking-tight">AGNXI</span>
+            <span className="block text-[10px] font-medium text-muted-foreground">Agent Skills</span>
+          </div>
+        </Link>
+
+        <nav className="flex items-center gap-1" aria-label="Primary">
+          {navItems.map((item) => (
+            <Button key={item.label} variant="ghost" size="sm" asChild>
+              <Link href={item.href} prefetch={false}>{item.label}</Link>
+            </Button>
+          ))}
+          <SubmitSkillDialog buttonSize="sm" />
+          <HeaderAuth />
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+export { Header };

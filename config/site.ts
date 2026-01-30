@@ -1,0 +1,26 @@
+export const siteConfig = {
+  name: "AGNXI",
+  tagline: "Agent Skills Directory",
+  description: "Discover and install agent skills for Claude Code, Cursor, Windsurf and more. Browse 1000+ curated skills by category or author. Start building smarter today.",
+  url: "https://agnxi.com",
+  ogImage: "https://agnxi.com/og.png",
+  twitterHandle: "@agnxi",
+  links: {
+    github: "https://github.com/doanbactam/kk",
+    twitter: "https://x.com/agnxi",
+  },
+  keywords: [
+    "agent skills",
+    "SKILL.md",
+    "Claude Code skills",
+    "amp code skills",
+    "cursor skills",
+    "antigravity skills",
+    "github copilot skills",
+    "openai codex skills",
+    "openai codex cli skills",
+    "windsurf skills",
+    "ai coding tools",
+    "developer tools",
+  ],
+}

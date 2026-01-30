@@ -1,0 +1,427 @@
+import * as React from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Github,
+  Star,
+  GitFork,
+  ExternalLink,
+  ChevronRight,
+  FileText,
+  Clock,
+  ShieldCheck,
+} from "lucide-react";
+
+import { getSkillBySlug, getSkillCategories } from "@/lib/db/queries";
+import { fetchRepoInfo } from "@/lib/features/skills/github-rest";
+import { buildMetadata } from "@/lib/seo";
+import { getExternalUrl } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { InstallCommand } from "@/features/skills/install-command";
+import { MarkdownContent } from "@/features/skills/markdown-content";
+import { RelatedSkillsSection } from "@/features/skills/related-skills-section";
+import { Container } from "@/components/layouts/container";
+import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
+import { SkillStructuredData } from "@/components/seo/skill-structured-data";
+import { BadgeSnippet } from "@/features/skills/badge-snippet";
+
+export const revalidate = 300;
+
+const getSkill = React.cache(async (owner: string, slug: string) =>
+  getSkillBySlug(owner, slug),
+);
+
+async function fetchSkillBody(rawUrl: string) {
+  try {
+    const response = await fetch(rawUrl, { next: { revalidate: 3600 } });
+    if (!response.ok) return "";
+    const content = await response.text();
+    return content.replace(/^---[\s\S]*?---\s*/, "");
+  } catch {
+    return "";
+  }
+}
+
+function RelatedSkillsFallback() {
+  return (
+    <div className="space-y-3">
+      <div className="h-4 w-28 bg-muted rounded animate-pulse" />
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="rounded-lg border border-border/50 bg-card/30 p-3">
+          <div className="flex items-center gap-3">
+            <div className="size-9 rounded-lg bg-muted animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-32 bg-muted rounded animate-pulse" />
+              <div className="h-3 w-24 bg-muted rounded animate-pulse" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type PageProps = {
+  params: Promise<{
+    owner: string;
+    name: string;
+  }>;
+};
+
+const relativeDateCache = new Map<string, string>();
+
+export default async function SkillDetailPage({ params }: PageProps) {
+  const { owner, name: slug } = await params;
+
+  const skill = await getSkill(owner, slug);
+
+  if (!skill) {
+    notFound();
+  }
+
+  const [repoInfo, skillCategories, bodyContent] = await Promise.all([
+    fetchRepoInfo(skill.owner, skill.repo),
+    getSkillCategories(skill.id),
+    fetchSkillBody(skill.rawUrl),
+  ]);
+  const primaryCategory = skillCategories[0];
+
+  const githubUrl = `https://github.com/${skill.owner}/${skill.repo}/tree/main/${skill.path}`;
+  const ownerUrl = `/${skill.owner}`;
+
+  const formatRelativeDate = (date?: Date | null) => {
+    if (!date) return null;
+    const cacheKey = date.toISOString();
+    const cached = relativeDateCache.get(cacheKey);
+    if (cached) return cached;
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    let result: string;
+    if (diffDays === 0) result = "today";
+    else if (diffDays === 1) result = "yesterday";
+    else if (diffDays < 7) result = `${diffDays} days ago`;
+    else if (diffDays < 30) result = `${Math.floor(diffDays / 7)} weeks ago`;
+    else if (diffDays < 365) result = `${Math.floor(diffDays / 30)} months ago`;
+    else result = `${Math.floor(diffDays / 365)} years ago`;
+
+    relativeDateCache.set(cacheKey, result);
+    return result;
+  };
+
+  const allowedTools = skill.allowedTools ? JSON.parse(skill.allowedTools) : [];
+  const topics = repoInfo?.topics ?? [];
+
+  const formatStars = (stars: number): string => {
+    if (stars >= 1000) {
+      return `${(stars / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+    }
+    return stars.toString();
+  };
+
+  return (
+    <Container>
+      <BreadcrumbsJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Skills", url: "/skills" },
+          ...(primaryCategory
+            ? [
+                {
+                  name: primaryCategory.name,
+                  url: `/categories/${primaryCategory.slug}`,
+                },
+              ]
+            : []),
+          { name: skill.owner, url: `/${skill.owner}` },
+          { name: skill.name, url: `/${skill.owner}/skills/${skill.slug}` },
+        ]}
+      />
+      <SkillStructuredData skill={skill} categories={skillCategories} />
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
+        <Link href="/" className="hover:text-foreground transition-colors">
+          Home
+        </Link>
+        <ChevronRight className="size-3" aria-hidden="true" />
+        <Link href="/skills" className="hover:text-foreground transition-colors">
+          Skills
+        </Link>
+        {primaryCategory && (
+          <>
+            <ChevronRight className="size-3" aria-hidden="true" />
+            <Link
+              href={`/categories/${primaryCategory.slug}`}
+              className="hover:text-foreground transition-colors"
+            >
+              {primaryCategory.name}
+            </Link>
+          </>
+        )}
+        <ChevronRight className="size-3" aria-hidden="true" />
+        <span className="text-foreground">{skill.name}</span>
+      </nav>
+
+      <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
+        {/* Main Content */}
+        <div className="space-y-4 min-w-0">
+          {/* Header */}
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-lg bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
+              {skill.avatarUrl ? (
+                <Image
+                  src={skill.avatarUrl}
+                  alt={`${skill.name} by ${skill.owner}`}
+                  width={40}
+                  height={40}
+                  className="size-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-medium text-muted-foreground">
+                  {skill.owner.charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold truncate leading-tight">{skill.name}</h1>
+              <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span>{skill.owner}</span>
+                {skill.isVerifiedOrg && (
+                  <ShieldCheck
+                    className="size-3.5 shrink-0 text-blue-500"
+                    aria-label="Verified organization"
+                  />
+                )}
+              </p>
+            </div>
+          </div>
+
+          {skill.description && (
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {skill.description}
+            </p>
+          )}
+
+          {/* Install Command */}
+          <InstallCommand
+            owner={skill.owner}
+            repo={skill.repo}
+            skillName={skill.name}
+          />
+
+          {/* Tags */}
+          {(skill.compatibility || allowedTools.length > 0 || topics.length > 0) && (
+            <div className="flex flex-wrap gap-1.5">
+              {skill.compatibility && (
+                <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-full">
+                  {skill.compatibility}
+                </Badge>
+              )}
+              {allowedTools.map((tool: string) => (
+                <Badge key={tool} variant="secondary" className="text-[10px] px-2 py-0.5 font-mono rounded-full">
+                  {tool}
+                </Badge>
+              ))}
+              {topics.slice(0, 6).map((topic) => (
+                <Badge key={topic} variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">
+                  {topic}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Instructions */}
+          <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+            <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
+              <FileText className="size-3.5 text-muted-foreground" aria-hidden="true" />
+              <span className="text-xs font-medium">Instructions</span>
+            </div>
+            <div className="p-3.5">
+              {bodyContent.trim() ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none text-[13px]">
+                  <React.Suspense
+                    fallback={
+                      <p className="text-xs text-muted-foreground/60 text-center py-6">
+                        Loading…
+                      </p>
+                    }
+                  >
+                    <MarkdownContent content={bodyContent} />
+                  </React.Suspense>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground/60 text-center py-6">
+                  No instructions available
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Related Skills (Mobile) */}
+          <div className="lg:hidden">
+            <React.Suspense fallback={<RelatedSkillsFallback />}>
+              <RelatedSkillsSection skillId={skill.id} />
+            </React.Suspense>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <aside className="space-y-3 lg:relative">
+          <div className="lg:sticky lg:top-20 space-y-3">
+            {/* Owner Card */}
+            <Link
+              href={ownerUrl}
+              className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card/40 p-3 hover:border-border hover:bg-card/80 transition-[background-color,border-color,box-shadow,color] group"
+            >
+              <div className="size-8 rounded-md bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
+                {skill.avatarUrl ? (
+                  <Image
+                    src={skill.avatarUrl}
+                    alt={`${skill.owner} avatar`}
+                    width={32}
+                    height={32}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    {skill.owner.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-1 text-[13px] font-medium truncate group-hover:text-primary transition-colors">
+                  <span className="truncate">{skill.owner}</span>
+                  {skill.isVerifiedOrg && (
+                    <ShieldCheck
+                      className="size-3.5 shrink-0 text-blue-500"
+                      aria-label="Verified organization"
+                    />
+                  )}
+                </p>
+                <p className="text-[10px] text-muted-foreground/60">
+                  View All Skills →
+                </p>
+              </div>
+            </Link>
+
+            {/* Repository Stats */}
+            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-muted/30">
+                <Github className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                <span className="text-[11px] font-medium">Repository</span>
+              </div>
+
+              <div className="divide-y divide-border/40">
+                {/* Stars */}
+                <div className="flex items-center justify-between px-3 py-2 text-[11px]">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Star className="size-3 text-amber-500/80 fill-amber-500/80" aria-hidden="true" />
+                    Stars
+                  </span>
+                  <span className="font-medium">{formatStars(skill.stars ?? 0)}</span>
+                </div>
+
+                {/* Forks */}
+                <div className="flex items-center justify-between px-3 py-2 text-[11px]">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <GitFork className="size-3" aria-hidden="true" />
+                    Forks
+                  </span>
+                  <span className="font-medium">{skill.forks ?? 0}</span>
+                </div>
+
+                {/* Updated */}
+                <div className="flex items-center justify-between px-3 py-2 text-[11px]">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Clock className="size-3" aria-hidden="true" />
+                    Updated
+                  </span>
+                  <span className="font-medium">{formatRelativeDate(skill.repoUpdatedAt) ?? "N/A"}</span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 p-2.5">
+                  <a
+                    href={getExternalUrl(githubUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-md border border-border/50 bg-background/50 hover:bg-muted/50 transition-colors"
+                  >
+                    <Github className="size-3" aria-hidden="true" />
+                    Source
+                  </a>
+                  <a
+                    href={getExternalUrl(skill.rawUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-md border border-border/50 bg-background/50 hover:bg-muted/50 transition-colors"
+                  >
+                    <ExternalLink className="size-3" aria-hidden="true" />
+                    Raw
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Badge Snippet */}
+            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-muted/30">
+                <span className="text-[11px] font-medium">🏆 Share this Skill</span>
+              </div>
+              <div className="p-3">
+                <BadgeSnippet owner={skill.owner} slug={skill.slug} />
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </Container>
+  );
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { owner, name: slug } = await params;
+  const skill = await getSkill(owner, slug);
+
+  if (!skill) {
+    return buildMetadata({
+      title: "Skill Not Found",
+      description: "The requested skill could not be found.",
+      path: `/${owner}/skills/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  const title = `${skill.name} - Agent Skill by ${skill.owner}`;
+  const description = skill.description
+    ? `${skill.description} Install this AI coding skill for Claude Code, Cursor, Windsurf and more.`
+    : `Install ${skill.name} skill by ${skill.owner}. Production-ready AI coding skill compatible with Claude Code, Cursor, Windsurf, Amp Code.`;
+
+  const keywords = [
+    skill.name,
+    `${skill.name} skill`,
+    skill.owner,
+    skill.compatibility ?? "Claude Code",
+    "agent skill",
+    "AI coding assistant",
+    "SKILL.md",
+  ].filter(Boolean);
+
+  return buildMetadata({
+    title,
+    description,
+    path: `/${skill.owner}/skills/${skill.slug}`,
+    openGraphType: "article",
+    keywords,
+    modifiedTime: skill.repoUpdatedAt?.toISOString(),
+    author: skill.owner,
+    noIndex: skill.isArchived === true || skill.status === "rejected",
+  });
+}

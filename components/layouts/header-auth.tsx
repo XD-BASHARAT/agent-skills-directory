@@ -1,0 +1,33 @@
+"use client"
+
+import * as React from "react"
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
+
+import { Button } from "@/components/ui/button"
+
+function HeaderAuth() {
+  return (
+    <div className="ml-2 flex items-center gap-2">
+      <SignedOut>
+        <SignInButton mode="modal">
+          <Button variant="outline" size="sm">
+            Sign in
+          </Button>
+        </SignInButton>
+      </SignedOut>
+
+      <SignedIn>
+        <UserButton
+          afterSignOutUrl="/"
+          appearance={{
+            elements: {
+              avatarBox: "size-8",
+            },
+          }}
+        />
+      </SignedIn>
+    </div>
+  )
+}
+
+export { HeaderAuth }

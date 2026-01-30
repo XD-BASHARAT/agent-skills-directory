@@ -1,0 +1,112 @@
+import { NextResponse } from "next/server"
+import { inngest } from "@/lib/inngest/client"
+import { env } from "@/lib/env"
+import { createHmac, timingSafeEqual } from "crypto"
+
+type PushEvent = {
+  ref: string
+  repository: {
+    owner: { login: string }
+    name: string
+    full_name: string
+  }
+  commits?: Array<{
+    added: string[]
+    modified: string[]
+    removed: string[]
+  }>
+  head_commit?: {
+    added: string[]
+    modified: string[]
+    removed: string[]
+  }
+}
+
+function verifySignature(payload: string, signature: string | null, secret: string): boolean {
+  if (!signature) return false
+  
+  const [algo, hash] = signature.split("=")
+  if (algo !== "sha256" || !hash) return false
+  
+  const expected = createHmac("sha256", secret).update(payload).digest("hex")
+  
+  try {
+    return timingSafeEqual(Buffer.from(hash), Buffer.from(expected))
+  } catch {
+    return false
+  }
+}
+
+function extractSkillPaths(event: PushEvent): string[] {
+  const paths = new Set<string>()
+  
+  const checkPath = (path: string) => {
+    if (path.endsWith("SKILL.md")) {
+      paths.add(path)
+    }
+  }
+  
+  if (event.head_commit) {
+    event.head_commit.added?.forEach(checkPath)
+    event.head_commit.modified?.forEach(checkPath)
+  }
+  
+  event.commits?.forEach((commit) => {
+    commit.added?.forEach(checkPath)
+    commit.modified?.forEach(checkPath)
+  })
+  
+  return Array.from(paths)
+}
+
+export async function POST(request: Request) {
+  try {
+    const rawBody = await request.text()
+    const signature = request.headers.get("x-hub-signature-256")
+    const eventType = request.headers.get("x-github-event")
+    
+    if (env.GITHUB_WEBHOOK_SECRET) {
+      if (!verifySignature(rawBody, signature, env.GITHUB_WEBHOOK_SECRET)) {
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
+      }
+    }
+    
+    if (eventType === "ping") {
+      return NextResponse.json({ message: "pong" })
+    }
+    
+    if (eventType !== "push") {
+      return NextResponse.json({ message: `Ignored event: ${eventType}` })
+    }
+    
+    const event = JSON.parse(rawBody) as PushEvent
+    const skillPaths = extractSkillPaths(event)
+    
+    if (skillPaths.length === 0) {
+      return NextResponse.json({ message: "No SKILL.md files changed" })
+    }
+    
+    const owner = event.repository.owner.login
+    const repo = event.repository.name
+    const ref = event.ref
+    
+    const events = skillPaths.map((path) => ({
+      name: "github/push" as const,
+      data: { owner, repo, path, ref },
+    }))
+    
+    await inngest.send(events)
+    
+    return NextResponse.json({
+      success: true,
+      message: `Triggered sync for ${skillPaths.length} skill(s)`,
+      skills: skillPaths,
+    })
+  } catch (error) {
+    console.error("GitHub webhook error:", error)
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: 500 }
+    )
+  }
+}
