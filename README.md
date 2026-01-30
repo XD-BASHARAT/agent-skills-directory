@@ -7,19 +7,18 @@
 
 **AGNXI** is a curated directory for discovering and installing agent skills for AI coding assistants like Claude Code, Cursor, Windsurf, and more.
 
-🌐 **Live**: [agnxi.com](https://agnxi.com)
 
 <img width="2400" height="1260" alt="og-1769761595063" src="https://github.com/user-attachments/assets/acd171bf-5ae3-4767-8fe4-73dd71ac71ed" />
 
 
 ## Features
 
-- 🔍 **Discover Skills** - Browse 1000+ curated SKILL.md files from GitHub
-- 📂 **Categories** - Filter by development, testing, documentation, DevOps, and more
-- ⭐ **Favorites** - Save and organize your favorite skills
-- 🚀 **One-Click Install** - Copy install commands for any compatible agent
-- 🔄 **Auto-Sync** - Automatic discovery of new skills from GitHub
-- 📊 **Rankings** - See trending and top-rated skills
+- **Discover Skills** - Browse 1000+ curated SKILL.md files from GitHub
+- **Categories** - Filter by development, testing, documentation, DevOps, and more
+- **Favorites** - Save and organize your favorite skills
+- **One-Click Install** - Copy install commands for any compatible agent
+- **Auto-Sync** - Automatic discovery of new skills from GitHub
+- **Rankings** - See trending and top-rated skills
 
 ## Tech Stack
 
