@@ -13,7 +13,7 @@ function Stats() {
   React.useEffect(() => {
     async function fetchStats() {
       try {
-        const response = await fetch("/api/skills?per_page=1")
+        const response = await fetch("/api/skills?perPage=1")
         if (!response.ok) {
           throw new Error("Failed to fetch stats")
         }

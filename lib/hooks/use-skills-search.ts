@@ -122,7 +122,7 @@ function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOpti
         if (debouncedQuery) params.set("q", debouncedQuery)
         if (queryState.categories.length > 0) params.set("categories", queryState.categories.join(","))
         params.set("page", queryState.page.toString())
-        params.set("per_page", pageSize.toString())
+        params.set("perPage", pageSize.toString())
         params.set("sort", activeSort)
 
         const response = await fetch(`/api/skills?${params}`, {

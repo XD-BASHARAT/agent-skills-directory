@@ -41,7 +41,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get("q") || ""
   const page = parseInt(searchParams.get("page") || "1", 10)
-  const perPage = parseInt(searchParams.get("per_page") || "30", 10)
+  // Support both perPage (preferred) and per_page (legacy) for backwards compatibility
+  const perPage = parseInt(searchParams.get("perPage") || searchParams.get("per_page") || "30", 10)
   const status = searchParams.get("status")
   const sortBy = normalizeSort(searchParams.get("sort"))
   const category = searchParams.get("category")
@@ -61,7 +62,7 @@ export async function GET(request: Request) {
 
   if (perPage < 1 || perPage > 100) {
     return NextResponse.json(
-      { error: "Invalid per_page value", details: "per_page must be between 1 and 100" },
+      { error: "Invalid perPage value", details: "perPage must be between 1 and 100" },
       { status: 400 }
     )
   }
