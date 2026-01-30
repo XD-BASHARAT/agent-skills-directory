@@ -9,6 +9,9 @@
 
 🌐 **Live**: [agnxi.com](https://agnxi.com)
 
+<img width="2400" height="1260" alt="og-1769761595063" src="https://github.com/user-attachments/assets/acd171bf-5ae3-4767-8fe4-73dd71ac71ed" />
+
+
 ## Features
 
 - 🔍 **Discover Skills** - Browse 1000+ curated SKILL.md files from GitHub
