@@ -20,7 +20,7 @@ function isLocalhost(): boolean {
 function getCloudflareUrl(src: string, width: number, quality: number = 80): string {
   if (!src.startsWith("http://") && !src.startsWith("https://")) return src
   if (isLocalhost()) return src
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ?? ""
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ?? "https://agnxi.com"
   return `${baseUrl}/cdn-cgi/image/width=${width},quality=${quality},format=auto/${src}`
 }
 

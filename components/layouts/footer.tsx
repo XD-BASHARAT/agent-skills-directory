@@ -49,7 +49,6 @@ function Footer() {
               alt="AGNXI - Featured on Startup Fame"
               width={171}
               height={54}
-              unoptimized
             />
           </a>
           <a href={getExternalUrl("https://verifieddr.com/website/agnxi-com")} target="_blank" rel="noopener noreferrer">
@@ -150,12 +149,12 @@ function Footer() {
           <p className="text-muted-foreground text-xs">
             Built with{" "}
             <a
-              href={getExternalUrl("https://nextjs.org")}
+              href={getExternalUrl("https://github.com/doanbactam/agent-skills-directory")}
               className="text-foreground/80 hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Nextjs & Vercel
+              GitHub
             </a>
           </p>
         </div>
