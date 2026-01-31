@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 
 interface ExternalImageProps {
   src: string
@@ -10,7 +9,19 @@ interface ExternalImageProps {
   height: number
   fallbackSrc?: string
   className?: string
-  unoptimized?: boolean
+  quality?: number
+}
+
+function isLocalhost(): boolean {
+  if (typeof window === "undefined") return false
+  return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+}
+
+function getCloudflareUrl(src: string, width: number, quality: number = 80): string {
+  if (!src.startsWith("http://") && !src.startsWith("https://")) return src
+  if (isLocalhost()) return src
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ?? ""
+  return `${baseUrl}/cdn-cgi/image/width=${width},quality=${quality},format=auto/${src}`
 }
 
 function ExternalImage({ 
@@ -20,27 +31,30 @@ function ExternalImage({
   height, 
   fallbackSrc, 
   className,
-  unoptimized = true,
-  ...props 
+  quality = 80,
 }: ExternalImageProps) {
-  const [imgSrc, setImgSrc] = React.useState(src)
+  const [imgSrc, setImgSrc] = React.useState(() => getCloudflareUrl(src, width, quality))
+  const [useFallback, setUseFallback] = React.useState(false)
   const [hasError, setHasError] = React.useState(false)
 
   const handleError = React.useCallback(() => {
-    setHasError(true)
-    if (fallbackSrc && imgSrc !== fallbackSrc) {
+    if (!useFallback) {
+      setUseFallback(true)
+      setImgSrc(src)
+    } else if (fallbackSrc && imgSrc !== fallbackSrc) {
       setImgSrc(fallbackSrc)
-      setHasError(false)
+    } else {
+      setHasError(true)
     }
-  }, [fallbackSrc, imgSrc])
+  }, [useFallback, src, fallbackSrc, imgSrc])
 
-  // Reset state when src changes
   React.useEffect(() => {
-    setImgSrc(src)
+    setImgSrc(getCloudflareUrl(src, width, quality))
+    setUseFallback(false)
     setHasError(false)
-  }, [src])
+  }, [src, width, quality])
 
-  if (hasError && !fallbackSrc) {
+  if (hasError) {
     return (
       <div 
         className={`flex items-center justify-center bg-muted text-muted-foreground text-xs ${className}`}
@@ -52,16 +66,16 @@ function ExternalImage({
   }
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={imgSrc}
       alt={alt}
       width={width}
       height={height}
-      unoptimized={unoptimized}
       onError={handleError}
       className={className}
-      style={{ height: "auto" }}
-      {...props}
+      loading="lazy"
+      decoding="async"
     />
   )
 }

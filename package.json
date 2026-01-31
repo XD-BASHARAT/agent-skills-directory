@@ -16,8 +16,7 @@
     "db:push": "bun drizzle-kit push",
     "db:studio": "bun drizzle-kit studio",
     "db:seed:categories": "bun run lib/db/seed-categories.ts",
-    "db:fix": "bun run scripts/fix-db.ts",
-    "ping:indexnow": "bun run scripts/indexnow.ts"
+    "db:fix": "bun run scripts/fix-db.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.13",
