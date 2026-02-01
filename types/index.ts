@@ -19,6 +19,7 @@ export type SkillListItem = Pick<
   | "fileUpdatedAt"
   | "repoUpdatedAt"
   | "indexedAt"
+  | "securityScan"
 > & {
   updatedAtLabel?: string | null
 }

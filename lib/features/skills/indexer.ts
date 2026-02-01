@@ -10,6 +10,7 @@ import {
   isLikelyAgentSkill,
   deduplicateSkills 
 } from "./canonical"
+import { scanSkillContent, scanAllowedTools, formatSecurityReport } from "./security-scanner"
 import type { NewSkill } from "@/lib/db/schema"
 import { slugify } from "@/lib/utils"
 
@@ -266,6 +267,21 @@ export async function indexSkills(options: IndexOptions = {}): Promise<IndexResu
       continue // Skip - don't include in results
     }
 
+    // Security scan
+    const securityScan = scanSkillContent(data.content)
+    const toolsThreats = scanAllowedTools(parsed.data["allowed-tools"])
+    if (toolsThreats.length > 0) {
+      securityScan.threats.push(...toolsThreats)
+      securityScan.riskScore = Math.min(securityScan.riskScore + toolsThreats.length * 10, 100)
+      securityScan.safe = securityScan.riskScore < 50
+    }
+
+    // Log security issues
+    if (!securityScan.safe || securityScan.threats.length > 0) {
+      onProgress?.(`⚠️  Security scan for ${identity.canonicalId}:`)
+      onProgress?.(formatSecurityReport(securityScan))
+    }
+
     // Map to DB with canonical ID
     const skill: NewSkill = {
       id: identity.canonicalId,  // Use canonical ID as primary key
@@ -291,7 +307,9 @@ export async function indexSkills(options: IndexOptions = {}): Promise<IndexResu
       lastSeenAt: new Date(),
       repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,
       fileUpdatedAt: data.fileCommittedAt ? new Date(data.fileCommittedAt) : null,
-      status: "pending",
+      status: data.stars >= 50 ? "approved" : "pending",
+      securityScan: JSON.stringify(securityScan),
+      securityScannedAt: new Date(),
     }
 
     result.skills.push(skill)
@@ -344,6 +362,21 @@ export async function indexSingleSkill(
     console.warn(`[indexSingleSkill] ${identity.canonicalId}: ${nameValidation.error}`)
   }
 
+  // Security scan
+  const securityScan = scanSkillContent(data.content)
+  const toolsThreats = scanAllowedTools(parsed.data["allowed-tools"])
+  if (toolsThreats.length > 0) {
+    securityScan.threats.push(...toolsThreats)
+    securityScan.riskScore = Math.min(securityScan.riskScore + toolsThreats.length * 10, 100)
+    securityScan.safe = securityScan.riskScore < 50
+  }
+
+  // Log security issues
+  if (!securityScan.safe || securityScan.threats.length > 0) {
+    console.warn(`[indexSingleSkill] Security scan for ${identity.canonicalId}:`)
+    console.warn(formatSecurityReport(securityScan))
+  }
+
   return {
     id: identity.canonicalId,  // Use canonical ID
     name: parsed.data.name,
@@ -364,6 +397,8 @@ export async function indexSingleSkill(
     lastSeenAt: new Date(),
     repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,
     fileUpdatedAt: data.fileCommittedAt ? new Date(data.fileCommittedAt) : null,
-    status: "pending",
+    status: data.stars >= 50 ? "approved" : "pending",
+    securityScan: JSON.stringify(securityScan),
+    securityScannedAt: new Date(),
   }
 }

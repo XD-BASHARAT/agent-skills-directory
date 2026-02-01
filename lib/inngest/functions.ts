@@ -671,13 +671,16 @@ export const discoverNewSkills = inngest.createFunction(
 
     // Step 8: Batch upsert skills (convert dates here)
     await step.run("upsert-skills", async () => {
-      const skillsToUpsert: NewSkill[] = parsedSkillsData.map((s) => ({
-        ...s,
-        lastSeenAt: new Date(),
-        repoUpdatedAt: s.pushedAt ? new Date(s.pushedAt) : null,
-        fileUpdatedAt: s.fileCommittedAt ? new Date(s.fileCommittedAt) : null,
-        status: "pending" as const,
-      }))
+      const skillsToUpsert: NewSkill[] = parsedSkillsData.map((s) => {
+        const status = s.stars >= 50 ? "approved" : "pending"
+        return {
+          ...s,
+          lastSeenAt: new Date(),
+          repoUpdatedAt: s.pushedAt ? new Date(s.pushedAt) : null,
+          fileUpdatedAt: s.fileCommittedAt ? new Date(s.fileCommittedAt) : null,
+          status,
+        }
+      })
       await batchUpsertSkills(skillsToUpsert)
     })
 
@@ -874,7 +877,7 @@ export const syncRepoSkills = inngest.createFunction(
           pushedAt: data.pushedAt,
           fileCommittedAt: data.fileCommittedAt,
           submittedBy: submittedBy ?? null,
-          status: status ?? "pending",
+          status: status ?? (data.stars >= 50 ? "approved" : "pending"),
         })
       }
 

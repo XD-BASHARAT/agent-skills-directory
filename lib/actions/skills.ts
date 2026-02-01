@@ -248,7 +248,7 @@ export async function submitSkill(data: SkillSubmission): Promise<SubmissionResu
     const isMultiple = approvedSkills.length > 1
 
     revalidatePath("/")
-    revalidatePath("/[owner]/skills/[slug]")
+    revalidatePath("/[owner]/skills/[slug]", "page")
 
     return {
       success: true,

@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { InstallCommand } from "@/features/skills/install-command";
 import { MarkdownContent } from "@/features/skills/markdown-content";
 import { RelatedSkillsSection } from "@/features/skills/related-skills-section";
+import { SecurityBadge } from "@/features/skills/security-badge";
 import { Container } from "@/components/layouts/container";
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { SkillStructuredData } from "@/components/seo/skill-structured-data";
@@ -214,6 +215,11 @@ export default async function SkillDetailPage({ params }: PageProps) {
             repo={skill.repo}
             skillName={skill.name}
           />
+
+          {/* Security Badge */}
+          {skill.securityScan && (
+            <SecurityBadge securityScan={skill.securityScan} variant="full" />
+          )}
 
           {/* Tags */}
           {(skill.compatibility || allowedTools.length > 0 || topics.length > 0) && (

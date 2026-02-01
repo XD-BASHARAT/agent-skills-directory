@@ -5,6 +5,7 @@ import { toCanonicalId } from "./canonical"
 import { discoverAllSkillFilesInRepo, batchFetchSkills } from "./github-graphql"
 import { batchFetchOwnersVerification } from "./github-rest"
 import { parseSkillMd, normalizeAllowedTools } from "./parser"
+import { scanSkillContent, scanAllowedTools } from "./security-scanner"
 import { slugify } from "@/lib/utils"
 import type { NewSkill } from "@/lib/db/schema"
 
@@ -128,6 +129,15 @@ export async function syncRepoSkills(
 
       const canonicalId = toCanonicalId(owner, repo, path)
 
+      // Security scan
+      const securityScan = scanSkillContent(data.content)
+      const toolsThreats = scanAllowedTools(parsed.data["allowed-tools"])
+      if (toolsThreats.length > 0) {
+        securityScan.threats.push(...toolsThreats)
+        securityScan.riskScore = Math.min(securityScan.riskScore + toolsThreats.length * 10, 100)
+        securityScan.safe = securityScan.riskScore < 50
+      }
+
       const skill: NewSkill = {
         id: canonicalId,
         name: parsed.data.name,
@@ -153,7 +163,9 @@ export async function syncRepoSkills(
         repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,
         fileUpdatedAt: data.fileCommittedAt ? new Date(data.fileCommittedAt) : null,
         submittedBy: options?.submittedBy ?? null,
-        status: options?.status ?? "pending",
+        status: options?.status ?? (data.stars >= 50 ? "approved" : "pending"),
+        securityScan: JSON.stringify(securityScan),
+        securityScannedAt: new Date(),
       }
 
       skillsToUpsert.push(skill)

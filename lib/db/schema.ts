@@ -44,6 +44,10 @@ export const skills = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 
     searchText: text("search_text"),
+    
+    // Security scan results
+    securityScan: text("security_scan"), // JSON: { safe: boolean, riskScore: number, threats: SecurityThreat[] }
+    securityScannedAt: timestamp("security_scanned_at", { withTimezone: true }),
   },
   (table) => [
     index("skills_stars_idx").on(table.stars),
