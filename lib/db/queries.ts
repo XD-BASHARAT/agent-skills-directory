@@ -372,7 +372,8 @@ export async function getOwnerInfo(owner: string) {
       SELECT DISTINCT ON (owner, slug)
         id, name, slug, description, owner, repo, path, url, raw_url, avatar_url, stars, forks,
         is_verified_org, status, file_updated_at, repo_updated_at, indexed_at, created_at, updated_at,
-        compatibility, allowed_tools, topics, is_archived, blob_sha, last_seen_at, submitted_by, search_text
+        compatibility, allowed_tools, topics, is_archived, blob_sha, last_seen_at, submitted_by, search_text,
+        security_scan, security_scanned_at
       FROM skills 
       WHERE owner = ${owner}
       ORDER BY owner, slug, indexed_at DESC, id DESC
@@ -430,6 +431,8 @@ export async function getOwnerInfo(owner: string) {
     last_seen_at: Date | null
     submitted_by: string | null
     search_text: string | null
+    security_scan: string | null
+    security_scanned_at: Date | null
     total_stars: string
     total_forks: string
     total_skills: string
@@ -467,6 +470,8 @@ export async function getOwnerInfo(owner: string) {
     lastSeenAt: row.last_seen_at,
     submittedBy: row.submitted_by,
     searchText: row.search_text,
+    securityScan: row.security_scan,
+    securityScannedAt: row.security_scanned_at,
     updatedAtLabel: formatShortDate(row.file_updated_at ?? row.repo_updated_at),
     categories: [], // Will be populated separately if needed
     category: null,
