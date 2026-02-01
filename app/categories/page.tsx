@@ -9,8 +9,9 @@ export const revalidate = 300
 
 export const metadata = buildMetadata({
   title: "Categories",
-  description: "Browse skills by category and domain to narrow in on specific workflows.",
+  description: "Browse agent skills by category and domain to find SKILL.md workflows for your coding assistant.",
   path: "/categories",
+  keywords: ["agent skills categories", "agent skills by category", "SKILL.md skills"],
 })
 
 export default async function CategoriesPage() {
@@ -21,8 +22,15 @@ export default async function CategoriesPage() {
   return (
     <Container>
       <div>
-        <h1 className="text-balance text-lg font-semibold">Categories</h1>
-        <p className="text-muted-foreground text-sm">Filter skills by domain and workflow</p>
+        <h1 className="text-balance text-lg font-semibold">Agent Skills Categories</h1>
+        <p className="text-muted-foreground text-sm">Filter agent skills by domain and workflow</p>
+        <p className="text-muted-foreground text-xs">
+          Not sure where to start? Read the{" "}
+          <Link href="/agent-skills" className="text-primary hover:underline">
+            Agent Skills Guide
+          </Link>
+          .
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

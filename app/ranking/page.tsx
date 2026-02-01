@@ -1,21 +1,21 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import Image from "next/image"
 import { Star, GitFork, Boxes, ShieldCheck, Trophy, ChevronRight } from "lucide-react"
 
 import { getOwnerRankings, type OwnerRanking } from "@/lib/db/queries"
 import { buildMetadata } from "@/lib/seo"
 import { Container } from "@/components/layouts/container"
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld"
+import { ExternalImage } from "@/components/ui/external-image"
 import { cn } from "@/lib/utils"
 import { RankingSortTabs } from "./ranking-sort-tabs"
 
 export const metadata: Metadata = buildMetadata({
   title: "Top Contributors Ranking",
   description:
-    "See contributors ranked by stars, forks, and number of published skills.",
+    "See contributors ranked by stars, forks, and published agent skills.",
   path: "/ranking",
-  keywords: ["ranking", "leaderboard", "top contributors", "skill authors", "maintainers"],
+  keywords: ["agent skills ranking", "ranking", "leaderboard", "top contributors", "skill authors", "maintainers"],
 })
 
 type SearchParams = Promise<{
@@ -90,11 +90,18 @@ function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
 
       {/* Avatar */}
       <div className={cn(
-        "relative mt-4 rounded-2xl overflow-hidden bg-muted border-2",
+        "mt-4 rounded-2xl overflow-hidden bg-muted border-2",
         rank === 1 ? "size-20 border-amber-500/30" : "size-16 border-border/50"
       )}>
         {owner.avatarUrl ? (
-          <Image src={owner.avatarUrl} alt={`${owner.owner} avatar`} fill sizes={rank === 1 ? "80px" : "64px"} className="object-cover" />
+          <ExternalImage 
+            src={owner.avatarUrl} 
+            alt={`${owner.owner} avatar`} 
+            width={rank === 1 ? 80 : 64}
+            height={rank === 1 ? 80 : 64}
+            quality={80}
+            className="object-cover" 
+          />
         ) : (
           <div className="flex items-center justify-center size-full">
             <span className="text-lg font-semibold text-muted-foreground">{initials}</span>
@@ -151,9 +158,16 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
       <RankBadge rank={rank} />
 
       {/* Avatar */}
-      <div className="relative size-10 overflow-hidden rounded-lg bg-muted shrink-0">
+      <div className="size-10 overflow-hidden rounded-lg bg-muted shrink-0">
         {owner.avatarUrl ? (
-          <Image src={owner.avatarUrl} alt={`${owner.owner} avatar`} fill sizes="40px" className="object-cover" />
+          <ExternalImage 
+            src={owner.avatarUrl} 
+            alt={`${owner.owner} avatar`} 
+            width={40}
+            height={40}
+            quality={75}
+            className="object-cover" 
+          />
         ) : (
           <div className="flex items-center justify-center size-full">
             <span className="text-xs font-semibold text-muted-foreground">{initials}</span>
@@ -228,10 +242,17 @@ export default async function RankingPage({ searchParams }: PageProps) {
       {/* Header */}
       <header className="text-center space-y-2">
         <h1 className="text-2xl font-bold tracking-tight">
-          Top Contributors
+          Top Agent Skills Contributors
         </h1>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Ranked by stars, forks, and published skills
+          Ranked by stars, forks, and published agent skills
+        </p>
+        <p className="text-xs text-muted-foreground">
+          New to agent skills? Read the{" "}
+          <Link href="/agent-skills" className="text-primary hover:underline">
+            Agent Skills Guide
+          </Link>
+          .
         </p>
       </header>
 

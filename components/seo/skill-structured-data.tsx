@@ -33,6 +33,9 @@ function SkillStructuredData({ skill, categories = [] }: SkillStructuredDataProp
     skill.compatibility,
     ...allowedTools,
     ...categories.map((c) => c.name),
+    "agent skill",
+    "agent skills",
+    "SKILL.md",
   ].filter(Boolean)
 
   const softwareSourceCode = {

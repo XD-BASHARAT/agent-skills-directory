@@ -2,7 +2,6 @@ import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Github,
   Star,
@@ -26,6 +25,7 @@ import { Container } from "@/components/layouts/container";
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { SkillStructuredData } from "@/components/seo/skill-structured-data";
 import { BadgeSnippet } from "@/features/skills/badge-snippet";
+import { ExternalImage } from "@/components/ui/external-image";
 
 export const revalidate = 300;
 
@@ -174,11 +174,12 @@ export default async function SkillDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-lg bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
               {skill.avatarUrl ? (
-                <Image
+                <ExternalImage
                   src={skill.avatarUrl}
                   alt={`${skill.name} by ${skill.owner}`}
                   width={40}
                   height={40}
+                  quality={75}
                   className="size-full object-cover"
                 />
               ) : (
@@ -280,11 +281,12 @@ export default async function SkillDetailPage({ params }: PageProps) {
             >
               <div className="size-8 rounded-md bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
                 {skill.avatarUrl ? (
-                  <Image
+                  <ExternalImage
                     src={skill.avatarUrl}
                     alt={`${skill.owner} avatar`}
                     width={32}
                     height={32}
+                    quality={75}
                     className="size-full object-cover"
                   />
                 ) : (
@@ -401,8 +403,8 @@ export async function generateMetadata({
 
   const title = `${skill.name} - Agent Skill by ${skill.owner}`;
   const description = skill.description
-    ? `${skill.description} Install instructions and source repo for Claude Code, Cursor, Windsurf, and more.`
-    : `Install ${skill.name} skill by ${skill.owner}. SKILL.md workflow compatible with Claude Code, Cursor, Windsurf, and Amp Code.`;
+    ? `${skill.description} Agent skill with install steps and source repo for Claude Code, Cursor, Windsurf, and more.`
+    : `Install ${skill.name} agent skill by ${skill.owner}. SKILL.md workflow compatible with Claude Code, Cursor, Windsurf, and Amp Code.`;
 
   const keywords = [
     skill.name,
@@ -410,7 +412,8 @@ export async function generateMetadata({
     skill.owner,
     skill.compatibility ?? "Claude Code",
     "agent skill",
-    "coding assistant",
+    "agent skills",
+    "coding assistant skills",
     "SKILL.md",
   ].filter(Boolean);
 

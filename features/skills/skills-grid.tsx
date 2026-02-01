@@ -198,8 +198,8 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
       {!loading && !error && displayedSkills.length > 0 && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {displayedSkills.map((skill, index) => (
-              <SkillCard key={skill.id} skill={skill} imagePriority={index < 4} />
+            {displayedSkills.map((skill) => (
+              <SkillCard key={skill.id} skill={skill} />
             ))}
           </div>
 

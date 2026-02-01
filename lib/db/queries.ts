@@ -22,6 +22,7 @@ export type GetSkillsOptions = {
   query?: string
   page?: number
   perPage?: number
+  descriptionLength?: number
   status?: string
   sortBy?: "stars_desc" | "name_asc" | "name_desc" | "recent" | "last_commit"
   category?: string
@@ -119,6 +120,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     query = "",
     page = 1,
     perPage = 30,
+    descriptionLength,
     status,
     sortBy = "stars_desc",
     category,
@@ -130,6 +132,10 @@ export async function getSkills(options: GetSkillsOptions = {}) {
   const safePerPage = Math.min(Math.max(1, Math.floor(perPage)), MAX_PER_PAGE)
   const safeQuery = query.slice(0, 200).trim() // Limit query length
   const offset = (safePage - 1) * safePerPage
+  const safeDescriptionLength =
+    typeof descriptionLength === "number" && Number.isFinite(descriptionLength) && descriptionLength > 0
+      ? Math.min(Math.floor(descriptionLength), 1000)
+      : undefined
 
   const conditions = []
 
@@ -174,19 +180,24 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     }
   })()
 
-  // Use CTE to properly deduplicate before pagination
+  const descriptionSelect = safeDescriptionLength
+    ? sql`LEFT(description, ${safeDescriptionLength})`
+    : sql`description`
+
+  // Use DISTINCT ON to pick the latest row per owner/slug, then apply requested sorting.
   const [skillsList, countResult] = await Promise.all([
     db.execute(sql`
-      WITH ranked_skills AS (
-        SELECT 
-          id, name, slug, description, owner, repo, path, url, avatar_url, stars,
-          is_verified_org, status, file_updated_at, repo_updated_at, indexed_at,
-          ROW_NUMBER() OVER (PARTITION BY owner, slug ORDER BY indexed_at DESC NULLS LAST, id DESC) as rn
+      WITH deduped_skills AS (
+        SELECT DISTINCT ON (owner, slug)
+          id, name, slug,
+          ${descriptionSelect} as description,
+          owner, repo, path, url, avatar_url, stars,
+          is_verified_org, status, file_updated_at, repo_updated_at, indexed_at
         FROM skills
         WHERE ${whereClause}
+        ORDER BY owner, slug, indexed_at DESC NULLS LAST, id DESC
       )
-      SELECT * FROM ranked_skills
-      WHERE rn = 1
+      SELECT * FROM deduped_skills
       ORDER BY ${orderByClause}
       LIMIT ${safePerPage}
       OFFSET ${offset}

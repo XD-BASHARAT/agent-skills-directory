@@ -145,8 +145,8 @@ export async function generateMetadata({
 
   const title = `${category.name} Agent Skills`;
   const description = category.description
-    ? `${category.description} Browse ${total}+ ${category.name.toLowerCase()} skills with install commands, stars, and recent updates.`
-    : `Explore ${total}+ ${category.name.toLowerCase()} skills for coding assistants, filtered by stars and recency.`;
+    ? `${category.description} Browse ${total}+ ${category.name.toLowerCase()} agent skills with install commands, stars, and recent updates.`
+    : `Explore ${total}+ ${category.name.toLowerCase()} agent skills for coding assistants, filtered by stars and recency.`;
 
   return buildMetadata({
     title,

@@ -2,7 +2,6 @@ import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Star, GitFork, Github, Boxes, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 
 import { getCategories, getOwnerInfo } from "@/lib/db/queries";
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layouts/container";
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ExternalImage } from "@/components/ui/external-image";
 import { OwnerSkillsFilter } from "./owner-skills-filter";
 
 const getOwner = React.cache(async (owner: string) => getOwnerInfo(owner));
@@ -91,14 +91,15 @@ export default async function OwnerPage({ params }: PageProps) {
           <div className="flex flex-col sm:flex-row sm:items-end gap-4">
             {/* Avatar */}
             <div className="relative shrink-0">
-              <div className="relative size-16 rounded-xl bg-card border-2 border-background overflow-hidden shadow-sm">
+              <div className="size-16 rounded-xl bg-card border-2 border-background overflow-hidden shadow-sm">
                 {ownerInfo.avatarUrl ? (
-                  <Image
+                  <ExternalImage
                     src={ownerInfo.avatarUrl}
                     alt={`${ownerInfo.owner} avatar`}
-                    fill
+                    width={64}
+                    height={64}
+                    quality={80}
                     className="object-cover"
-                    priority
                   />
                 ) : (
                   <div className="flex items-center justify-center size-full bg-muted">
@@ -213,7 +214,7 @@ export async function generateMetadata({
 
   return buildMetadata({
     title: owner,
-    description: `Browse ${ownerInfo.totalSkills} skills by ${owner}.`,
+    description: `Browse ${ownerInfo.totalSkills} agent skills by ${owner}.`,
     path: `/${owner}`,
     openGraphType: "profile",
   });

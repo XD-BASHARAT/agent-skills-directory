@@ -81,10 +81,10 @@ function Hero({ stats = { total: 0, updatedToday: 0 }, healthStatus }: HeroProps
               id="hero-heading"
               className="text-lg font-semibold tracking-tight sm:text-xl"
             >
-              Search <span className="text-primary">Agent Skills</span> for coding assistants
+              <span className="text-primary">Agent skills</span> directory for coding assistants
             </h1>
             <p className="text-[13px] text-muted-foreground-soft">
-              SKILL.md files from GitHub, filterable by tool, category, and activity
+              Discover SKILL.md workflows from GitHub, compare stars and updates, and install agent skills for Claude Code, Cursor, Windsurf, and more.
             </p>
           </div>
 

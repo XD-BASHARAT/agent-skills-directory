@@ -1,9 +1,12 @@
 import * as React from "react"
 import type { Metadata } from "next"
+import Link from "next/link"
+import { Search, Star, Terminal } from "lucide-react"
 import { Hero } from "@/features/marketing/hero"
 import { SkillsGrid } from "@/features/skills/skills-grid"
 import { Container } from "@/components/layouts/container"
 import { FaqJsonLd } from "@/components/seo/faq-json-ld"
+import { Button } from "@/components/ui/button"
 import { siteDescription, siteFullName } from "@/lib/seo"
 import { getSiteUrl } from "@/lib/site-url"
 import { getStats } from "@/lib/stats"
@@ -19,6 +22,7 @@ export const metadata: Metadata = {
   description: siteDescription,
   keywords: [
     ...siteConfig.keywords,
+    "agent skills directory",
     "find agent skills",
     "SKILL.md files",
     "search agent skills",
@@ -149,6 +153,60 @@ export default async function Page({ searchParams }: PageProps) {
       <Container>
         <HomeClient />
         <Hero stats={stats} healthStatus={healthStatus} />
+        <section
+          aria-labelledby="agent-skills-overview"
+          className="rounded-xl border border-border-subtle bg-card/30 p-4 sm:p-6"
+        >
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+
+              <h2 id="agent-skills-overview" className="text-base font-semibold">
+                What are agent skills?
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
+                Agent skills are SKILL.md workflows that teach coding assistants how to complete repeatable tasks. AGNXI indexes public agent skills, shows repo signals, and lets you install the workflow that fits your tool.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" asChild>
+                  <Link href="/agent-skills">Read the Agent Skills Guide</Link>
+                </Button>
+                <Button size="sm" variant="outline" asChild>
+                  <Link href="/skills">Browse Agent Skills</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:w-[300px]">
+              <div className="rounded-lg border border-border/50 bg-background/60 p-3">
+                <div className="flex items-center gap-2 text-xs font-semibold">
+                  <Search className="size-3.5 text-primary" aria-hidden="true" />
+                  Discover
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Find agent skills for Claude Code, Cursor, Windsurf, Amp, and more.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/50 bg-background/60 p-3">
+                <div className="flex items-center gap-2 text-xs font-semibold">
+                  <Star className="size-3.5 text-amber-500" aria-hidden="true" />
+                  Compare
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Review stars, forks, and recent updates before you install.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/50 bg-background/60 p-3">
+                <div className="flex items-center gap-2 text-xs font-semibold">
+                  <Terminal className="size-3.5 text-emerald-500" aria-hidden="true" />
+                  Install
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Copy the install command and run it in your tool or terminal.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
         <section aria-labelledby="featured-skills-heading" className="space-y-4">
           <h2 id="featured-skills-heading" className="sr-only">
             Featured Agent Skills

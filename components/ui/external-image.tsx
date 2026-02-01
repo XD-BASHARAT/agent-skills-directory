@@ -33,7 +33,7 @@ function ExternalImage({
   className,
   quality = 80,
 }: ExternalImageProps) {
-  const [imgSrc, setImgSrc] = React.useState(() => getCloudflareUrl(src, width, quality))
+  const [imgSrc, setImgSrc] = React.useState(src)
   const [useFallback, setUseFallback] = React.useState(false)
   const [hasError, setHasError] = React.useState(false)
 
@@ -49,7 +49,8 @@ function ExternalImage({
   }, [useFallback, src, fallbackSrc, imgSrc])
 
   React.useEffect(() => {
-    setImgSrc(getCloudflareUrl(src, width, quality))
+    const cloudflareUrl = getCloudflareUrl(src, width, quality)
+    setImgSrc(cloudflareUrl)
     setUseFallback(false)
     setHasError(false)
   }, [src, width, quality])

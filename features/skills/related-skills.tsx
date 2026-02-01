@@ -1,8 +1,8 @@
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Star, ArrowUpRight, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ExternalImage } from "@/components/ui/external-image"
 
 type Skill = {
   id: string
@@ -48,11 +48,12 @@ function RelatedSkills({ skills, title = "Related Skills" }: RelatedSkillsProps)
             {/* Avatar */}
             <div className="size-9 rounded-lg bg-muted border border-border/50 overflow-hidden flex items-center justify-center shrink-0">
               {skill.avatarUrl ? (
-                <Image
+                <ExternalImage
                   src={skill.avatarUrl}
                   alt={`${skill.name} - ${skill.owner} skill icon`}
                   width={36}
                   height={36}
+                  quality={75}
                   className="size-full object-cover"
                 />
               ) : (

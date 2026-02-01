@@ -1,14 +1,15 @@
 # AGNXI - Agent Skills Directory
 
-> Find agent skills for Claude Code, Cursor, Windsurf and other AI coding tools.
+> Agent skills directory for coding assistants. Discover SKILL.md workflows and install skills for Claude Code, Cursor, Windsurf, Amp, and more.
 
 ## Summary
 
-AGNXI is a community-driven catalog of AI coding agent skills hosted on public GitHub repositories. It helps developers discover, evaluate, and install skills (SKILL.md files) for popular AI coding agents including Claude Code, Amp Code, Cursor, Windsurf, and more.
+AGNXI is a community-driven agent skills directory hosted on public GitHub repositories. It helps developers discover, evaluate, and install SKILL.md workflows for popular AI coding assistants including Claude Code, Amp Code, Cursor, Windsurf, and more.
 
 ## Key Pages
 
 - `/` - Home page with featured skills and search
+- `/agent-skills` - Agent skills guide and FAQ
 - `/skills` - Browse all skills with search and filters
 - `/skills/[owner]/[slug]` - Individual skill detail page
 - `/categories` - Browse skills by category

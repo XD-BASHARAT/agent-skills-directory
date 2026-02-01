@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ShieldCheck, Star } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ExternalImage } from "@/components/ui/external-image";
 import type { SkillListItem } from "@/types";
 
 const FavoriteButton = dynamic(
@@ -17,10 +17,9 @@ const FavoriteButton = dynamic(
 type SkillCardProps = {
   skill: SkillListItem;
   className?: string;
-  imagePriority?: boolean;
 };
 
-function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
+function SkillCard({ skill, className }: SkillCardProps) {
   const skillUrl = `/${skill.owner}/skills/${skill.slug}`;
   const updatedAt = skill.updatedAtLabel ?? null;
 
@@ -44,15 +43,14 @@ function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
       <div className="flex items-start gap-3">
         <div className="shrink-0">
           {skill.avatarUrl ? (
-            <div className="relative size-10 overflow-hidden rounded-lg bg-muted">
-              <Image
+            <div className="overflow-hidden rounded-lg bg-muted">
+              <ExternalImage
                 src={skill.avatarUrl}
                 alt={`${skill.name} by ${skill.owner}`}
-                fill
-                sizes="40px"
-                priority={imagePriority}
+                width={40}
+                height={40}
+                quality={75}
                 className="object-cover"
-                loading={imagePriority ? "eager" : "lazy"}
               />
             </div>
           ) : (

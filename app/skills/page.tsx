@@ -1,4 +1,5 @@
 import * as React from "react"
+import Link from "next/link"
 import { SkillsGrid } from "@/features/skills/skills-grid"
 import { Container } from "@/components/layouts/container"
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld"
@@ -7,10 +8,11 @@ import { getSkills, getCategories } from "@/lib/db/queries"
 
 export const metadata = buildMetadata({
   title: "Browse Agent Skills",
-  description: "Browse SKILL.md skills for Claude Code, Cursor, Windsurf, and other coding assistants. Filter by category or search by name.",
+  description: "Browse agent skills for coding assistants. Search SKILL.md workflows for Claude Code, Cursor, Windsurf, and more, then filter by category or recency.",
   path: "/skills",
   keywords: [
     "browse agent skills",
+    "agent skills directory",
     "search skills",
     "SKILL.md",
     "Claude Code skills",
@@ -62,7 +64,14 @@ export default async function SkillsPage() {
       <header className="space-y-1">
         <h1 className="text-balance text-2xl font-bold tracking-tight">Browse Agent Skills</h1>
         <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
-          Search by name, filter by category, and sort by recent updates or stars.
+          Search agent skills by name, filter by category, and sort by recent updates or stars.
+        </p>
+        <p className="text-muted-foreground text-xs">
+          Need a refresher? Read the{" "}
+          <Link href="/agent-skills" className="text-primary hover:underline">
+            Agent Skills Guide
+          </Link>
+          .
         </p>
       </header>
       <React.Suspense fallback={<SkillsGridSkeleton />}>

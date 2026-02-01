@@ -1,18 +1,17 @@
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ShieldCheck, Star } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ExternalImage } from "@/components/ui/external-image";
 import type { SkillListItem } from "@/types";
 
 type SkillCardProps = {
   skill: SkillListItem;
   className?: string;
-  imagePriority?: boolean;
 };
 
-function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
+function SkillCard({ skill, className }: SkillCardProps) {
   const skillUrl = `/${skill.owner}/skills/${skill.slug}`;
   const updatedAt = skill.updatedAtLabel ?? null;
   const optimizedAvatar = buildAvatarUrl(skill.avatarUrl);
@@ -35,14 +34,13 @@ function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
       <div className="flex items-start gap-3">
         <div className="shrink-0">
           {skill.avatarUrl ? (
-            <div className="relative size-10 overflow-hidden rounded-lg bg-muted">
-              <Image
+            <div className="overflow-hidden rounded-lg bg-muted">
+              <ExternalImage
                 src={optimizedAvatar ?? skill.avatarUrl}
                 alt={`${skill.name} by ${skill.owner}`}
-                fill
-                sizes="40px"
+                width={40}
+                height={40}
                 quality={75}
-                priority={imagePriority}
                 className="object-cover"
               />
             </div>

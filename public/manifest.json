@@ -1,7 +1,7 @@
 {
   "name": "AGNXI - Agent Skills Directory",
   "short_name": "AGNXI",
-  "description": "Find agent skills for Claude Code, Cursor, Windsurf and other AI coding tools.",
+  "description": "Agent skills directory for coding assistants. Discover SKILL.md workflows and install skills for Claude Code, Cursor, Windsurf, Amp, and more.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

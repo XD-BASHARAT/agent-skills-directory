@@ -7,7 +7,7 @@ import { getExternalUrl } from "@/lib/utils"
 export const metadata = buildMetadata({
   title: "About",
   description:
-    "Learn how Agent Skills Directory indexes SKILL.md skills and how to contribute.",
+    "Learn how the Agent Skills Directory indexes agent skills from SKILL.md and how to contribute.",
   path: "/about",
 })
 
@@ -28,6 +28,9 @@ export default function AboutPage() {
           <h2 className="text-sm font-semibold">What are Agent Skills?</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
             An Agent Skill is a SKILL.md file that describes a repeatable workflow for a coding assistant. Skills can also include scripts and templates to make setup and execution consistent.
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            New here? Read the <Link href="/agent-skills" className="text-primary hover:underline">Agent Skills Guide</Link> for a quick overview and installation steps.
           </p>
         </section>
 

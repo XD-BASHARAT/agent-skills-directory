@@ -61,11 +61,10 @@ function FeaturedSkills() {
         </Link>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {FEATURED_SKILLS.map((skill, index) => (
+        {FEATURED_SKILLS.map((skill) => (
           <SkillCard
             key={`${skill.owner}/${skill.repo}/${skill.name}`}
             skill={skill as Skill}
-            imagePriority={index < 4}
           />
         ))}
       </div>
