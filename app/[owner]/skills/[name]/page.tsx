@@ -19,6 +19,7 @@ import { getSkillBySlug, getSkillCategories } from "@/lib/db/queries";
 import { fetchRepoInfo } from "@/lib/features/skills/github-rest";
 import { buildMetadata } from "@/lib/seo";
 import { getExternalUrl } from "@/lib/utils";
+import { skillRouteParamsSchema, safeParseAllowedTools } from "@/lib/validators/skills";
 import { Badge } from "@/components/ui/badge";
 import { InstallCommand } from "@/features/skills/install-command";
 import { MarkdownContent } from "@/features/skills/markdown-content";
@@ -78,7 +79,19 @@ type PageProps = {
 const relativeDateCache = new Map<string, string>();
 
 export default async function SkillDetailPage({ params }: PageProps) {
-  const { owner, name: slug } = await params;
+  const rawParams = await params;
+  
+  // Validate route parameters
+  const paramsResult = skillRouteParamsSchema.safeParse({
+    owner: rawParams.owner,
+    name: rawParams.name,
+  });
+
+  if (!paramsResult.success) {
+    notFound();
+  }
+
+  const { owner, name: slug } = paramsResult.data;
 
   const skill = await getSkill(owner, slug);
 
@@ -118,7 +131,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
     return result;
   };
 
-  const allowedTools = skill.allowedTools ? JSON.parse(skill.allowedTools) : [];
+  const allowedTools = safeParseAllowedTools(skill.allowedTools);
   const topics = repoInfo?.topics ?? [];
 
   const formatStars = (stars: number): string => {
@@ -439,7 +452,24 @@ export default async function SkillDetailPage({ params }: PageProps) {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { owner, name: slug } = await params;
+  const rawParams = await params;
+  
+  // Validate route parameters
+  const paramsResult = skillRouteParamsSchema.safeParse({
+    owner: rawParams.owner,
+    name: rawParams.name,
+  });
+
+  if (!paramsResult.success) {
+    return buildMetadata({
+      title: "Invalid Skill URL",
+      description: "The requested skill URL is invalid.",
+      path: `/${rawParams.owner}/skills/${rawParams.name}`,
+      noIndex: true,
+    });
+  }
+
+  const { owner, name: slug } = paramsResult.data;
   const skill = await getSkill(owner, slug);
 
   if (!skill) {

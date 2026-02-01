@@ -8,7 +8,7 @@ import { skills } from "@/lib/db/schema"
 const getSkillsSchema = z.object({
   page: z.coerce.number().int().min(1).max(100).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(100),
-  status: z.enum(["all", "pending", "approved", "rejected"]).optional(),
+  status: z.enum(["all", "pending", "approved", "rejected"]).default("all"),
 })
 
 async function ensureAdmin() {
@@ -51,8 +51,8 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit
 
     // Build where conditions
-    const conditions = []
-    if (status !== "all") {
+    const conditions: Array<ReturnType<typeof eq>> = []
+    if (status && status !== "all") {
       conditions.push(eq(skills.status, status))
     }
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined

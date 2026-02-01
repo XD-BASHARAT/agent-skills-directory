@@ -31,3 +31,40 @@ export const cacheInvalidationSchema = z.object({
 })
 
 export type CacheInvalidation = z.infer<typeof cacheInvalidationSchema>
+
+// Route parameter validation
+export const skillRouteParamsSchema = z.object({
+  owner: z
+    .string()
+    .min(1, "Owner is required")
+    .max(100, "Owner name too long")
+    .regex(/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/, "Invalid owner format"),
+  name: z
+    .string()
+    .min(1, "Skill name is required")
+    .max(200, "Skill name too long")
+    .regex(/^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?$/, "Invalid skill name format"),
+})
+
+export type SkillRouteParams = z.infer<typeof skillRouteParamsSchema>
+
+// Safe JSON parse for allowedTools
+export function safeParseAllowedTools(value: string | null | undefined): string[] {
+  if (!value) return []
+  
+  try {
+    const parsed = JSON.parse(value)
+    // Validate it's an array of strings
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item): item is string => typeof item === "string")
+    }
+    // If it's a single string, wrap it in an array
+    if (typeof parsed === "string") {
+      return [parsed]
+    }
+    return []
+  } catch {
+    // If parsing fails, return empty array
+    return []
+  }
+}

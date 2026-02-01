@@ -191,7 +191,14 @@ export function SkillEditDialog({
               <label htmlFor="skill-status" className="text-xs font-medium text-muted-foreground">
                 Status
               </label>
-              <Select value={status} onValueChange={setStatus}>
+              <Select
+                value={status}
+                onValueChange={(value) => {
+                  if (typeof value === "string") {
+                    setStatus(value)
+                  }
+                }}
+              >
                 <SelectTrigger id="skill-status" className="w-full" size="default">
                   <SelectValue placeholder="Select status…" />
                 </SelectTrigger>
