@@ -1,8 +1,10 @@
 ﻿import Link from "next/link"
 import { Compass, ArrowRight } from "lucide-react"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Logo, type LogoName } from "@/components/ui/logo"
+import type { HealthStatus } from "@/lib/health"
 import { cn } from "@/lib/utils"
 
 type HeroStats = {
@@ -12,6 +14,7 @@ type HeroStats = {
 
 type HeroProps = {
   stats?: HeroStats
+  healthStatus?: HealthStatus
 }
 
 function formatNumber(num: number): string {
@@ -50,7 +53,21 @@ function ProviderLogo({ name, label }: { name: LogoName; label: string }) {
   )
 }
 
-function Hero({ stats = { total: 0, updatedToday: 0 } }: HeroProps) {
+function Hero({ stats = { total: 0, updatedToday: 0 }, healthStatus }: HeroProps) {
+  const healthState = healthStatus?.status ?? "unknown"
+  const healthLabel =
+    healthState === "healthy" ? "Healthy" : healthState === "unhealthy" ? "Unhealthy" : "Unknown"
+  const healthDotClassName =
+    healthState === "healthy"
+      ? "bg-emerald-500"
+      : healthState === "unhealthy"
+        ? "bg-rose-500"
+        : "bg-muted-foreground/50"
+  const healthLatency = typeof healthStatus?.latencyMs === "number"
+    ? Math.round(healthStatus.latencyMs)
+    : null
+  const healthTitle = healthLatency ? `DB latency ${healthLatency}ms` : "Health status"
+
   return (
     <section
       aria-labelledby="hero-heading"
@@ -72,22 +89,23 @@ function Hero({ stats = { total: 0, updatedToday: 0 } }: HeroProps) {
           </div>
 
           {/* Stats inline */}
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
               <span className="font-medium text-foreground">
                 {stats.total > 0 ? formatNumber(stats.total) : "--"}
               </span>{" "}
               skills
             </span>
             {stats.updatedToday > 0 && (
-              <>
-                <span className="text-border-muted">&middot;</span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
-                  <span className="font-medium text-foreground">{stats.updatedToday}</span> updated today
-                </span>
-              </>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
+                <span className="font-medium text-foreground">{stats.updatedToday}</span> updated today
+              </span>
             )}
+            <Badge variant="outline" className="gap-1.5 border-border/60 bg-background/60" title={healthTitle}>
+              <span className={cn("size-1.5 rounded-full", healthDotClassName)} aria-hidden="true" />
+              <span>Health {healthLabel}</span>
+            </Badge>
           </div>
 
           {/* Tool logos */}

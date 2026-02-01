@@ -22,6 +22,7 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  compress: true, // Enable gzip/brotli compression to reduce egress
   poweredByHeader: false,
   turbopack: {
     root: __dirname,

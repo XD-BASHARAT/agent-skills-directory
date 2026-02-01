@@ -63,9 +63,9 @@ function SiteStructuredData() {
       priceCurrency: "USD",
     },
     featureList: [
-      "Search SKILL.md skills by name and category",
-      "See repo signals like stars and recency",
-      "Install commands for Claude Code, Cursor, Windsurf, Amp",
+      "Search agent skills by name and category",
+      "Compare stars, recency, and compatibility signals",
+      "Install agent skills for Claude Code, Cursor, Windsurf, Amp",
       "Open SKILL.md standard",
       "Free to use",
     ],

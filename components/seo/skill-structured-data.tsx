@@ -82,8 +82,8 @@ function SkillStructuredData({ skill, categories = [] }: SkillStructuredDataProp
   const howTo = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    name: `How to Install ${skill.name}`,
-    description: `Install the ${skill.name} skill for coding assistants`,
+    name: `How to Install ${skill.name} Agent Skill`,
+    description: `Install the ${skill.name} agent skill for coding assistants`,
     step: [
       {
         "@type": "HowToStep",

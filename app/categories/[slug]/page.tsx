@@ -41,6 +41,7 @@ const getCategorySkills = React.cache(async (slug: string) =>
   getSkills({
     category: slug,
     perPage: SKILLS_PER_PAGE,
+    descriptionLength: 200,
     sortBy: "stars_desc",
   }),
 );

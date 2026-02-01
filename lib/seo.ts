@@ -180,16 +180,19 @@ export function buildSkillMetadata(skill: {
 }): Metadata {
   const title = `${skill.name} - Agent Skill by ${skill.owner}`
   const description = skill.description
-    ? `${skill.description} Install instructions and source repo included.`
-    : `${skill.name} by ${skill.owner}. SKILL.md workflow for coding assistants with install instructions.`
+    ? `${skill.description} Agent skill with install steps and source repo details.`
+    : `Install ${skill.name} agent skill by ${skill.owner}. SKILL.md workflow for coding assistants with install steps.`
   
   const keywords = [
     skill.name,
     `${skill.name} skill`,
+    `${skill.name} agent skill`,
     skill.owner,
     skill.compatibility ?? "Claude Code",
     "agent skill",
-    "coding assistants",
+    "agent skills",
+    "coding assistant skills",
+    "SKILL.md",
   ].filter(Boolean)
 
   return buildMetadata({
@@ -212,8 +215,8 @@ export function buildCategoryMetadata(category: {
   const count = category.skillCount ?? 0
   const title = `${category.name} Agent Skills`
   const description = category.description
-    ? `${category.description} Browse ${count}+ ${category.name.toLowerCase()} skills with install commands and repo signals.`
-    : `Explore ${count}+ ${category.name.toLowerCase()} skills for coding assistants, sorted by stars and recency.`
+    ? `${category.description} Browse ${count}+ ${category.name.toLowerCase()} agent skills with install commands and repo signals.`
+    : `Explore ${count}+ ${category.name.toLowerCase()} agent skills for coding assistants, sorted by stars and recency.`
 
   return buildMetadata({
     title,
@@ -237,7 +240,7 @@ export function buildOwnerMetadata(owner: {
     description,
     path: `/${owner.name}`,
     openGraphType: "profile",
-    keywords: [owner.name, `${owner.name} skills`],
+    keywords: [owner.name, `${owner.name} skills`, "agent skills", "agent skills developer"],
   })
 }
 

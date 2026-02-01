@@ -98,9 +98,10 @@ export async function GET(request: Request) {
       })
     )
 
-    // Cache for 60 seconds, stale-while-revalidate for 10 minutes
+    // Cache for 5 minutes, stale-while-revalidate for 1 hour, CDN cache for 1 hour
     const headers: HeadersInit = {
-      "Cache-Control": "s-maxage=60, stale-while-revalidate=600",
+      "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
+      "CDN-Cache-Control": "public, max-age=3600",
     }
     // Only include debug header in development
     if (process.env.NODE_ENV !== "production") {

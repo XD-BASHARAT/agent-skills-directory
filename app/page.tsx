@@ -8,6 +8,7 @@ import { siteDescription, siteFullName } from "@/lib/seo"
 import { getSiteUrl } from "@/lib/site-url"
 import { getStats } from "@/lib/stats"
 import { getCategories, getSkills, type GetSkillsOptions } from "@/lib/db/queries"
+import { getHealthStatus } from "@/lib/health"
 import { siteConfig } from "@/config/site"
 import { HomeClient } from "@/features/marketing/home-client"
 
@@ -87,7 +88,7 @@ type PageProps = {
   searchParams?: Record<string, string | string[] | undefined>
 }
 
-const DEFAULT_PAGE_SIZE = 32
+const DEFAULT_PAGE_SIZE = 12 // Reduced from 32 for better performance and lower egress
 
 const allowedSorts: NonNullable<GetSkillsOptions["sortBy"]>[] = [
   "recent",
@@ -128,16 +129,18 @@ export default async function Page({ searchParams }: PageProps) {
   const page = parseNumber(params?.page, 1)
   const categoryList = parseCategoryList(params?.categories)
 
-  const [stats, categories, skillsData] = await Promise.all([
+  const [stats, categories, skillsData, healthStatus] = await Promise.all([
     getStats(),
     getCategories(),
     getSkills({
       query: searchQuery,
       page,
       perPage: DEFAULT_PAGE_SIZE,
+      descriptionLength: 200,
       sortBy,
       categoryList,
     }),
+    getHealthStatus(),
   ])
 
   return (
@@ -145,7 +148,7 @@ export default async function Page({ searchParams }: PageProps) {
       <FaqJsonLd />
       <Container>
         <HomeClient />
-        <Hero stats={stats} />
+        <Hero stats={stats} healthStatus={healthStatus} />
         <section aria-labelledby="featured-skills-heading" className="space-y-4">
           <h2 id="featured-skills-heading" className="sr-only">
             Featured Agent Skills

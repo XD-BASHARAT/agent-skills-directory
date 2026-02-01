@@ -15,6 +15,7 @@ type SkillCardProps = {
 function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
   const skillUrl = `/${skill.owner}/skills/${skill.slug}`;
   const updatedAt = skill.updatedAtLabel ?? null;
+  const optimizedAvatar = buildAvatarUrl(skill.avatarUrl);
 
   return (
     <Link
@@ -36,10 +37,11 @@ function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
           {skill.avatarUrl ? (
             <div className="relative size-10 overflow-hidden rounded-lg bg-muted">
               <Image
-                src={skill.avatarUrl}
+                src={optimizedAvatar ?? skill.avatarUrl}
                 alt={`${skill.name} by ${skill.owner}`}
                 fill
                 sizes="40px"
+                quality={75}
                 priority={imagePriority}
                 className="object-cover"
               />
@@ -93,6 +95,19 @@ function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
       </div>
     </Link>
   );
+}
+
+function buildAvatarUrl(avatarUrl: string | null): string | null {
+  if (!avatarUrl) return null;
+
+  try {
+    const url = new URL(avatarUrl);
+    url.searchParams.set("s", "80");
+    return url.toString();
+  } catch {
+    const separator = avatarUrl.includes("?") ? "&" : "?";
+    return `${avatarUrl}${separator}s=80`;
+  }
 }
 
 function formatStars(stars: number): string {

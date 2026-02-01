@@ -47,7 +47,7 @@ function SkillsGridSkeleton() {
 
 export default async function SkillsPage() {
   const [initialData, categories] = await Promise.all([
-    getSkills({ page: 1, perPage: 30, sortBy: "last_commit" }),
+    getSkills({ page: 1, perPage: 30, descriptionLength: 200, sortBy: "last_commit" }),
     getCategories(),
   ])
 
