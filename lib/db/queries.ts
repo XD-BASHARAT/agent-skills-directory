@@ -339,7 +339,7 @@ export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { c
     return {
       ...skill,
       categories: skillCategoriesList,
-      category: skillCategoriesList[0] || null, // Main category (first one)
+      category: skillCategoriesList[0] || null,
     } as Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }
   })
 
