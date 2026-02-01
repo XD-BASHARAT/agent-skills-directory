@@ -21,6 +21,7 @@ function Header() {
     { label: "Browse", href: "/skills" },
     { label: "Categories", href: "/categories" },
     { label: "Favorites", href: "/favorites" },
+    { label: "Ranking", href: "/ranking" },
   ];
 
   return (

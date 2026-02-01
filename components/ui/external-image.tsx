@@ -12,14 +12,9 @@ interface ExternalImageProps {
   quality?: number
 }
 
-function isLocalhost(): boolean {
-  if (typeof window === "undefined") return false
-  return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-}
-
-function getCloudflareUrl(src: string, width: number, quality: number = 80): string {
+function getCloudflareUrl(src: string, width: number, quality: number = 80, isLocalhost: boolean = false): string {
   if (!src.startsWith("http://") && !src.startsWith("https://")) return src
-  if (isLocalhost()) return src
+  if (isLocalhost) return src
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ?? "https://agnxi.com"
   return `${baseUrl}/cdn-cgi/image/width=${width},quality=${quality},format=auto/${src}`
 }
@@ -33,27 +28,44 @@ function ExternalImage({
   className,
   quality = 80,
 }: ExternalImageProps) {
-  const [imgSrc, setImgSrc] = React.useState(src)
+  // Calculate initial URL on server (always use Cloudflare to ensure consistency)
+  // On client, we'll check localhost in useEffect and update if needed
+  const initialUrl = React.useMemo(() => getCloudflareUrl(src, width, quality, false), [src, width, quality])
+  const [imgSrc, setImgSrc] = React.useState(initialUrl)
   const [useFallback, setUseFallback] = React.useState(false)
   const [hasError, setHasError] = React.useState(false)
+  const [isMounted, setIsMounted] = React.useState(false)
+  const srcRef = React.useRef(src)
+
+  // Update ref when src changes
+  React.useEffect(() => {
+    srcRef.current = src
+  }, [src])
 
   const handleError = React.useCallback(() => {
     if (!useFallback) {
       setUseFallback(true)
-      setImgSrc(src)
+      setImgSrc(srcRef.current)
     } else if (fallbackSrc && imgSrc !== fallbackSrc) {
       setImgSrc(fallbackSrc)
     } else {
       setHasError(true)
     }
-  }, [useFallback, src, fallbackSrc, imgSrc])
+  }, [useFallback, fallbackSrc, imgSrc])
 
   React.useEffect(() => {
-    const cloudflareUrl = getCloudflareUrl(src, width, quality)
-    setImgSrc(cloudflareUrl)
-    setUseFallback(false)
-    setHasError(false)
-  }, [src, width, quality])
+    setIsMounted(true)
+    // Check if we're on localhost and update URL if needed
+    // Only update after mount to avoid hydration mismatch
+    const isLocalhost = typeof window !== "undefined" && 
+      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    
+    if (isLocalhost && imgSrc !== srcRef.current) {
+      // On localhost, use original URL
+      setImgSrc(srcRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Empty deps - only run once on mount
 
   if (hasError) {
     return (
@@ -77,6 +89,7 @@ function ExternalImage({
       className={className}
       loading="lazy"
       decoding="async"
+      suppressHydrationWarning
     />
   )
 }

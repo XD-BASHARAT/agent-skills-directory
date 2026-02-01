@@ -855,7 +855,7 @@ export type OwnerRanking = {
   totalSkills: number
   totalStars: number
   totalForks: number
-  hasVerified: boolean
+  isVerifiedOrg: boolean
 }
 
 export async function getOwnerRankings(options: {
@@ -892,7 +892,7 @@ export async function getOwnerRankings(options: {
       GROUP BY owner
     ),
     owner_verified AS (
-      SELECT owner, BOOL_OR(status = 'approved') as has_verified
+      SELECT owner, BOOL_OR(is_verified_org) as is_verified_org
       FROM skills
       WHERE status != 'rejected'
       GROUP BY owner
@@ -903,11 +903,11 @@ export async function getOwnerRankings(options: {
       COALESCE(sc.total_skills, 0) as total_skills,
       COALESCE(SUM(r.stars), 0) as total_stars,
       COALESCE(SUM(r.forks), 0) as total_forks,
-      COALESCE(ov.has_verified, false) as has_verified
+      COALESCE(ov.is_verified_org, false) as is_verified_org
     FROM unique_repos r
     LEFT JOIN skill_counts sc ON sc.owner = r.owner
     LEFT JOIN owner_verified ov ON ov.owner = r.owner
-    GROUP BY r.owner, sc.total_skills, ov.has_verified
+    GROUP BY r.owner, sc.total_skills, ov.is_verified_org
     ORDER BY ${orderColumn} DESC
     LIMIT ${safeLimit}
   `)
@@ -918,7 +918,7 @@ export async function getOwnerRankings(options: {
     total_skills: string
     total_stars: string
     total_forks: string
-    has_verified: boolean
+    is_verified_org: boolean
   }>
 
   return rows.map((r) => ({
@@ -927,6 +927,6 @@ export async function getOwnerRankings(options: {
     totalSkills: Number(r.total_skills),
     totalStars: Number(r.total_stars),
     totalForks: Number(r.total_forks),
-    hasVerified: Boolean(r.has_verified),
+    isVerifiedOrg: Boolean(r.is_verified_org),
   }))
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Star, GitFork, Boxes, ShieldCheck, Trophy, ChevronRight } from "lucide-react"
+import { Boxes, ShieldCheck, Trophy, Medal } from "lucide-react"
 
 import { getOwnerRankings, type OwnerRanking } from "@/lib/db/queries"
 import { buildMetadata } from "@/lib/seo"
@@ -8,90 +8,80 @@ import { Container } from "@/components/layouts/container"
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld"
 import { ExternalImage } from "@/components/ui/external-image"
 import { cn } from "@/lib/utils"
-import { RankingSortTabs } from "./ranking-sort-tabs"
 
 export const metadata: Metadata = buildMetadata({
   title: "Top Contributors Ranking",
   description:
-    "See contributors ranked by stars, forks, and published agent skills.",
+    "See contributors ranked by published agent skills.",
   path: "/ranking",
   keywords: ["agent skills ranking", "ranking", "leaderboard", "top contributors", "skill authors", "maintainers"],
 })
 
-type SearchParams = Promise<{
-  sort?: string
-}>
-
 type PageProps = {
-  searchParams: SearchParams
-}
-
-function formatNumber(num: number): string {
-  if (num >= 1000) {
-    return `${(num / 1000).toFixed(1).replace(/\.0$/, "")}k`
-  }
-  return num.toString()
-}
-
-function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) {
-    return (
-      <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20">
-        <Trophy className="size-5" aria-hidden="true" />
-        <span className="sr-only">1</span>
-      </div>
-    )
-  }
-  if (rank === 2) {
-    return (
-      <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-slate-300 to-slate-500 text-white font-bold text-sm shadow-lg shadow-slate-400/20">
-        2
-      </div>
-    )
-  }
-  if (rank === 3) {
-    return (
-      <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-white font-bold text-sm shadow-lg shadow-orange-500/20">
-        3
-      </div>
-    )
-  }
-  return (
-    <div className="flex items-center justify-center size-10 rounded-xl bg-muted/50 text-muted-foreground font-semibold text-sm tabular-nums border border-border/40">
-      {rank}
-    </div>
-  )
+  searchParams: Promise<{
+    sort?: string
+  }>
 }
 
 function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
   const initials = owner.owner.slice(0, 2).toUpperCase()
   
-  const gradients = {
-    1: "from-amber-500/10 via-amber-500/5 to-transparent border-amber-500/20",
-    2: "from-slate-400/10 via-slate-400/5 to-transparent border-slate-400/20",
-    3: "from-orange-500/10 via-orange-500/5 to-transparent border-orange-500/20",
-  }
+  const rankConfig = {
+    1: {
+      gradient: "from-amber-500/20 via-amber-500/10 to-transparent",
+      border: "border-amber-500/30",
+      badge: "bg-gradient-to-br from-amber-400 to-amber-600 text-white",
+      icon: Trophy,
+      size: "size-20",
+      avatarBorder: "border-amber-500/40",
+    },
+    2: {
+      gradient: "from-slate-400/20 via-slate-400/10 to-transparent",
+      border: "border-slate-400/30",
+      badge: "bg-gradient-to-br from-slate-300 to-slate-500 text-white",
+      icon: Medal,
+      size: "size-16",
+      avatarBorder: "border-slate-400/40",
+    },
+    3: {
+      gradient: "from-orange-500/20 via-orange-500/10 to-transparent",
+      border: "border-orange-500/30",
+      badge: "bg-gradient-to-br from-orange-400 to-orange-600 text-white",
+      icon: Medal,
+      size: "size-16",
+      avatarBorder: "border-orange-500/40",
+    },
+  } as const
+
+  const config = rankConfig[rank as 1 | 2 | 3]
+  const Icon = config.icon
 
   return (
     <Link
       href={`/${owner.owner}`}
       className={cn(
-        "group relative flex flex-col items-center p-5 rounded-2xl border backdrop-blur-sm",
-        "bg-gradient-to-b transition-[transform,background-color,border-color,box-shadow] duration-300 motion-reduce:transition-none motion-reduce:transform-none",
+        "group relative flex flex-col items-center rounded-2xl border-2 p-6 backdrop-blur-sm transition-all duration-300",
+        "bg-gradient-to-b",
+        config.gradient,
+        config.border,
         "hover:scale-[1.02] hover:shadow-lg",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        gradients[rank as 1 | 2 | 3]
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2"
       )}
     >
       {/* Rank Badge */}
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-        <RankBadge rank={rank} />
+      <div className={cn(
+        "absolute -top-4 left-1/2 -translate-x-1/2 flex items-center justify-center size-12 rounded-full shadow-lg",
+        config.badge
+      )}>
+        <Icon className="size-6" aria-hidden="true" />
+        <span className="sr-only">Rank {rank}</span>
       </div>
 
       {/* Avatar */}
       <div className={cn(
         "mt-4 rounded-2xl overflow-hidden bg-muted border-2",
-        rank === 1 ? "size-20 border-amber-500/30" : "size-16 border-border/50"
+        config.size,
+        config.avatarBorder
       )}>
         {owner.avatarUrl ? (
           <ExternalImage 
@@ -110,52 +100,104 @@ function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
       </div>
 
       {/* Info */}
-      <div className="mt-3 text-center space-y-1">
+      <div className="mt-4 text-center space-y-1">
         <div className="flex items-center justify-center gap-1">
-          <h3 className="font-semibold truncate max-w-[120px] group-hover:text-primary transition-colors">
+          <h3 className="font-bold text-base truncate max-w-[140px] group-hover:text-primary transition-colors">
             {owner.owner}
           </h3>
-          {owner.hasVerified && (
+          {owner.isVerifiedOrg && (
             <span className="inline-flex items-center">
               <ShieldCheck className="size-4 shrink-0 text-blue-500" aria-hidden="true" />
               <span className="sr-only">Verified organization</span>
             </span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground">
-          {owner.totalSkills} skill{owner.totalSkills !== 1 && "s"}
-        </p>
-      </div>
-
-      {/* Stats */}
-      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/40 w-full justify-center">
-        <div className="flex items-center gap-1">
-          <Star className="size-3.5 text-amber-500 fill-amber-500" aria-hidden="true" />
-          <span className="text-sm font-bold tabular-nums">{formatNumber(owner.totalStars)}</span>
-        </div>
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <GitFork className="size-3.5" aria-hidden="true" />
-          <span className="text-sm tabular-nums">{formatNumber(owner.totalForks)}</span>
+        <div className="flex items-center justify-center gap-1.5">
+          <Boxes className="size-4 text-muted-foreground" aria-hidden="true" />
+          <p className="text-sm font-semibold text-foreground">
+            {owner.totalSkills} skill{owner.totalSkills !== 1 && "s"}
+          </p>
         </div>
       </div>
     </Link>
   )
 }
 
-function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
+function TopTenCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
   const initials = owner.owner.slice(0, 2).toUpperCase()
 
   return (
     <Link
       href={`/${owner.owner}`}
       className={cn(
-        "group flex items-center gap-3 p-3 rounded-xl transition-[background-color,border-color,box-shadow,transform] duration-200 motion-reduce:transition-none motion-reduce:transform-none",
-        "hover:bg-card/50 hover:border-border/60",
-        "border border-transparent",
+        "group flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-4 backdrop-blur-sm transition-all duration-200",
+        "hover:border-primary/40 hover:bg-primary/10 hover:shadow-md",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2"
+      )}
+    >
+      {/* Rank */}
+      <div className="flex shrink-0 items-center justify-center size-10 rounded-lg bg-primary/10 text-primary font-bold text-sm tabular-nums border border-primary/20">
+        {rank}
+      </div>
+
+      {/* Avatar */}
+      <div className="size-12 overflow-hidden rounded-xl bg-muted border border-border/50 shrink-0">
+        {owner.avatarUrl ? (
+          <ExternalImage 
+            src={owner.avatarUrl} 
+            alt={`${owner.owner} avatar`} 
+            width={48}
+            height={48}
+            quality={75}
+            className="object-cover" 
+          />
+        ) : (
+          <div className="flex items-center justify-center size-full">
+            <span className="text-sm font-semibold text-muted-foreground">{initials}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Owner Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1">
+          <h3 className="text-sm font-semibold truncate group-hover:text-primary transition-colors">
+            {owner.owner}
+          </h3>
+          {owner.isVerifiedOrg && (
+            <span className="inline-flex items-center">
+              <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
+              <span className="sr-only">Verified organization</span>
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <Boxes className="size-3.5 text-muted-foreground" aria-hidden="true" />
+          <p className="text-xs text-muted-foreground">
+            {owner.totalSkills} skill{owner.totalSkills !== 1 && "s"}
+          </p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function RankingCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
+  const initials = owner.owner.slice(0, 2).toUpperCase()
+
+  return (
+    <Link
+      href={`/${owner.owner}`}
+      className={cn(
+        "group flex items-center gap-3 rounded-lg border border-border/50 bg-background/95 supports-[backdrop-filter]:bg-background/60 p-3 backdrop-blur transition-colors",
+        "hover:border-primary/30 hover:bg-muted/50",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       )}
     >
-      <RankBadge rank={rank} />
+      {/* Rank */}
+      <div className="flex shrink-0 items-center justify-center size-8 rounded-lg bg-muted/50 text-muted-foreground font-semibold text-xs tabular-nums border border-border/40">
+        {rank}
+      </div>
 
       {/* Avatar */}
       <div className="size-10 overflow-hidden rounded-lg bg-muted shrink-0">
@@ -181,33 +223,19 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
           <h3 className="text-sm font-semibold truncate group-hover:text-primary transition-colors">
             {owner.owner}
           </h3>
-          {owner.hasVerified && (
+          {owner.isVerifiedOrg && (
             <span className="inline-flex items-center">
               <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
               <span className="sr-only">Verified organization</span>
             </span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground">
-          {owner.totalSkills} skill{owner.totalSkills !== 1 && "s"}
-        </p>
-      </div>
-
-      {/* Stats */}
-      <div className="flex items-center gap-4 shrink-0">
-        <div className="flex items-center gap-1">
-          <Star className="size-3.5 text-amber-500 fill-amber-500" aria-hidden="true" />
-          <span className="text-sm font-medium tabular-nums">{formatNumber(owner.totalStars)}</span>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <Boxes className="size-3.5 text-muted-foreground" aria-hidden="true" />
+          <p className="text-xs text-muted-foreground">
+            {owner.totalSkills} skill{owner.totalSkills !== 1 && "s"}
+          </p>
         </div>
-        <div className="hidden sm:flex items-center gap-1 text-muted-foreground">
-          <GitFork className="size-3.5" aria-hidden="true" />
-          <span className="text-sm tabular-nums">{formatNumber(owner.totalForks)}</span>
-        </div>
-        <div className="hidden md:flex items-center gap-1 text-muted-foreground">
-          <Boxes className="size-3.5" aria-hidden="true" />
-          <span className="text-sm tabular-nums">{owner.totalSkills}</span>
-        </div>
-        <ChevronRight className="size-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors motion-reduce:transition-none" aria-hidden="true" />
       </div>
     </Link>
   )
@@ -215,11 +243,12 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
 
 export default async function RankingPage({ searchParams }: PageProps) {
   const { sort } = await searchParams
-  const sortBy = sort === "skills" || sort === "forks" ? sort : "stars"
+  const sortBy = sort === "skills" ? "skills" : "skills" // Always sort by skills
 
   const owners = await getOwnerRankings({ sortBy, limit: 100 })
   const topThree = owners.slice(0, 3)
-  const rest = owners.slice(3)
+  const topFourToTen = owners.slice(3, 10)
+  const rest = owners.slice(10)
 
   return (
     <Container>
@@ -230,24 +259,15 @@ export default async function RankingPage({ searchParams }: PageProps) {
         ]}
       />
 
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="size-3" aria-hidden="true" />
-        <span className="text-foreground">Ranking</span>
-      </nav>
-
       {/* Header */}
-      <header className="text-center space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">
+      <header className="space-y-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">
           Top Agent Skills Contributors
         </h1>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Ranked by stars, forks, and published agent skills
+        <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
+          Ranked by number of published agent skills.
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           New to agent skills? Read the{" "}
           <Link href="/agent-skills" className="text-primary hover:underline">
             Agent Skills Guide
@@ -256,38 +276,54 @@ export default async function RankingPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      <RankingSortTabs currentSort={sortBy} />
-
       {/* Top 3 Podium */}
       {topThree.length >= 3 && (
-        <div className="grid grid-cols-3 gap-3 sm:gap-4">
-          {/* 2nd Place */}
-          <div className="pt-6">
-            <TopThreeCard owner={topThree[1]} rank={2} />
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-center">Top 3 Contributors</h2>
+          <div className="grid grid-cols-3 gap-4 sm:gap-6">
+            {/* 2nd Place */}
+            <div className="pt-8">
+              <TopThreeCard owner={topThree[1]} rank={2} />
+            </div>
+            {/* 1st Place */}
+            <div>
+              <TopThreeCard owner={topThree[0]} rank={1} />
+            </div>
+            {/* 3rd Place */}
+            <div className="pt-8">
+              <TopThreeCard owner={topThree[2]} rank={3} />
+            </div>
           </div>
-          {/* 1st Place */}
-          <div>
-            <TopThreeCard owner={topThree[0]} rank={1} />
+        </section>
+      )}
+
+      {/* Top 4-10 */}
+      {topFourToTen.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-base font-semibold">Top 4-10</h2>
+          <div className="space-y-2">
+            {topFourToTen.map((owner, index) => (
+              <TopTenCard key={owner.owner} owner={owner} rank={index + 4} />
+            ))}
           </div>
-          {/* 3rd Place */}
-          <div className="pt-6">
-            <TopThreeCard owner={topThree[2]} rank={3} />
-          </div>
-        </div>
+        </section>
       )}
 
       {/* Rest of Rankings */}
       {rest.length > 0 && (
-        <div className="rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm divide-y divide-border/40">
-          {rest.map((owner, index) => (
-            <RankingRow key={owner.owner} owner={owner} rank={index + 4} />
-          ))}
-        </div>
+        <section className="space-y-3">
+          <h2 className="text-base font-semibold">All Contributors</h2>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {rest.map((owner, index) => (
+              <RankingCard key={owner.owner} owner={owner} rank={index + 11} />
+            ))}
+          </div>
+        </section>
       )}
 
       {owners.length === 0 && (
-        <div className="rounded-xl border border-dashed border-border/50 bg-muted/20 p-12 text-center">
-          <p className="text-muted-foreground">No contributors found.</p>
+        <div className="text-muted-foreground py-12 text-center text-sm">
+          No contributors found.
         </div>
       )}
     </Container>

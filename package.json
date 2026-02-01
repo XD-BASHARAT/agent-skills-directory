@@ -6,9 +6,9 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 4000",
     "lint": "eslint",
     "postinstall": "bun drizzle-kit generate --config=drizzle.config.ts || true",
     "db:generate": "bun drizzle-kit generate",
