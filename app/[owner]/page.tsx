@@ -189,7 +189,7 @@ export default async function OwnerPage({ params }: PageProps) {
       <section className="space-y-3">
         <OwnerSkillsFilter
           owner={ownerInfo.owner}
-          skills={ownerInfo.skills}
+          skills={ownerInfo.skills as any}
           categories={categories}
         />
       </section>

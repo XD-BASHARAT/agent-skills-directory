@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ShieldAlert, ShieldCheck, ShieldX } from "lucide-react"
-import { Tooltip } from "@/components/ui/tooltip"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 import type { SecurityScanResult } from "@/lib/features/skills/security-scanner"
 
 type SecurityBadgeProps = {
@@ -83,23 +83,29 @@ function SecurityBadge({ securityScan, variant = "compact", className }: Securit
 
   if (variant === "icon") {
     return (
-      <Tooltip content={tooltipContent}>
-        <span className={`inline-flex ${className}`}>
-          <Icon className={`size-4 ${color}`} aria-label={label} />
-        </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={`inline-flex ${className}`}>
+            <Icon className={`size-4 ${color}`} aria-label={label} />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{tooltipContent}</TooltipContent>
       </Tooltip>
     )
   }
 
   if (variant === "compact") {
     return (
-      <Tooltip content={tooltipContent}>
-        <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${bg} ${color} ${border} border ${className}`}
-        >
-          <Icon className="size-3" aria-hidden="true" />
-          <span>{safe ? "Verified" : label}</span>
-        </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${bg} ${color} ${border} border ${className}`}
+          >
+            <Icon className="size-3" aria-hidden="true" />
+            <span>{safe ? "Verified" : label}</span>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{tooltipContent}</TooltipContent>
       </Tooltip>
     )
   }

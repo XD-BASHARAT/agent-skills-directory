@@ -8,8 +8,10 @@ import {
   syncState,
   type NewSkill,
   type NewSyncJob,
+  type Skill,
 } from "./schema"
 import { CATEGORIES, toDatabaseCategory } from "@/lib/categories"
+import type { CategorySummary } from "@/types"
 
 const BATCH_SIZE = 50
 const MAX_PER_PAGE = 100
@@ -192,7 +194,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
           id, name, slug,
           ${descriptionSelect} as description,
           owner, repo, path, url, avatar_url, stars,
-          is_verified_org, status, file_updated_at, repo_updated_at, indexed_at
+          is_verified_org, status, file_updated_at, repo_updated_at, indexed_at, security_scan
         FROM skills
         WHERE ${whereClause}
         ORDER BY owner, slug, indexed_at DESC NULLS LAST, id DESC
@@ -228,6 +230,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     file_updated_at: Date | null
     repo_updated_at: Date | null
     indexed_at: Date | null
+    security_scan: string | null
   }>
 
   const dedupedSkills = rows.map((row) => ({
@@ -246,6 +249,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     fileUpdatedAt: row.file_updated_at,
     repoUpdatedAt: row.repo_updated_at,
     indexedAt: row.indexed_at,
+    securityScan: row.security_scan,
     updatedAtLabel: formatShortDate(row.file_updated_at ?? row.repo_updated_at),
   }))
 
@@ -289,9 +293,13 @@ export async function getSkillBySlug(owner: string, slug: string) {
   return result ?? null
 }
 
-export async function getSkillsByOwner(owner: string) {
+export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }>> {
   const skillsList = await db.select().from(skills).where(eq(skills.owner, owner)).orderBy(desc(skills.stars), desc(skills.id))
-  const dedupedSkills = dedupeSkillsByOwnerSlug(skillsList).map((skill) => ({
+  
+  // Type assertion is safe because .select() without fields returns all columns
+  const typedSkills = skillsList as Skill[]
+  
+  const dedupedSkills = dedupeSkillsByOwnerSlug(typedSkills).map((skill) => ({
     ...skill,
     updatedAtLabel: formatShortDate(skill.fileUpdatedAt ?? skill.repoUpdatedAt),
   }))
@@ -332,7 +340,7 @@ export async function getSkillsByOwner(owner: string) {
       ...skill,
       categories: skillCategoriesList,
       category: skillCategoriesList[0] || null, // Main category (first one)
-    }
+    } as Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }
   })
 
   return skillsWithCategories
