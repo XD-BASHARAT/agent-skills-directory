@@ -88,7 +88,7 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
               type="button"
               onClick={handleClearSearch}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
@@ -153,7 +153,7 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center gap-2 py-12" role="status" aria-live="polite">
-          <Loader2 className="text-primary size-5 animate-spin" aria-hidden="true" />
+          <Loader2 className="text-primary size-5 animate-spin motion-reduce:animate-none" aria-hidden="true" />
           <span className="text-muted-foreground text-sm">Loading…</span>
         </div>
       )}

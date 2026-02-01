@@ -17,8 +17,8 @@ function FavoritesClient({ categories }: FavoritesClientProps) {
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="flex items-center justify-center py-12" role="status" aria-live="polite">
+        <div className="animate-pulse motion-reduce:animate-none text-muted-foreground">Loading…</div>
       </div>
     )
   }
@@ -26,7 +26,7 @@ function FavoritesClient({ categories }: FavoritesClientProps) {
   if (!isAuthenticated) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
-        <Heart className="size-12 text-muted-foreground/50" />
+        <Heart className="size-12 text-muted-foreground/50" aria-hidden="true" />
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Sign in to save favorites</h2>
           <p className="text-muted-foreground text-sm max-w-sm">
@@ -40,7 +40,7 @@ function FavoritesClient({ categories }: FavoritesClientProps) {
           <Button variant="outline" asChild>
             <Link href="/skills">
               Browse Skills
-              <ArrowRight className="size-4" data-icon="inline-end" />
+              <ArrowRight className="size-4" data-icon="inline-end" aria-hidden="true" />
             </Link>
           </Button>
         </div>

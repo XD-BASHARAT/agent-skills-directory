@@ -40,8 +40,8 @@ function RelatedSkills({ skills, title = "Related Skills" }: RelatedSkillsProps)
             prefetch={false}
             className={cn(
               "group flex items-start gap-3 p-3 rounded-xl border border-border/50 bg-card/30",
-              "hover:border-primary/30 hover:bg-card/60 transition-[background-color,border-color,box-shadow,transform] duration-200",
-              "animate-in fade-in slide-in-from-bottom-2",
+              "hover:border-primary/30 hover:bg-card/60 transition-[background-color,border-color,box-shadow,transform] duration-200 motion-reduce:transition-none",
+              "animate-in fade-in slide-in-from-bottom-2 motion-reduce:animate-none",
             )}
             style={{ animationDelay: `${index * 50}ms` }}
           >
@@ -68,7 +68,7 @@ function RelatedSkills({ skills, title = "Related Skills" }: RelatedSkillsProps)
                 <h4 className="text-sm font-medium truncate group-hover:text-primary transition-colors">
                   {skill.name}
                 </h4>
-                <ArrowUpRight className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" aria-hidden="true" />
+                <ArrowUpRight className="size-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity motion-reduce:transition-none shrink-0" aria-hidden="true" />
               </div>
               <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
                 {skill.description}

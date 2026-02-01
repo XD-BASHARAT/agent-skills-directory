@@ -7,7 +7,7 @@ import { FavoritesClient } from "./favorites-client"
 
 export const metadata = buildMetadata({
   title: "My Favorites",
-  description: "Your favorite agent skills collection. Manage and organize skills you've saved for quick access.",
+  description: "Your saved list of skills for quick reference.",
   path: "/favorites",
   keywords: [
     "favorite skills",
@@ -32,7 +32,7 @@ export default async function FavoritesPage() {
       <header className="space-y-1">
         <h1 className="text-balance text-2xl font-bold tracking-tight">My Favorites</h1>
         <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
-          Your saved agent skills collection. Skills you&apos;ve favorited for quick access and reference.
+          Your saved skills list for quick reference and reuse.
         </p>
       </header>
       <FavoritesClient categories={categories} />

@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC)](https://tailwindcss.com/)
 
-**AGNXI** is a curated directory for discovering and installing agent skills for AI coding assistants like Claude Code, Cursor, Windsurf, and more.
+**AGNXI** is a directory of SKILL.md skills for coding assistants like Claude Code, Cursor, Windsurf, and more.
 
 
 <img width="2400" height="1260" alt="og-1769761595063" src="https://github.com/user-attachments/assets/acd171bf-5ae3-4767-8fe4-73dd71ac71ed" />
@@ -13,12 +13,12 @@
 
 ## Features
 
-- **Discover Skills** - Browse 1000+ curated SKILL.md files from GitHub
+- **Skills** - Browse SKILL.md files from GitHub
 - **Categories** - Filter by development, testing, documentation, DevOps, and more
-- **Favorites** - Save and organize your favorite skills
-- **One-Click Install** - Copy install commands for any compatible agent
-- **Auto-Sync** - Automatic discovery of new skills from GitHub
-- **Rankings** - See trending and top-rated skills
+- **Favorites** - Save skills for quick access
+- **Install Commands** - Copy install commands for supported tools
+- **Sync** - Periodic discovery of new skills from GitHub
+- **Rankings** - Sort by stars, forks, and skill count
 
 ## Tech Stack
 
@@ -86,37 +86,37 @@ bun ping:indexnow         # Submit sitemap to search engines
 
 ```
 app/                    # Next.js App Router
-├── (auth)/            # Auth pages (sign-in, sign-up)
-├── [owner]/           # Dynamic owner/skill pages
-├── admin/             # Admin dashboard
-├── api/               # API routes
-├── categories/        # Category listing
-├── ranking/           # Skills ranking
-└── skills/            # Skills browsing
+  (auth)/               # Auth pages (sign-in, sign-up)
+  [owner]/              # Dynamic owner/skill pages
+  admin/                # Admin dashboard
+  api/                  # API routes
+  categories/           # Category listing
+  ranking/              # Skills ranking
+  skills/               # Skills browsing
 
-components/            # Shared React components
-├── layouts/           # Layout components
-├── seo/               # SEO components
-└── ui/                # Base UI components
+components/             # Shared React components
+  layouts/              # Layout components
+  seo/                  # SEO components
+  ui/                   # Base UI components
 
-features/              # Feature-specific components
-├── examples/          # Example components
-├── marketing/         # Marketing/landing
-├── skills/            # Skill cards, grids
-└── submissions/       # Skill submission
+features/               # Feature-specific components
+  examples/             # Example components
+  marketing/            # Marketing/landing
+  skills/               # Skill cards, grids
+  submissions/          # Skill submission
 
-lib/                   # Core utilities
-├── actions/           # Server actions
-├── ai/                # AI integration
-├── categories/        # Category logic
-├── db/                # Database schema & queries
-├── features/skills/   # Skill discovery & indexing
-├── hooks/             # React hooks
-└── inngest/           # Background job functions
+lib/                    # Core utilities
+  actions/              # Server actions
+  ai/                   # AI integration
+  categories/           # Category logic
+  db/                   # Database schema & queries
+  features/skills/      # Skill discovery & indexing
+  hooks/                # React hooks
+  inngest/              # Background job functions
 
-config/                # App configuration
-drizzle/               # Database migrations
-public/                # Static assets
+config/                 # App configuration
+drizzle/                # Database migrations
+public/                 # Static assets
 ```
 
 ## Environment Variables
@@ -150,17 +150,17 @@ INNGEST_SIGNING_KEY=
 
 1. **Discovery** - Scans GitHub for `SKILL.md` files using Code Search API
 2. **Indexing** - Parses skill metadata (name, description, tools, compatibility)
-3. **Categorization** - AI-powered category assignment using Gemini
+3. **Categorization** - Category assignment using Gemini
 4. **Sync** - Scheduled jobs keep the directory updated
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
+2. Create your feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -m 'Add feature'`)
+4. Push to branch (`git push origin feature/new-feature`)
 5. Open a Pull Request
 
 ## License
 
-MIT © [doanbactam](https://github.com/doanbactam)
+MIT (c) [doanbactam](https://github.com/doanbactam)

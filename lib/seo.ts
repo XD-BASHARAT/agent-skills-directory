@@ -43,7 +43,7 @@ export const baseMetadata: Metadata = {
     ],
   },
   category: "technology",
-  classification: "AI Tools, Developer Tools, Agent Skills Marketplace",
+  classification: "Developer Tools, Agent Skills Directory",
   openGraph: {
     title: siteFullName,
     description: siteDescription,
@@ -179,17 +179,17 @@ export function buildSkillMetadata(skill: {
   repoUpdatedAt?: Date | null
 }): Metadata {
   const title = `${skill.name} - Agent Skill by ${skill.owner}`
-  const description = skill.description 
-    ? `${skill.description} A curated skill for AI coding agents like Claude Code, Cursor, and Windsurf.`
-    : `${skill.name} by ${skill.owner} — a quality-reviewed skill for AI coding agents. Works with Claude Code, Cursor, Windsurf, and more.`
+  const description = skill.description
+    ? `${skill.description} Install instructions and source repo included.`
+    : `${skill.name} by ${skill.owner}. SKILL.md workflow for coding assistants with install instructions.`
   
   const keywords = [
     skill.name,
     `${skill.name} skill`,
     skill.owner,
     skill.compatibility ?? "Claude Code",
-    "curated agent skill",
-    "AI coding",
+    "agent skill",
+    "coding assistants",
   ].filter(Boolean)
 
   return buildMetadata({
@@ -211,15 +211,15 @@ export function buildCategoryMetadata(category: {
 }): Metadata {
   const count = category.skillCount ?? 0
   const title = `${category.name} Agent Skills`
-  const description = category.description 
-    ? `${category.description} Browse ${count}+ ${category.name.toLowerCase()} skills for AI coding agents.`
-    : `Discover ${count}+ ${category.name.toLowerCase()} skills for AI coding agents like Claude Code, Cursor, and Windsurf.`
+  const description = category.description
+    ? `${category.description} Browse ${count}+ ${category.name.toLowerCase()} skills with install commands and repo signals.`
+    : `Explore ${count}+ ${category.name.toLowerCase()} skills for coding assistants, sorted by stars and recency.`
 
   return buildMetadata({
     title,
     description,
     path: `/categories/${category.slug}`,
-    keywords: [category.name, `${category.name} skills`, `${category.name} AI tools`],
+    keywords: [category.name, `${category.name} skills`, `${category.name} tools`],
   })
 }
 
@@ -230,7 +230,7 @@ export function buildOwnerMetadata(owner: {
 }): Metadata {
   const count = owner.skillCount ?? 0
   const title = `${owner.name} - Agent Skills Developer`
-  const description = `Browse ${count}+ agent skills by ${owner.name}. Find production-ready AI coding skills compatible with Claude Code, Cursor, and Windsurf.`
+  const description = `Browse ${count}+ agent skills by ${owner.name}, with stars, recency, and compatibility signals.`
 
   return buildMetadata({
     title,

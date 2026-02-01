@@ -91,16 +91,6 @@ function Footer() {
               unoptimized
             />
           </a>
-          <a href={getExternalUrl("https://findly.tools/agnxi?utm_source=agnxi")} target="_blank" rel="noopener noreferrer">
-            <Image
-              src="https://findly.tools/badges/findly-tools-badge-light.svg"
-              alt="Featured on findly.tools"
-              width={150}
-              height={54}
-              style={{ height: "auto" }}
-              unoptimized
-            />
-          </a>
           <a href={getExternalUrl("https://turbo0.com/item/agnxi")} target="_blank" rel="noopener noreferrer">
             <Image
               src="https://img.turbo0.com/badge-listed-light.svg"

@@ -44,7 +44,7 @@ function SkillStructuredData({ skill, categories = [] }: SkillStructuredDataProp
     url: skillUrl,
     codeRepository: githubUrl,
     programmingLanguage: "Markdown",
-    runtimePlatform: "AI Coding Agents",
+    runtimePlatform: "Coding assistants",
     author: {
       "@type": "Person",
       name: skill.owner,
@@ -83,7 +83,7 @@ function SkillStructuredData({ skill, categories = [] }: SkillStructuredDataProp
     "@context": "https://schema.org",
     "@type": "HowTo",
     name: `How to Install ${skill.name}`,
-    description: `Install the ${skill.name} skill for AI coding agents`,
+    description: `Install the ${skill.name} skill for coding assistants`,
     step: [
       {
         "@type": "HowToStep",
@@ -95,13 +95,13 @@ function SkillStructuredData({ skill, categories = [] }: SkillStructuredDataProp
         "@type": "HowToStep",
         position: 2,
         name: "Run in terminal",
-        text: "Paste and run the command in your terminal or AI coding tool",
+        text: "Paste and run the command in your terminal or coding tool",
       },
       {
         "@type": "HowToStep",
         position: 3,
         name: "Start using",
-        text: "The skill is now available for your AI assistant to use",
+        text: "The skill is now available in your tool",
       },
     ],
     tool: [

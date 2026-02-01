@@ -13,9 +13,9 @@ import { RankingSortTabs } from "./ranking-sort-tabs"
 export const metadata: Metadata = buildMetadata({
   title: "Top Contributors Ranking",
   description:
-    "Discover the most impactful skill creators in our community. Rankings by stars, skills count, and forks.",
+    "See contributors ranked by stars, forks, and number of published skills.",
   path: "/ranking",
-  keywords: ["ranking", "leaderboard", "top contributors", "skill authors", "community leaders"],
+  keywords: ["ranking", "leaderboard", "top contributors", "skill authors", "maintainers"],
 })
 
 type SearchParams = Promise<{
@@ -37,7 +37,8 @@ function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) {
     return (
       <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20">
-        <Trophy className="size-5" />
+        <Trophy className="size-5" aria-hidden="true" />
+        <span className="sr-only">1</span>
       </div>
     )
   }
@@ -76,8 +77,9 @@ function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
       href={`/${owner.owner}`}
       className={cn(
         "group relative flex flex-col items-center p-5 rounded-2xl border backdrop-blur-sm",
-        "bg-gradient-to-b transition-all duration-300",
+        "bg-gradient-to-b transition-[transform,background-color,border-color,box-shadow] duration-300 motion-reduce:transition-none motion-reduce:transform-none",
         "hover:scale-[1.02] hover:shadow-lg",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         gradients[rank as 1 | 2 | 3]
       )}
     >
@@ -92,7 +94,7 @@ function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
         rank === 1 ? "size-20 border-amber-500/30" : "size-16 border-border/50"
       )}>
         {owner.avatarUrl ? (
-          <Image src={owner.avatarUrl} alt={`${owner.owner} avatar`} fill className="object-cover" />
+          <Image src={owner.avatarUrl} alt={`${owner.owner} avatar`} fill sizes={rank === 1 ? "80px" : "64px"} className="object-cover" />
         ) : (
           <div className="flex items-center justify-center size-full">
             <span className="text-lg font-semibold text-muted-foreground">{initials}</span>
@@ -107,7 +109,10 @@ function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
             {owner.owner}
           </h3>
           {owner.hasVerified && (
-            <ShieldCheck className="size-4 shrink-0 text-blue-500" aria-label="Verified" />
+            <span className="inline-flex items-center">
+              <ShieldCheck className="size-4 shrink-0 text-blue-500" aria-hidden="true" />
+              <span className="sr-only">Verified organization</span>
+            </span>
           )}
         </div>
         <p className="text-xs text-muted-foreground">
@@ -137,9 +142,10 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
     <Link
       href={`/${owner.owner}`}
       className={cn(
-        "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+        "group flex items-center gap-3 p-3 rounded-xl transition-[background-color,border-color,box-shadow,transform] duration-200 motion-reduce:transition-none motion-reduce:transform-none",
         "hover:bg-card/50 hover:border-border/60",
-        "border border-transparent"
+        "border border-transparent",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       )}
     >
       <RankBadge rank={rank} />
@@ -147,7 +153,7 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
       {/* Avatar */}
       <div className="relative size-10 overflow-hidden rounded-lg bg-muted shrink-0">
         {owner.avatarUrl ? (
-          <Image src={owner.avatarUrl} alt={`${owner.owner} avatar`} fill className="object-cover" />
+          <Image src={owner.avatarUrl} alt={`${owner.owner} avatar`} fill sizes="40px" className="object-cover" />
         ) : (
           <div className="flex items-center justify-center size-full">
             <span className="text-xs font-semibold text-muted-foreground">{initials}</span>
@@ -162,7 +168,10 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
             {owner.owner}
           </h3>
           {owner.hasVerified && (
-            <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-label="Verified" />
+            <span className="inline-flex items-center">
+              <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
+              <span className="sr-only">Verified organization</span>
+            </span>
           )}
         </div>
         <p className="text-xs text-muted-foreground">
@@ -184,7 +193,7 @@ function RankingRow({ owner, rank }: { owner: OwnerRanking; rank: number }) {
           <Boxes className="size-3.5" aria-hidden="true" />
           <span className="text-sm tabular-nums">{owner.totalSkills}</span>
         </div>
-        <ChevronRight className="size-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+        <ChevronRight className="size-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors motion-reduce:transition-none" aria-hidden="true" />
       </div>
     </Link>
   )
@@ -222,7 +231,7 @@ export default async function RankingPage({ searchParams }: PageProps) {
           Top Contributors
         </h1>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Celebrating the most impactful skill creators in our community
+          Ranked by stars, forks, and published skills
         </p>
       </header>
 

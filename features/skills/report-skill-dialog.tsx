@@ -90,8 +90,8 @@ function ReportSkillDialog({ skillId, skillName }: ReportSkillDialogProps) {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Reason</label>
-            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Reason">
+            <label id="report-reason-label" className="text-sm font-medium">Reason</label>
+            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="report-reason-label">
               {REPORT_REASONS.map((r) => (
                 <button
                   key={r.value}
@@ -107,7 +107,7 @@ function ReportSkillDialog({ skillId, skillName }: ReportSkillDialogProps) {
                     }
                   }}
                   className={cn(
-                    "rounded-md border px-3 py-2 text-left text-sm transition-colors",
+                    "rounded-md border px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                     reason === r.value
                       ? "border-primary bg-primary/10 text-foreground"
                     : "border-border hover:bg-muted"

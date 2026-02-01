@@ -13,6 +13,7 @@ function Toaster({ className, ...props }: ToasterProps) {
       closeButton
       duration={2600}
       position="top-right"
+      aria-live="polite"
       className={cn("toaster group", className)}
       toastOptions={{
         classNames: {

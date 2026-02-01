@@ -31,10 +31,12 @@ function FavoriteButton({ skillId, className, ...props }: FavoriteButtonProps) {
       type="button"
       onClick={handleToggleFavorite}
       aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+      aria-pressed={favorited}
       className={cn(
-        "absolute top-2.5 right-2.5 z-10 rounded-full p-1 transition-[opacity,transform,background-color,color]",
-        "opacity-0 group-hover:opacity-100",
-        "hover:bg-muted/80",
+        "absolute top-2.5 right-2.5 z-10 inline-flex size-11 items-center justify-center rounded-full",
+        "transition-[opacity,transform,background-color,color] motion-reduce:transition-none",
+        "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+        "hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         favorited && "opacity-100",
         favorited ? "text-red-500" : "text-muted-foreground/60 hover:text-red-400",
         className,

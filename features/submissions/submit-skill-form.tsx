@@ -16,7 +16,6 @@ type ApprovedSkill = {
   owner: string;
   slug: string;
   name: string;
-  path: string;
 };
 
 function SubmitSkillForm({ className }: { className?: string }) {
@@ -65,29 +64,7 @@ function SubmitSkillForm({ className }: { className?: string }) {
         setMessage(msg);
         toast.success(msg);
       } else if (result.skill) {
-        // Adapt single skill to array if needed, though type allows ApprovedSkill[]
-        // But result.skill is just one object.
-        // We need to fetch path/owner/slug/name/id from result.skill.
-        // The type in action says result.skill doesn't have path?
-        // Let's check action type.
-        // skill?: { id: string; owner: string; slug: string; name: string }
-        // ApprovedSkill has path.
-        // If single skill, we might need to mock path or fix action return type.
-        // The original API response probably had path or used `skills` array for multiple.
-
-        // Let's assume result.skills is populated if multiple, result.skill if single.
-        // The loop in action populates `approvedSkills` array which has path.
-        // And returns `skill: approvedSkills[0]` if length is 1.
-        // So result.skill HAS path in the implementation, but type definition might be missing it?
-        // Let's check lib/actions/skills.ts type definition again.
-        // skill?: { id: string; owner: string; slug: string; name: string } -- MISSING PATH
-
-        // I should fix the action type definition in lib/actions/skills.ts or just cast it here.
-        // Better to cast/extend here for now or trust runtime.
-        // Actually, let's just use `skills` if available, or wrap `skill`.
-
-        const skillWithPath = result.skill as ApprovedSkill; // Runtime it likely has path
-        setApprovedSkills([skillWithPath]);
+        setApprovedSkills([result.skill]);
         setMessage("Skill imported successfully!");
         toast.success("Skill imported!");
       }
@@ -105,10 +82,13 @@ function SubmitSkillForm({ className }: { className?: string }) {
   return (
     <form onSubmit={handleSubmit} className={cn("space-y-3", className)}>
       <div className="space-y-1.5">
+        <label htmlFor="repoUrl" className="sr-only">
+          GitHub repository URL
+        </label>
         <Input
           id="repoUrl"
           type="url"
-          placeholder="https://github.com/username/repo"
+          placeholder="https://github.com/username/repo…"
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
           disabled={state === "submitting"}
@@ -132,9 +112,9 @@ function SubmitSkillForm({ className }: { className?: string }) {
           role={state === "error" ? "alert" : "status"}
         >
           {state === "success" ? (
-            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-green-500" />
+            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-green-500" aria-hidden="true" />
           ) : (
-            <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
+            <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden="true" />
           )}
           <div className="space-y-1 min-w-0">
             <p>{message}</p>
@@ -167,7 +147,7 @@ function SubmitSkillForm({ className }: { className?: string }) {
       >
         {state === "submitting" ? (
           <>
-            <Loader2 className="mr-2 size-4 animate-spin" />
+            <Loader2 className="mr-2 size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
             Importing…
           </>
         ) : (

@@ -238,7 +238,7 @@ function FormExample() {
                         <DropdownMenuGroup>
                           <DropdownMenuItem>
                             <Search strokeWidth={2} />
-                            Browse...
+                            Browse…
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuSubContent>
@@ -425,7 +425,7 @@ function FormExample() {
                   <FieldLabel htmlFor="small-form-name">Name</FieldLabel>
                   <Input
                     id="small-form-name"
-                    placeholder="Enter your name"
+                    placeholder="Enter your name…"
                     required
                   />
                 </Field>
@@ -433,7 +433,7 @@ function FormExample() {
                   <FieldLabel htmlFor="small-form-role">Role</FieldLabel>
                   <Select defaultValue="">
                     <SelectTrigger id="small-form-role">
-                      <SelectValue placeholder="Select a role" />
+                      <SelectValue placeholder="Select a role…" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -453,7 +453,7 @@ function FormExample() {
                 <Combobox items={frameworks}>
                   <ComboboxInput
                     id="small-form-framework"
-                    placeholder="Select a framework"
+                    placeholder="Select a framework…"
                     required
                   />
                   <ComboboxContent>
@@ -472,7 +472,7 @@ function FormExample() {
                 <FieldLabel htmlFor="small-form-comments">Comments</FieldLabel>
                 <Textarea
                   id="small-form-comments"
-                  placeholder="Add any additional comments"
+                  placeholder="Add any additional comments…"
                 />
               </Field>
               <Field orientation="horizontal">

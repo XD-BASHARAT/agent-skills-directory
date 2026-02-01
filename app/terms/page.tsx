@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/seo"
 export const metadata = buildMetadata({
   title: "Terms of Service",
   description:
-    "Terms of Service for Agent Skills Directory - the rules and guidelines for using our platform.",
+    "Terms of Service for Agent Skills Directory and its usage guidelines.",
   path: "/terms",
 })
 
@@ -32,7 +32,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">2. Description of Service</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Agent Skills Directory is a platform for discovering, browsing, and sharing skills for AI coding agents. We aggregate publicly available skills from GitHub repositories.
+            Agent Skills Directory is a platform for discovering, browsing, and sharing skills for coding assistants. We aggregate publicly available skills from GitHub repositories.
           </p>
         </section>
 
@@ -80,7 +80,7 @@ export default function TermsPage() {
 
         <div className="flex gap-3 pt-2">
           <Link href="/" className="text-xs text-primary hover:underline">
-            ← Back to Home
+            {"<- Back to Home"}
           </Link>
           <Link href="/privacy" className="text-xs text-primary hover:underline">
             Privacy Policy

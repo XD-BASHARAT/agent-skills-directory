@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     ...siteConfig.keywords,
     "find agent skills",
     "SKILL.md files",
-    "search AI skills",
+    "search agent skills",
   ],
   alternates: {
     canonical: "/",
@@ -55,10 +55,10 @@ function SkillsGridSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-9 bg-muted rounded-md animate-pulse" />
+        <div className="flex-1 h-9 bg-muted rounded-md animate-pulse motion-reduce:animate-none" />
         <div className="hidden sm:flex gap-1">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="w-12 h-7 bg-muted rounded-md animate-pulse" />
+            <div key={i} className="w-12 h-7 bg-muted rounded-md animate-pulse motion-reduce:animate-none" />
           ))}
         </div>
       </div>
@@ -66,15 +66,15 @@ function SkillsGridSkeleton() {
         {Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className="rounded-lg border border-border-subtle bg-card p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <div className="size-10 rounded-lg bg-muted animate-pulse" />
+              <div className="size-10 rounded-lg bg-muted animate-pulse motion-reduce:animate-none" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-                <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-24 bg-muted rounded animate-pulse motion-reduce:animate-none" />
+                <div className="h-3 w-16 bg-muted rounded animate-pulse motion-reduce:animate-none" />
               </div>
             </div>
             <div className="space-y-2">
-              <div className="h-3 w-full bg-muted rounded animate-pulse" />
-              <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
+              <div className="h-3 w-full bg-muted rounded animate-pulse motion-reduce:animate-none" />
+              <div className="h-3 w-2/3 bg-muted rounded animate-pulse motion-reduce:animate-none" />
             </div>
           </div>
         ))}

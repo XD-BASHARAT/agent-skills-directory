@@ -69,7 +69,7 @@ export default function CookiePolicyPage() {
 
         <div className="pt-2 flex gap-3">
           <Link href="/" className="text-xs text-primary hover:underline">
-            ← Back to Home
+            {"<- Back to Home"}
           </Link>
           <Link href="/privacy" className="text-xs text-primary hover:underline">
             Privacy Policy

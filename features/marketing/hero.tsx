@@ -39,10 +39,10 @@ function ProviderLogo({ name, label }: { name: LogoName; label: string }) {
       className={cn(
         "group relative flex size-9 items-center justify-center rounded-lg",
         "bg-card-subtle ring-1 ring-border-subtle",
-        "transition-all duration-200 hover:scale-105 hover:ring-border hover:bg-card-elevated"
+        "transition-[transform,background-color,border-color,box-shadow] duration-200 hover:scale-105 hover:ring-border hover:bg-card-elevated motion-reduce:transition-none motion-reduce:transform-none"
       )}
     >
-      <Logo name={name} size={18} className="transition-transform duration-200" />
+      <Logo name={name} size={18} className="transition-transform duration-200 motion-reduce:transition-none" />
       <span className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-1.5 py-0.5 text-[10px] font-medium text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         {label}
       </span>
@@ -64,10 +64,10 @@ function Hero({ stats = { total: 0, updatedToday: 0 } }: HeroProps) {
               id="hero-heading"
               className="text-lg font-semibold tracking-tight sm:text-xl"
             >
-              Find <span className="text-primary">Agent Skills</span> for AI Coding
+              Search <span className="text-primary">Agent Skills</span> for coding assistants
             </h1>
             <p className="text-[13px] text-muted-foreground-soft">
-              Browse SKILL.md files for Claude, Cursor, Windsurf and other AI tools
+              SKILL.md files from GitHub, filterable by tool, category, and activity
             </p>
           </div>
 
@@ -83,7 +83,7 @@ function Hero({ stats = { total: 0, updatedToday: 0 } }: HeroProps) {
               <>
                 <span className="text-border-muted">&middot;</span>
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
                   <span className="font-medium text-foreground">{stats.updatedToday}</span> updated today
                 </span>
               </>

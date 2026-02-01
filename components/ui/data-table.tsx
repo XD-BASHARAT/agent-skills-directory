@@ -74,7 +74,12 @@ function DataTable<TData, TValue>({
     <div className="space-y-4">
       {searchKey && (
         <Input
+          type="search"
+          name={searchKey}
           placeholder={searchPlaceholder}
+          aria-label="Search table"
+          autoComplete="off"
+          inputMode="search"
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(searchKey)?.setFilterValue(event.target.value)

@@ -7,14 +7,14 @@ import { getSkills, getCategories } from "@/lib/db/queries"
 
 export const metadata = buildMetadata({
   title: "Browse Agent Skills",
-  description: "Browse agent skills for Claude Code, Cursor, Windsurf and other AI coding tools. Filter by category or search by keyword.",
+  description: "Browse SKILL.md skills for Claude Code, Cursor, Windsurf, and other coding assistants. Filter by category or search by name.",
   path: "/skills",
   keywords: [
     "browse agent skills",
     "search skills",
     "SKILL.md",
     "Claude Code skills",
-    "AI coding skills",
+    "coding assistant skills",
   ],
 })
 
@@ -22,21 +22,21 @@ function SkillsGridSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-9 bg-muted rounded-md animate-pulse" />
+        <div className="flex-1 h-9 bg-muted rounded-md animate-pulse motion-reduce:animate-none" />
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="rounded-lg border border-border/60 bg-card p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <div className="size-10 rounded-lg bg-muted animate-pulse" />
+              <div className="size-10 rounded-lg bg-muted animate-pulse motion-reduce:animate-none" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-                <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-24 bg-muted rounded animate-pulse motion-reduce:animate-none" />
+                <div className="h-3 w-16 bg-muted rounded animate-pulse motion-reduce:animate-none" />
               </div>
             </div>
             <div className="space-y-2">
-              <div className="h-3 w-full bg-muted rounded animate-pulse" />
-              <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
+              <div className="h-3 w-full bg-muted rounded animate-pulse motion-reduce:animate-none" />
+              <div className="h-3 w-2/3 bg-muted rounded animate-pulse motion-reduce:animate-none" />
             </div>
           </div>
         ))}
@@ -62,7 +62,7 @@ export default async function SkillsPage() {
       <header className="space-y-1">
         <h1 className="text-balance text-2xl font-bold tracking-tight">Browse Agent Skills</h1>
         <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
-          Find skills for Claude Code, Cursor, Windsurf and more. Use search or filter by category.
+          Search by name, filter by category, and sort by recent updates or stars.
         </p>
       </header>
       <React.Suspense fallback={<SkillsGridSkeleton />}>

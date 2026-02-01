@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "AGNXI",
   tagline: "Agent Skills Directory",
-  description: "Discover and install agent skills for Claude Code, Cursor, Windsurf and more. Browse 1000+ curated skills by category or author. Start building smarter today.",
+  description: "Directory of SKILL.md skills for coding assistants. Filter by tool, category, stars, and recent updates.",
   url: "https://agnxi.com",
   ogImage: "https://agnxi.com/og.png",
   twitterHandle: "@agnxi",

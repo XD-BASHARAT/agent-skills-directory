@@ -32,7 +32,7 @@ function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
       className={cn(
         "group relative flex h-full flex-col rounded-xl border border-border/40 bg-card/30 p-4",
         "backdrop-blur-sm",
-        "transition-all duration-200 ease-out",
+        "transition-[box-shadow,background-color,border-color] duration-200 ease-out motion-reduce:transition-none",
         "hover:border-border/60 hover:bg-card/50 hover:shadow-md hover:shadow-black/5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
         className,
@@ -71,10 +71,10 @@ function SkillCard({ skill, className, imagePriority }: SkillCardProps) {
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
             <span className="truncate">{skill.owner}</span>
             {skill.isVerifiedOrg && (
-              <ShieldCheck
-                className="size-3.5 shrink-0 text-blue-500"
-                aria-label="Verified organization"
-              />
+              <span className="inline-flex items-center">
+                <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
+                <span className="sr-only">Verified organization</span>
+              </span>
             )}
           </p>
         </div>

@@ -63,9 +63,9 @@ function SiteStructuredData() {
       priceCurrency: "USD",
     },
     featureList: [
-      "Search and filter agent skills",
-      "Browse by category or author",
-      "Compatible with Claude Code, Cursor, Windsurf, Amp",
+      "Search SKILL.md skills by name and category",
+      "See repo signals like stars and recency",
+      "Install commands for Claude Code, Cursor, Windsurf, Amp",
       "Open SKILL.md standard",
       "Free to use",
     ],

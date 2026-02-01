@@ -47,14 +47,14 @@ async function fetchSkillBody(rawUrl: string) {
 function RelatedSkillsFallback() {
   return (
     <div className="space-y-3">
-      <div className="h-4 w-28 bg-muted rounded animate-pulse" />
+      <div className="h-4 w-28 bg-muted rounded animate-pulse motion-reduce:animate-none" />
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="rounded-lg border border-border/50 bg-card/30 p-3">
           <div className="flex items-center gap-3">
-            <div className="size-9 rounded-lg bg-muted animate-pulse" />
+            <div className="size-9 rounded-lg bg-muted animate-pulse motion-reduce:animate-none" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 w-32 bg-muted rounded animate-pulse" />
-              <div className="h-3 w-24 bg-muted rounded animate-pulse" />
+              <div className="h-3 w-32 bg-muted rounded animate-pulse motion-reduce:animate-none" />
+              <div className="h-3 w-24 bg-muted rounded animate-pulse motion-reduce:animate-none" />
             </div>
           </div>
         </div>
@@ -304,7 +304,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   )}
                 </p>
                 <p className="text-[10px] text-muted-foreground/60">
-                  View All Skills →
+                  View all skills
                 </p>
               </div>
             </Link>
@@ -371,7 +371,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
             {/* Badge Snippet */}
             <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-muted/30">
-                <span className="text-[11px] font-medium">🏆 Share this Skill</span>
+                <span className="text-[11px] font-medium">Share this skill</span>
               </div>
               <div className="p-3">
                 <BadgeSnippet owner={skill.owner} slug={skill.slug} />
@@ -401,8 +401,8 @@ export async function generateMetadata({
 
   const title = `${skill.name} - Agent Skill by ${skill.owner}`;
   const description = skill.description
-    ? `${skill.description} Install this AI coding skill for Claude Code, Cursor, Windsurf and more.`
-    : `Install ${skill.name} skill by ${skill.owner}. Production-ready AI coding skill compatible with Claude Code, Cursor, Windsurf, Amp Code.`;
+    ? `${skill.description} Install instructions and source repo for Claude Code, Cursor, Windsurf, and more.`
+    : `Install ${skill.name} skill by ${skill.owner}. SKILL.md workflow compatible with Claude Code, Cursor, Windsurf, and Amp Code.`;
 
   const keywords = [
     skill.name,
@@ -410,7 +410,7 @@ export async function generateMetadata({
     skill.owner,
     skill.compatibility ?? "Claude Code",
     "agent skill",
-    "AI coding assistant",
+    "coding assistant",
     "SKILL.md",
   ].filter(Boolean);
 

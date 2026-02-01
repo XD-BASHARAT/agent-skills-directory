@@ -259,7 +259,7 @@ function OwnerSkillsFilter({ owner, skills, categories }: OwnerSkillsFilterProps
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="rounded-lg border border-border/50 bg-card/40 p-3 space-y-3 animate-pulse"
+              className="rounded-lg border border-border/50 bg-card/40 p-3 space-y-3 animate-pulse motion-reduce:animate-none"
             >
               <div className="flex items-start gap-3">
                 <div className="size-8 rounded-md bg-muted" />

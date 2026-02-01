@@ -89,7 +89,7 @@ export default function OpenGraphImage() {
                 display: "flex",
               }}
             >
-              Find skills for your AI.
+              Browse SKILL.md skills for coding assistants.
             </div>
             <div
               style={{
@@ -99,7 +99,7 @@ export default function OpenGraphImage() {
                 display: "flex",
               }}
             >
-              Claude • Cursor • Windsurf • Copilot
+              Claude / Cursor / Windsurf / Copilot
             </div>
           </div>
 

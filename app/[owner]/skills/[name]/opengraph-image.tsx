@@ -182,7 +182,7 @@ export default async function SkillOGImage({ params }: Props) {
                 }}
               >
                 {skill.description.length > 100
-                  ? `${skill.description.slice(0, 100)}...`
+                  ? `${skill.description.slice(0, 100)}…`
                   : skill.description}
               </div>
             )}

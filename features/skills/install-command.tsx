@@ -48,6 +48,8 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
   const [selected, setSelected] = React.useState<PackageManager>("bun");
   const command = getInstallCommand(selected, owner, repo, skillName);
   const selectedPm = PACKAGE_MANAGERS.find((pm) => pm.id === selected)!;
+  const tabId = React.useId();
+  const panelId = `${tabId}-panel`;
 
   if (variant === "compact") {
     return (
@@ -61,9 +63,11 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
               onClick={() => setSelected(pm.id)}
               role="tab"
               aria-selected={selected === pm.id}
+              aria-controls={panelId}
+              id={`${tabId}-${pm.id}`}
               tabIndex={selected === pm.id ? 0 : -1}
               className={cn(
-                "relative flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-[background-color,border-color,box-shadow,color] duration-200",
+                "relative flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-[background-color,border-color,box-shadow,color] duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 selected === pm.id
                   ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
                   : "text-muted-foreground hover:text-foreground hover:bg-background/50",
@@ -75,6 +79,7 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
                     "absolute inset-x-2 -bottom-px h-0.5 rounded-full",
                     pm.color.replace("text-", "bg-"),
                   )}
+                  aria-hidden="true"
                 />
               )}
               {pm.label}
@@ -83,12 +88,12 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
         </div>
 
         {/* Command Display */}
-        <div className="group relative rounded-xl bg-muted/50 dark:bg-muted/30 border border-border/50 p-3 overflow-hidden">
+        <div id={panelId} role="tabpanel" aria-labelledby={`${tabId}-${selected}`} className="group relative rounded-xl bg-muted/50 dark:bg-muted/30 border border-border/50 p-3 overflow-hidden">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <ChevronRight
                 className={cn(
-                  "size-3.5 shrink-0 transition-colors duration-200",
+                  "size-3.5 shrink-0 transition-colors duration-200 motion-reduce:transition-none",
                   selectedPm.color,
                 )}
                 strokeWidth={2.5}
@@ -124,6 +129,8 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
+              aria-hidden="true"
+              focusable="false"
             >
               <path d="M4 17l6-6-6-6M12 19h8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -143,9 +150,11 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
               onClick={() => setSelected(pm.id)}
               role="tab"
               aria-selected={selected === pm.id}
+              aria-controls={panelId}
+              id={`${tabId}-${pm.id}-default`}
               tabIndex={selected === pm.id ? 0 : -1}
               className={cn(
-                "relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-[background-color,border-color,box-shadow,color] duration-200",
+                "relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-[background-color,border-color,box-shadow,color] duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 selected === pm.id
                   ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
                   : "text-muted-foreground hover:text-foreground hover:bg-background/50",
@@ -157,6 +166,7 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
                     "absolute inset-x-2 -bottom-px h-0.5 rounded-full",
                     pm.color.replace("text-", "bg-"),
                   )}
+                  aria-hidden="true"
                 />
               )}
               {pm.label}
@@ -167,11 +177,11 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
 
       {/* Command Display */}
       <div className="px-4 pb-4">
-        <div className="relative rounded-lg bg-muted/40 dark:bg-muted/20 border border-border/50 p-3.5 overflow-hidden">
+        <div id={panelId} role="tabpanel" aria-labelledby={`${tabId}-${selected}-default`} className="relative rounded-lg bg-muted/40 dark:bg-muted/20 border border-border/50 p-3.5 overflow-hidden">
           <div className="flex items-start gap-2.5">
             <ChevronRight
               className={cn(
-                "size-4 mt-0.5 shrink-0 transition-colors duration-200",
+                "size-4 mt-0.5 shrink-0 transition-colors duration-200 motion-reduce:transition-none",
                 selectedPm.color,
               )}
               strokeWidth={2.5}

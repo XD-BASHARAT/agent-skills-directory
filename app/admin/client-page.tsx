@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useUser, UserButton } from "@clerk/nextjs"
-import { Check, ExternalLink, SquarePen, Trash2, X } from "lucide-react"
+import { Check, ExternalLink, Loader2, SquarePen, Trash2, X } from "lucide-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
@@ -179,11 +179,12 @@ function OverviewTab({ skills }: { skills: Skill[] }) {
         <Button onClick={handlePingIndexNow} disabled={pinging} size="sm">
           {pinging ? (
             <>
-              <span className="animate-spin mr-2">⏳</span> Pinging...
+              <Loader2 className="mr-2 size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+              Pinging…
             </>
           ) : (
             <>
-              <ExternalLink className="mr-2 h-4 w-4" /> Ping IndexNow
+              <ExternalLink className="mr-2 h-4 w-4" aria-hidden="true" /> Ping IndexNow
             </>
           )}
         </Button>
@@ -449,7 +450,7 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
             columns={skillColumns}
             data={filteredSkills}
             searchKey="name"
-            searchPlaceholder="Search skills..."
+            searchPlaceholder="Search skills…"
             pageSize={20}
           />
         </CardContent>
@@ -607,7 +608,7 @@ function SkillEditDialog({
               <label htmlFor="skill-status" className="text-xs font-medium text-muted-foreground">Status</label>
               <Select value={status} onValueChange={(value) => setStatus(value as SkillFilter)}>
                 <SelectTrigger id="skill-status" className="w-full" size="default">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Select status…" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">Pending</SelectItem>
@@ -620,7 +621,7 @@ function SkillEditDialog({
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Categories</label>
               {loadingCategories ? (
-                <div className="text-xs text-muted-foreground">Loading categories...</div>
+                <div className="text-xs text-muted-foreground">Loading categories…</div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   {(CATEGORIES as readonly CategoryDefinition[]).map((category) => {

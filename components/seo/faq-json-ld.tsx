@@ -11,15 +11,15 @@ function FaqJsonLd() {
         name: "What are Agent Skills?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Agent Skills are modular capabilities that extend AI coding assistants. Each skill consists of a SKILL.md file with instructions, plus optional scripts and templates. Skills are model-invoked—the AI automatically decides when to use them based on context.",
+          text: "Agent Skills are SKILL.md instructions plus optional scripts and templates that define a workflow for a coding assistant. You can run them on demand, and some tools can invoke them automatically based on context.",
         },
       },
       {
         "@type": "Question",
-        name: "Which AI coding tools support Agent Skills?",
+        name: "Which tools support Agent Skills?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Agent Skills are compatible with Claude Code (Anthropic), Cursor, Windsurf, Amp Code, GitHub Copilot, OpenAI Codex CLI, and other tools that support the open SKILL.md standard.",
+          text: "Agent Skills work with Claude Code, Cursor, Windsurf, Amp Code, GitHub Copilot, OpenAI Codex CLI, and any tool that supports the SKILL.md standard.",
         },
       },
       {
@@ -27,7 +27,7 @@ function FaqJsonLd() {
         name: "How do I install an Agent Skill?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "You can install skills using a simple command in your terminal. Each skill page provides the installation command. For Claude Code users, you can use '/install owner/repo' directly.",
+          text: "Copy the install command from the skill page and run it in your terminal or tool. Claude Code users can also use '/install owner/repo'.",
         },
       },
       {
@@ -35,7 +35,7 @@ function FaqJsonLd() {
         name: "Can I create and share my own skills?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes! You can create custom skills and share them on GitHub. The basic structure requires a SKILL.md file with instructions. You can also add optional scripts, templates, and a marketplace.json for easier distribution.",
+          text: "Yes. Create a SKILL.md with frontmatter and instructions, add optional scripts or templates, and publish it on GitHub.",
         },
       },
     ],

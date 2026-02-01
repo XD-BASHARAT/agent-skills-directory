@@ -16,6 +16,7 @@ type BadgeSnippetProps = {
 function BadgeSnippet({ owner, slug, className }: BadgeSnippetProps) {
   const [copied, setCopied] = React.useState(false)
   const [expanded, setExpanded] = React.useState(false)
+  const snippetId = React.useId()
 
   const skillUrl = `${siteConfig.url}/${owner}/skills/${slug}`
   const badgeUrl = `${siteConfig.url}/badge.svg`
@@ -43,7 +44,9 @@ function BadgeSnippet({ owner, slug, className }: BadgeSnippetProps) {
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between group"
+        aria-expanded={expanded}
+        aria-controls={snippetId}
+        className="w-full flex items-center justify-between group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <div className="flex items-center gap-2">
           <Image
@@ -65,41 +68,44 @@ function BadgeSnippet({ owner, slug, className }: BadgeSnippetProps) {
         </div>
         <ChevronDown 
           className={cn(
-            "size-3.5 text-muted-foreground transition-transform",
+            "size-3.5 text-muted-foreground transition-transform motion-reduce:transition-none",
             expanded && "rotate-180"
-          )} 
+          )}
+          aria-hidden="true"
         />
       </button>
 
       {expanded && (
-        <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div id={snippetId} className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:animate-none">
           <p className="text-[10px] text-muted-foreground">
             Add to your README
           </p>
-          <div 
-            className="group relative rounded-md border border-border/50 bg-muted/30 p-2 cursor-pointer hover:border-primary/50 transition-colors"
+          <button 
+            type="button"
+            aria-label="Copy badge snippet"
+            className="group relative w-full rounded-md border border-border/50 bg-muted/30 p-2 text-left hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             onClick={copyToClipboard}
           >
             <code className="text-[10px] text-foreground/70 break-all font-mono leading-relaxed">
               {markdownSnippet}
             </code>
             <div className={cn(
-              "absolute inset-0 flex items-center justify-center rounded-md transition-opacity",
+              "absolute inset-0 flex items-center justify-center rounded-md transition-opacity motion-reduce:transition-none",
               copied ? "bg-green-500/10 opacity-100" : "bg-primary/5 opacity-0 group-hover:opacity-100"
-            )}>
+            )} role="status" aria-live="polite">
               {copied ? (
                 <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400">
-                  <Check className="size-3" />
+                  <Check className="size-3" aria-hidden="true" />
                   Copied!
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-[10px] font-medium text-primary">
-                  <Copy className="size-3" />
+                  <Copy className="size-3" aria-hidden="true" />
                   Click to copy
                 </span>
               )}
             </div>
-          </div>
+          </button>
         </div>
       )}
     </div>

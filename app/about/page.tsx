@@ -7,7 +7,7 @@ import { getExternalUrl } from "@/lib/utils"
 export const metadata = buildMetadata({
   title: "About",
   description:
-    "Learn about Agent Skills Directory - the community-driven platform for discovering and sharing AI coding agent skills.",
+    "Learn how Agent Skills Directory indexes SKILL.md skills and how to contribute.",
   path: "/about",
 })
 
@@ -16,35 +16,35 @@ export default function AboutPage() {
     <Container size="md">
       <div>
         <h1 className="text-lg font-semibold">About Agent Skills Directory</h1>
-        <p className="text-muted-foreground text-sm">Learn more about our platform</p>
+        <p className="text-muted-foreground text-sm">How it works and how to contribute</p>
       </div>
 
       <div className="space-y-6">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Agent Skills Directory is a community-driven platform for discovering, browsing, and sharing skills for AI coding agents like Claude, Cursor, Windsurf, and Amp Code.
+          Agent Skills Directory indexes SKILL.md skills from public GitHub repositories. Each entry links to the source repo and shows compatibility, stars, and recent activity so you can compare and decide.
         </p>
 
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">What are Agent Skills?</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Agent Skills are specialized instructions and workflows that extend the capabilities of AI coding assistants. They provide domain-specific knowledge, best practices, and automation patterns that help AI agents perform complex tasks more effectively.
+            An Agent Skill is a SKILL.md file that describes a repeatable workflow for a coding assistant. Skills can also include scripts and templates to make setup and execution consistent.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">Our Mission</h2>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-            <li>Create a central hub for discovering high-quality agent skills</li>
-            <li>Foster a community of developers sharing their expertise</li>
-            <li>Promote best practices in AI-assisted development</li>
-            <li>Make it easy to find the right skill for any task</li>
+            <li>Index public SKILL.md skills with clear attribution</li>
+            <li>Surface practical signals like stars, recency, and compatibility</li>
+            <li>Use search and categories to narrow the list</li>
+            <li>Show install commands and source links</li>
           </ul>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">How It Works</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Skills are stored in GitHub repositories following the <a href={getExternalUrl("https://agentskills.io")} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Agent Skills specification</a>. Each skill includes:
+            Skills live in GitHub repositories following the <a href={getExternalUrl("https://agentskills.io")} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Agent Skills specification</a>. We parse the SKILL.md frontmatter, pull repo stats, and provide the install command and raw file.
           </p>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li><strong className="text-foreground">SKILL.md</strong> - The main skill file with instructions and workflows</li>
@@ -56,16 +56,16 @@ export default function AboutPage() {
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">Contributing</h2>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-            <li><Link href="/skills" className="text-primary hover:underline">Submit your own skills</Link> to the directory (use the button in header)</li>
-            <li>Report issues or suggest improvements on GitHub</li>
-            <li>Help improve existing skills with better documentation</li>
+            <li><Link href="/skills" className="text-primary hover:underline">Submit a repo or SKILL.md path</Link> using the header button</li>
+            <li>Report broken links or incorrect metadata on GitHub</li>
+            <li>Improve existing skills with clearer docs and examples</li>
           </ul>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">Open Source</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            This project is open source and built with transparency in mind. We believe in the power of community-driven development and welcome contributions of all kinds.
+            This project is open source and built in the open. Contributions, fixes, and feedback are welcome.
           </p>
         </section>
 
