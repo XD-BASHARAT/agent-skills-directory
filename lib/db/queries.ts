@@ -1,4 +1,5 @@
 import { eq, ilike, or, desc, asc, sql, and, inArray, ne } from "drizzle-orm"
+import { z } from "zod"
 import { db, dbPool } from "./client"
 import {
   skills,
@@ -19,6 +20,53 @@ const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
 })
+
+const dbNullableDate = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return null
+    if (value instanceof Date) return value
+    if (typeof value === "string" || typeof value === "number") {
+      const parsed = new Date(value)
+      return Number.isNaN(parsed.getTime()) ? value : parsed
+    }
+    return value
+  },
+  z.date().nullable()
+)
+
+const dbNullableNumber = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return null
+    if (typeof value === "number") return value
+    if (typeof value === "string") {
+      const parsed = Number(value)
+      return Number.isNaN(parsed) ? value : parsed
+    }
+    return value
+  },
+  z.number().nullable()
+)
+
+const dbNumber = z.preprocess(
+  (value) => {
+    if (typeof value === "number") return value
+    if (typeof value === "string") {
+      const parsed = Number(value)
+      return Number.isNaN(parsed) ? value : parsed
+    }
+    return value
+  },
+  z.number()
+)
+
+function parseDbRows<T extends z.ZodTypeAny>(schema: T, rows: unknown, label: string) {
+  const parsed = z.array(schema).safeParse(rows)
+  if (!parsed.success) {
+    console.error(`Invalid database response for ${label}:`, parsed.error.flatten())
+    throw new Error("Invalid database response")
+  }
+  return parsed.data
+}
 
 export type GetSkillsOptions = {
   query?: string
@@ -53,16 +101,42 @@ export async function ensureCategoriesSeeded() {
     })
 }
 
+/**
+ * Build search conditions with SQL injection protection
+ * 
+ * Security measures:
+ * 1. ILIKE patterns: Escapes special SQL LIKE characters (% _ \) to prevent injection
+ * 2. Full-text search: Uses websearch_to_tsquery() which safely handles user input
+ * 3. Input sanitization: Removes non-alphanumeric characters before passing to SQL
+ * 4. Defense in depth: Validates sanitized string length and ensures non-empty
+ * 
+ * @param query - User-provided search query (already validated at API level, max 200 chars)
+ * @returns SQL condition object safe for use in parameterized queries
+ */
 function buildSearchConditions(query: string) {
-  // Sanitize query for ILIKE - escape special SQL LIKE characters
+  // Defense in depth: Ensure query is not empty and has reasonable length
+  // (API level already limits to 200 chars, but validate here too)
+  if (!query || query.length === 0 || query.length > 200) {
+    throw new Error("Invalid query: empty or too long")
+  }
+  
+  // Sanitize query for ILIKE - escape special SQL LIKE characters (% _ \)
+  // This prevents SQL injection via LIKE pattern matching
   const likeEscaped = query.replace(/[%_\\]/g, '\\$&')
   
   // Sanitize query for full-text search - remove special characters that break tsquery
-  // Keep only alphanumeric and spaces
+  // Keep only alphanumeric and spaces (Unicode-aware)
   const sanitized = query.trim().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim()
   
+  // Defense in depth: Validate sanitized string is reasonable length
+  // Even after sanitization, ensure it's not suspiciously long
+  if (sanitized.length > 200) {
+    throw new Error("Invalid query: sanitized string too long")
+  }
+  
   // If no valid words after sanitization, fall back to ILIKE only
-  if (!sanitized) {
+  // This is safe because likeEscaped is properly escaped
+  if (!sanitized || sanitized.length === 0) {
     return or(
       ilike(skills.name, `%${likeEscaped}%`),
       ilike(skills.owner, `%${likeEscaped}%`),
@@ -71,11 +145,14 @@ function buildSearchConditions(query: string) {
   }
   
   // Use websearch_to_tsquery which handles user input safely (available in PostgreSQL 11+)
-  // It automatically handles quotes, operators, and special characters
+  // It automatically handles quotes, operators, and special characters, preventing injection
+  // The sanitized string is passed as a parameter, not concatenated into SQL
   return or(
     // Primary: Full-text search using websearch_to_tsquery (safe for user input)
+    // Note: sanitized is passed as parameter, not string interpolation
     sql`to_tsvector('english', COALESCE(${skills.searchText}, '')) @@ websearch_to_tsquery('english', ${sanitized})`,
     // Fallback: ILIKE for partial matches (more reliable than trigram)
+    // likeEscaped is properly escaped, preventing LIKE injection
     ilike(skills.name, `%${likeEscaped}%`),
     ilike(skills.owner, `%${likeEscaped}%`),
     ilike(skills.description, `%${likeEscaped}%`)
@@ -145,13 +222,18 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     try {
       conditions.push(buildSearchConditions(safeQuery))
     } catch (error) {
-      console.error("Search condition build error:", error)
-      // Fallback to simple ILIKE search if full-text search fails
+      // Log error for debugging but don't expose details to prevent information leakage
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      console.error("Search condition build error:", errorMessage)
+      
+      // Defense in depth: If buildSearchConditions fails, use safe fallback
+      // Escape the query to prevent SQL injection even in fallback path
+      const escapedQuery = safeQuery.replace(/[%_\\]/g, '\\$&')
       conditions.push(
         or(
-          ilike(skills.name, `%${safeQuery}%`),
-          ilike(skills.owner, `%${safeQuery}%`),
-          ilike(skills.description, `%${safeQuery}%`)
+          ilike(skills.name, `%${escapedQuery}%`),
+          ilike(skills.owner, `%${escapedQuery}%`),
+          ilike(skills.description, `%${escapedQuery}%`)
         )
       )
     }
@@ -214,24 +296,26 @@ export async function getSkills(options: GetSkillsOptions = {}) {
 
   const total = Number(countResult[0]?.count ?? 0)
   
-  const rows = skillsList as unknown as Array<{
-    id: string
-    name: string
-    slug: string
-    description: string
-    owner: string
-    repo: string
-    path: string
-    url: string
-    avatar_url: string | null
-    stars: number | null
-    is_verified_org: boolean | null
-    status: string | null
-    file_updated_at: Date | null
-    repo_updated_at: Date | null
-    indexed_at: Date | null
-    security_scan: string | null
-  }>
+  const skillsListRowSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    description: z.string(),
+    owner: z.string(),
+    repo: z.string(),
+    path: z.string(),
+    url: z.string(),
+    avatar_url: z.string().nullable(),
+    stars: dbNullableNumber,
+    is_verified_org: z.boolean().nullable(),
+    status: z.string().nullable(),
+    file_updated_at: dbNullableDate,
+    repo_updated_at: dbNullableDate,
+    indexed_at: dbNullableDate,
+    security_scan: z.string().nullable(),
+  })
+
+  const rows = parseDbRows(skillsListRowSchema, skillsList, "getSkills")
 
   const dedupedSkills = rows.map((row) => ({
     id: row.id,
@@ -296,10 +380,7 @@ export async function getSkillBySlug(owner: string, slug: string) {
 export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }>> {
   const skillsList = await db.select().from(skills).where(eq(skills.owner, owner)).orderBy(desc(skills.stars), desc(skills.id))
   
-  // Type assertion is safe because .select() without fields returns all columns
-  const typedSkills = skillsList as Skill[]
-  
-  const dedupedSkills = dedupeSkillsByOwnerSlug(typedSkills).map((skill) => ({
+  const dedupedSkills: Array<Skill & { updatedAtLabel: string | null }> = dedupeSkillsByOwnerSlug(skillsList).map((skill) => ({
     ...skill,
     updatedAtLabel: formatShortDate(skill.fileUpdatedAt ?? skill.repoUpdatedAt),
   }))
@@ -324,7 +405,7 @@ export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { c
     : []
 
   // Create a map of skillId to categories
-  const skillsWithCategories = dedupedSkills.map((skill) => {
+  const skillsWithCategories: Array<Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }> = dedupedSkills.map((skill) => {
     const skillCategoriesList = categoryRelations
       .filter((cr) => cr.skillId === skill.id)
       .map((cr) => ({
@@ -340,7 +421,7 @@ export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { c
       ...skill,
       categories: skillCategoriesList,
       category: skillCategoriesList[0] || null,
-    } as Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }
+    }
   })
 
   return skillsWithCategories
@@ -403,41 +484,43 @@ export async function getOwnerInfo(owner: string) {
     ORDER BY os.stars DESC, os.id DESC
   `)
 
-  const rows = result as unknown as Array<{
-    id: string
-    name: string
-    slug: string
-    description: string
-    owner: string
-    repo: string
-    path: string
-    url: string
-    raw_url: string
-    avatar_url: string | null
-    stars: number | null
-    forks: number | null
-    is_verified_org: boolean | null
-    status: string | null
-    file_updated_at: Date | null
-    repo_updated_at: Date | null
-    indexed_at: Date | null
-    created_at: Date | null
-    updated_at: Date | null
-    compatibility: string | null
-    allowed_tools: string | null
-    topics: string | null
-    is_archived: boolean | null
-    blob_sha: string | null
-    last_seen_at: Date | null
-    submitted_by: string | null
-    search_text: string | null
-    security_scan: string | null
-    security_scanned_at: Date | null
-    total_stars: string
-    total_forks: string
-    total_skills: string
-    has_verified: boolean
-  }>
+  const ownerInfoRowSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    description: z.string(),
+    owner: z.string(),
+    repo: z.string(),
+    path: z.string(),
+    url: z.string(),
+    raw_url: z.string(),
+    avatar_url: z.string().nullable(),
+    stars: dbNullableNumber,
+    forks: dbNullableNumber,
+    is_verified_org: z.boolean().nullable(),
+    status: z.string().nullable(),
+    file_updated_at: dbNullableDate,
+    repo_updated_at: dbNullableDate,
+    indexed_at: dbNullableDate,
+    created_at: dbNullableDate,
+    updated_at: dbNullableDate,
+    compatibility: z.string().nullable(),
+    allowed_tools: z.string().nullable(),
+    topics: z.string().nullable(),
+    is_archived: z.boolean().nullable(),
+    blob_sha: z.string().nullable(),
+    last_seen_at: dbNullableDate,
+    submitted_by: z.string().nullable(),
+    search_text: z.string().nullable(),
+    security_scan: z.string().nullable(),
+    security_scanned_at: dbNullableDate,
+    total_stars: dbNumber,
+    total_forks: dbNumber,
+    total_skills: dbNumber,
+    has_verified: z.boolean(),
+  })
+
+  const rows = parseDbRows(ownerInfoRowSchema, result, "getOwnerInfo")
 
   if (rows.length === 0) return null
 
@@ -912,14 +995,16 @@ export async function getOwnerRankings(options: {
     LIMIT ${safeLimit}
   `)
 
-  const rows = result as unknown as Array<{
-    owner: string
-    avatar_url: string | null
-    total_skills: string
-    total_stars: string
-    total_forks: string
-    is_verified_org: boolean
-  }>
+  const ownerRankingRowSchema = z.object({
+    owner: z.string(),
+    avatar_url: z.string().nullable(),
+    total_skills: dbNumber,
+    total_stars: dbNumber,
+    total_forks: dbNumber,
+    is_verified_org: z.boolean(),
+  })
+
+  const rows = parseDbRows(ownerRankingRowSchema, result, "getOwnerRankings")
 
   return rows.map((r) => ({
     owner: r.owner,

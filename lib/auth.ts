@@ -1,8 +1,17 @@
 import { auth, currentUser } from "@clerk/nextjs/server"
 
+function hasRoleMetadata(metadata: unknown): metadata is { role?: unknown } {
+  return typeof metadata === "object" && metadata !== null && "role" in metadata
+}
+
+function readRole(metadata: unknown): string | null {
+  if (!hasRoleMetadata(metadata)) return null
+  return typeof metadata.role === "string" ? metadata.role : null
+}
+
 export async function isAdmin(): Promise<boolean> {
   const user = await currentUser()
-  const role = (user?.publicMetadata as { role?: string })?.role
+  const role = readRole(user?.publicMetadata)
   return role === "admin"
 }
 

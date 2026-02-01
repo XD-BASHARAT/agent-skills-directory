@@ -24,3 +24,10 @@ export const skillUpdateSchema = z.object({
 })
 
 export type SkillUpdate = z.infer<typeof skillUpdateSchema>
+
+export const cacheInvalidationSchema = z.object({
+  action: z.literal("invalidate"),
+  pattern: z.string().max(200, "Pattern too long").optional(),
+})
+
+export type CacheInvalidation = z.infer<typeof cacheInvalidationSchema>

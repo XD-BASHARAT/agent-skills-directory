@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { getSkills } from "@/lib/db/queries"
 import { withServerCache, invalidateCache } from "@/lib/server-cache"
 import { apiRateLimit, getClientIdentifier } from "@/lib/rate-limit"
+import { requireAdmin } from "@/lib/auth"
+import { cacheInvalidationSchema } from "@/lib/validators/skills"
 
 type SortBy = "stars_desc" | "name_asc" | "name_desc" | "recent" | "last_commit"
 
@@ -25,6 +26,18 @@ function normalizeSort(value: string | null): SortBy {
     return "last_commit"
   }
   return "last_commit"
+}
+
+function formatValidationIssues(
+  issues: Array<{ path: Array<string | number | symbol>; message: string }>
+) {
+  return issues
+    .map((issue) => {
+      const path =
+        issue.path.length > 0 ? issue.path.map((segment) => String(segment)).join(".") : "request"
+      return `${path}: ${issue.message}`
+    })
+    .join(", ")
 }
 
 export async function GET(request: Request) {
@@ -119,9 +132,9 @@ export async function GET(request: Request) {
         { status: 400 }
       )
     }
-    
+
     return NextResponse.json(
-      { error: "Failed to fetch skills", details: message },
+      { error: "Failed to fetch skills" },
       { status: 500 }
     )
   }
@@ -130,13 +143,29 @@ export async function GET(request: Request) {
 // Add POST method for cache invalidation (admin only)
 export async function POST(request: Request) {
   // Auth check - only allow authenticated admin users
-  const { userId } = await auth()
-  if (!userId) {
+  try {
+    await requireAdmin()
+  } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
+  let body
   try {
-    const { action, pattern } = await request.json()
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
+  }
+
+  const validation = cacheInvalidationSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(
+      { error: "Invalid request", details: formatValidationIssues(validation.error.issues) },
+      { status: 400 }
+    )
+  }
+
+  try {
+    const { action, pattern } = validation.data
     
     if (action === "invalidate") {
       invalidateCache(pattern)
