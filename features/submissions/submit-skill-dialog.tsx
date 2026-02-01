@@ -23,20 +23,14 @@ function SubmitSkillDialog({ buttonSize = "default" }: SubmitSkillDialogProps) {
   const [open, setOpen] = React.useState(false);
   const { isSignedIn, isLoaded } = useAuth();
 
-  const isSmall = buttonSize === "sm";
-
   if (!isLoaded) {
     return (
       <Button
         size={buttonSize}
         disabled
-        className={cn(
-          "gap-1.5",
-          isSmall ? "h-8 px-3 text-xs" : "h-9 px-4 text-sm",
-        )}
+        className="gap-1.5"
       >
         <Plus
-          className={isSmall ? "size-3.5" : "size-4"}
           strokeWidth={2}
           aria-hidden="true"
         />
@@ -50,13 +44,9 @@ function SubmitSkillDialog({ buttonSize = "default" }: SubmitSkillDialogProps) {
       <SignInButton mode="modal">
         <Button
           size={buttonSize}
-          className={cn(
-            "gap-1.5",
-            isSmall ? "h-8 px-3 text-xs" : "h-9 px-4 text-sm",
-          )}
+          className="gap-1.5"
         >
           <Plus
-            className={isSmall ? "size-3.5" : "size-4"}
             strokeWidth={2}
             aria-hidden="true"
           />
@@ -71,13 +61,9 @@ function SubmitSkillDialog({ buttonSize = "default" }: SubmitSkillDialogProps) {
       <DialogTrigger asChild>
         <Button
           size={buttonSize}
-          className={cn(
-            "gap-1.5",
-            isSmall ? "h-8 px-3 text-xs" : "h-9 px-4 text-sm",
-          )}
+          className="gap-1.5"
         >
           <Plus
-            className={isSmall ? "size-3.5" : "size-4"}
             strokeWidth={2}
             aria-hidden="true"
           />

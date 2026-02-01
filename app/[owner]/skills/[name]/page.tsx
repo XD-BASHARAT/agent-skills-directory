@@ -11,6 +11,8 @@ import {
   FileText,
   Clock,
   ShieldCheck,
+  Share2,
+  Tag,
 } from "lucide-react";
 
 import { getSkillBySlug, getSkillCategories } from "@/lib/db/queries";
@@ -27,6 +29,8 @@ import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { SkillStructuredData } from "@/components/seo/skill-structured-data";
 import { BadgeSnippet } from "@/features/skills/badge-snippet";
 import { ExternalImage } from "@/components/ui/external-image";
+import { FavoriteButton } from "@/features/skills/favorite-button";
+import { ReportSkillDialog } from "@/features/skills/report-skill-dialog";
 
 export const revalidate = 300;
 
@@ -172,7 +176,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
         {/* Main Content */}
         <div className="space-y-4 min-w-0">
           {/* Header */}
-          <div className="flex items-center gap-3">
+          <div className="relative flex items-center gap-3 group">
             <div className="size-10 rounded-lg bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
               {skill.avatarUrl ? (
                 <ExternalImage
@@ -190,7 +194,14 @@ export default async function SkillDetailPage({ params }: PageProps) {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg font-semibold truncate leading-tight">{skill.name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-semibold truncate leading-tight">{skill.name}</h1>
+                {skill.securityScan && (
+                  <div className="lg:hidden shrink-0">
+                    <SecurityBadge securityScan={skill.securityScan} variant="icon" />
+                  </div>
+                )}
+              </div>
               <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
                 <span>{skill.owner}</span>
                 {skill.isVerifiedOrg && (
@@ -201,10 +212,11 @@ export default async function SkillDetailPage({ params }: PageProps) {
                 )}
               </p>
             </div>
+            <FavoriteButton skillId={skill.id} />
           </div>
 
           {skill.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed break-words">
               {skill.description}
             </p>
           )}
@@ -216,29 +228,10 @@ export default async function SkillDetailPage({ params }: PageProps) {
             skillName={skill.name}
           />
 
-          {/* Security Badge */}
+          {/* Security Badge (Mobile) */}
           {skill.securityScan && (
-            <SecurityBadge securityScan={skill.securityScan} variant="full" />
-          )}
-
-          {/* Tags */}
-          {(skill.compatibility || allowedTools.length > 0 || topics.length > 0) && (
-            <div className="flex flex-wrap gap-1.5">
-              {skill.compatibility && (
-                <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-full">
-                  {skill.compatibility}
-                </Badge>
-              )}
-              {allowedTools.map((tool: string) => (
-                <Badge key={tool} variant="secondary" className="text-[10px] px-2 py-0.5 font-mono rounded-full">
-                  {tool}
-                </Badge>
-              ))}
-              {topics.slice(0, 6).map((topic) => (
-                <Badge key={topic} variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">
-                  {topic}
-                </Badge>
-              ))}
+            <div className="lg:hidden">
+              <SecurityBadge securityScan={skill.securityScan} variant="full" />
             </div>
           )}
 
@@ -275,11 +268,47 @@ export default async function SkillDetailPage({ params }: PageProps) {
               <RelatedSkillsSection skillId={skill.id} />
             </React.Suspense>
           </div>
+
+          {/* Tags */}
+          {(skill.compatibility || allowedTools.length > 0 || topics.length > 0) && (
+            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+              <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
+                <Tag className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                <span className="text-xs font-medium">Tags & Topics</span>
+              </div>
+              <div className="p-3.5">
+                <div className="flex flex-wrap gap-1.5">
+                  {skill.compatibility && (
+                    <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-full">
+                      {skill.compatibility}
+                    </Badge>
+                  )}
+                  {allowedTools.map((tool: string) => (
+                    <Badge key={tool} variant="secondary" className="text-[10px] px-2 py-0.5 font-mono rounded-full">
+                      {tool}
+                    </Badge>
+                  ))}
+                  {topics.slice(0, 6).map((topic) => (
+                    <Badge key={topic} variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">
+                      {topic}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
         <aside className="space-y-3 lg:relative">
           <div className="lg:sticky lg:top-20 space-y-3">
+            {/* Security Badge (Sidebar) */}
+            {skill.securityScan && (
+              <div className="lg:block hidden">
+                <SecurityBadge securityScan={skill.securityScan} variant="full" />
+              </div>
+            )}
+
             {/* Owner Card */}
             <Link
               href={ownerUrl}
@@ -379,10 +408,25 @@ export default async function SkillDetailPage({ params }: PageProps) {
             {/* Badge Snippet */}
             <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-muted/30">
+                <Share2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
                 <span className="text-[11px] font-medium">Share this skill</span>
               </div>
               <div className="p-3">
                 <BadgeSnippet owner={skill.owner} slug={skill.slug} />
+              </div>
+            </div>
+
+            {/* Related Skills (Desktop) */}
+            <div className="hidden lg:block">
+              <React.Suspense fallback={<RelatedSkillsFallback />}>
+                <RelatedSkillsSection skillId={skill.id} />
+              </React.Suspense>
+            </div>
+
+            {/* Report Skill */}
+            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+              <div className="p-3">
+                <ReportSkillDialog skillId={skill.id} skillName={skill.name} />
               </div>
             </div>
           </div>

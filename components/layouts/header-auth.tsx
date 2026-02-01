@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { LogIn } from "lucide-react"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 
 import { Button } from "@/components/ui/button"
@@ -10,7 +11,11 @@ function HeaderAuth() {
     <div className="ml-2 flex items-center gap-2">
       <SignedOut>
         <SignInButton mode="modal">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <LogIn
+              strokeWidth={2}
+              aria-hidden="true"
+            />
             Sign in
           </Button>
         </SignInButton>

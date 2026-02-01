@@ -82,7 +82,7 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
                   aria-hidden="true"
                 />
               )}
-              {pm.label}
+              <span>{pm.label}</span>
             </button>
           ))}
         </div>
@@ -99,12 +99,12 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
                 strokeWidth={2.5}
                 aria-hidden="true"
               />
-              <pre className="font-mono text-xs leading-relaxed overflow-x-auto scrollbar-none min-w-0">
+              <pre className="font-mono text-xs leading-relaxed overflow-x-auto scrollbar-none min-w-0 flex-1">
                 <code className="flex items-center gap-1">
                   <span className={cn("font-semibold shrink-0", selectedPm.color)}>
                     {command.split(" ")[0]}
                   </span>
-                  <span className="text-muted-foreground truncate">
+                  <span className="text-muted-foreground break-words">
                     {command.split(" ").slice(1).join(" ")}
                   </span>
                 </code>
@@ -169,7 +169,7 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
                   aria-hidden="true"
                 />
               )}
-              {pm.label}
+              <span>{pm.label}</span>
             </button>
           ))}
         </div>
@@ -187,13 +187,12 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
               strokeWidth={2.5}
               aria-hidden="true"
             />
-            <pre className="font-mono text-sm leading-relaxed overflow-x-auto scrollbar-none">
-              <code>
-                <span className={cn("font-semibold", selectedPm.color)}>
+            <pre className="font-mono text-sm leading-relaxed overflow-x-auto scrollbar-none flex-1 min-w-0">
+              <code className="flex items-center gap-1">
+                <span className={cn("font-semibold shrink-0", selectedPm.color)}>
                   {command.split(" ")[0]}
                 </span>
-                <span className="text-muted-foreground">
-                  {" "}
+                <span className="text-muted-foreground break-words">
                   {command.split(" ").slice(1).join(" ")}
                 </span>
               </code>

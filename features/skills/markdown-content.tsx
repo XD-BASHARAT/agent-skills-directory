@@ -26,7 +26,7 @@ async function MarkdownContent({ content, className }: MarkdownContentProps) {
             <h3 className="text-base font-semibold mt-4 mb-2">{children}</h3>
           ),
           p: ({ children }) => (
-            <p className="text-sm leading-relaxed mb-3">{children}</p>
+            <p className="text-sm leading-relaxed mb-3 break-words">{children}</p>
           ),
           ul: ({ children }) => (
             <ul className="list-disc list-inside text-sm mb-3 space-y-1">{children}</ul>
@@ -34,7 +34,7 @@ async function MarkdownContent({ content, className }: MarkdownContentProps) {
           ol: ({ children }) => (
             <ol className="list-decimal list-inside text-sm mb-3 space-y-1">{children}</ol>
           ),
-          li: ({ children }) => <li className="text-sm">{children}</li>,
+          li: ({ children }) => <li className="text-sm break-words">{children}</li>,
           code: ({ className, children, ...props }) => {
             const isInline = !className
             return isInline ? (
@@ -73,12 +73,12 @@ async function MarkdownContent({ content, className }: MarkdownContentProps) {
             </div>
           ),
           th: ({ children }) => (
-            <th className="border border-border bg-muted px-3 py-2 text-left font-medium">
+            <th className="border border-border bg-muted px-3 py-2 text-left font-medium break-words">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="border border-border px-3 py-2">{children}</td>
+            <td className="border border-border px-3 py-2 break-words">{children}</td>
           ),
           hr: () => <hr className="border-border my-6" />,
         }}
