@@ -239,7 +239,9 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     }
   }
 
-  conditions.push(status ? eq(skills.status, status) : ne(skills.status, "rejected"))
+  // Only show approved skills by default (for public pages)
+  // Admin pages can explicitly filter by status if needed
+  conditions.push(status ? eq(skills.status, status) : eq(skills.status, "approved"))
 
   const categorySlugs = categoryList?.length ? categoryList : category ? [category] : []
   if (categorySlugs.length > 0) {

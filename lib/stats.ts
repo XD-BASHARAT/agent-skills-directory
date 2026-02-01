@@ -1,6 +1,6 @@
 import "server-only"
 
-import { and, gte, ne, sql } from "drizzle-orm"
+import { and, eq, gte, sql } from "drizzle-orm"
 
 import { db } from "@/lib/db"
 import { skills } from "@/lib/db/schema"
@@ -17,14 +17,14 @@ async function getStats(): Promise<StatsResult> {
 
   const cacheKey = `stats:${today.toISOString().slice(0, 10)}`
   return withServerCache(cacheKey, 60_000, async () => {
-    // Count distinct owner/slug combinations (same as getSkills)
+    // Count distinct owner/slug combinations for approved skills only
     const [totalResult, todayResult] = await Promise.all([
       db
         .select({ 
           count: sql<number>`count(distinct ${sql`${skills.owner} || '/' || ${skills.slug}`})` 
         })
         .from(skills)
-        .where(ne(skills.status, "rejected")),
+        .where(eq(skills.status, "approved")),
       db
         .select({ 
           count: sql<number>`count(distinct ${sql`${skills.owner} || '/' || ${skills.slug}`})` 
@@ -32,7 +32,7 @@ async function getStats(): Promise<StatsResult> {
         .from(skills)
         .where(
           and(
-            ne(skills.status, "rejected"),
+            eq(skills.status, "approved"),
             gte(skills.indexedAt, today)
           )
         ),

@@ -1,15 +1,23 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import Script from "next/script"
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google"
 
 function LazyAnalytics() {
+  const pathname = usePathname()
   const [shouldLoad, setShouldLoad] = React.useState(false)
   const [isMounted, setIsMounted] = React.useState(false)
 
+  // Don't load analytics on admin pages
+  const isAdminPage = pathname?.startsWith("/admin") ?? false
+
   React.useEffect(() => {
     setIsMounted(true)
+    // Skip loading analytics on admin pages
+    if (isAdminPage) return
+
     // Defer loading analytics until after initial page load
     // This improves LCP by not blocking the main thread during initial render
     if ("requestIdleCallback" in window) {
@@ -25,10 +33,11 @@ function LazyAnalytics() {
       const timer = setTimeout(() => setShouldLoad(true), 2000)
       return () => clearTimeout(timer)
     }
-  }, [])
+  }, [isAdminPage])
 
   // Don't render anything until mounted to avoid hydration mismatch
-  if (!isMounted || !shouldLoad) return null
+  // Or if it's an admin page, don't render analytics at all
+  if (!isMounted || !shouldLoad || isAdminPage) return null
 
   return (
     <>

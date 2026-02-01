@@ -276,6 +276,8 @@ export async function submitSkill(data: SkillSubmission): Promise<SubmissionResu
 }
 
 // Admin Actions
+// Note: These functions are kept for backward compatibility
+// New admin actions are in lib/actions/admin-skills.ts
 
 export async function updateSkill(skillId: string, updates: SkillUpdate, categories?: string[]) {
   const isAdmin = await checkAdminAuth()
