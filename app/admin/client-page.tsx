@@ -54,15 +54,33 @@ type Stats = {
 type Skill = {
   id: string
   name: string
+  slug: string
   description: string
   owner: string
   repo: string
   path: string
   url: string
+  rawUrl: string
   stars: number | null
+  forks: number | null
+  avatarUrl: string | null
   status: string | null
-  isVerifiedOrg?: boolean | null
-  // featured is removed as it's not in DB
+  isVerifiedOrg: boolean | null
+  isArchived: boolean | null
+  topics: string | null
+  compatibility: string | null
+  allowedTools: string | null
+  blobSha: string | null
+  lastSeenAt: Date | null
+  submittedBy: string | null
+  repoUpdatedAt: Date | null
+  fileUpdatedAt: Date | null
+  indexedAt: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  searchText: string | null
+  securityScan: string | null
+  securityScannedAt: Date | null
 }
 
 type AdminClientPageProps = {
@@ -278,6 +296,8 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
         else if (action === "delete") await deleteSkill(skillId)
 
         toast.success(`Skill ${action}d successfully`)
+        // Refresh the page to show updated data
+        window.location.reload()
       } catch {
         toast.error(`Failed to ${action} skill`)
       }
@@ -292,9 +312,11 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
           name: updates.name,
           description: updates.description,
           status: updates.status as SkillUpdate['status'],
-          isVerifiedOrg: updates.isVerifiedOrg as boolean | undefined
+          isVerifiedOrg: updates.isVerifiedOrg ?? undefined
         }, categories)
         toast.success("Skill updated successfully")
+        // Refresh the page to show updated data
+        window.location.reload()
       } catch {
         toast.error("Failed to update skill")
       }
@@ -308,7 +330,7 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => (
-          <div>
+          <div className="min-w-[200px]">
             <div className="font-medium">{row.original.name}</div>
             <div className="text-xs text-muted-foreground truncate max-w-[200px]">
               {row.original.description}
@@ -334,7 +356,11 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
       {
         accessorKey: "stars",
         header: "Stars",
-        cell: ({ row }) => <span>Star {row.original.stars}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm tabular-nums">
+            {row.original.stars?.toLocaleString() ?? 0}
+          </span>
+        ),
       },
       {
         accessorKey: "status",
@@ -343,12 +369,12 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
           const status = row.original.status
           const colorClass =
             status === "approved"
-              ? "text-green-600 bg-green-50"
+              ? "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-950"
               : status === "rejected"
-                ? "text-red-600 bg-red-50"
-                : "text-yellow-600 bg-yellow-50"
+                ? "text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950"
+                : "text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-950"
           return (
-            <span className={`px-2 py-0.5 text-xs rounded-full ${colorClass}`}>
+            <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${colorClass}`}>
               {status}
             </span>
           )
@@ -356,6 +382,27 @@ function SkillsTab({ skills }: { skills: Skill[] }) {
         filterFn: (row, id, value) => {
           if (value === "all") return true
           return row.getValue(id) === value
+        },
+      },
+      {
+        id: "security",
+        header: "Security",
+        cell: ({ row }) => {
+          const scan = row.original.securityScan
+          if (!scan) {
+            return <span className="text-xs text-muted-foreground">Not scanned</span>
+          }
+          try {
+            const parsed = JSON.parse(scan)
+            const isSafe = parsed.safe === true
+            return (
+              <span className={`text-xs ${isSafe ? "text-green-600" : "text-red-600"}`}>
+                {isSafe ? "✓ Safe" : "⚠ Risk"}
+              </span>
+            )
+          } catch {
+            return <span className="text-xs text-muted-foreground">Invalid</span>
+          }
         },
       },
       {

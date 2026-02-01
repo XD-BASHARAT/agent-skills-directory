@@ -1,5 +1,6 @@
 import * as React from "react"
 import { redirect } from "next/navigation"
+import { desc } from "drizzle-orm"
 
 import { checkAdminAuth } from "@/lib/auth"
 import { db } from "@/lib/db"
@@ -12,9 +13,12 @@ export default async function AdminPage() {
     redirect("/")
   }
 
-  const allSkills = await db.query.skills.findMany({
-    orderBy: [skills.createdAt],
-  })
+  // Use direct query with limit to avoid timeout
+  const allSkills = await db
+    .select()
+    .from(skills)
+    .orderBy(desc(skills.createdAt))
+    .limit(500)
 
   return (
     <AdminClientPage
