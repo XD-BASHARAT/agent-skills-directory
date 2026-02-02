@@ -111,6 +111,17 @@ function Footer() {
               unoptimized
             />
           </a>
+          <a href={getExternalUrl("https://code.market?code.market=verified")} target="_blank" rel="noopener noreferrer">
+            <Image
+              src="https://code.market/assets/manage-product/featured-logo-bright.svg"
+              alt="ai tools code.market"
+              title="ai tools code.market"
+              width={120}
+              height={35}
+              style={{ height: "auto" }}
+              unoptimized
+            />
+          </a>
         </div>
         <div className="flex items-center justify-between">
           <div className="text-muted-foreground flex items-center gap-3 text-xs">
