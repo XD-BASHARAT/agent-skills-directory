@@ -258,11 +258,24 @@ export async function getSkills(options: GetSkillsOptions = {}) {
       case "last_commit":
         return sql`file_updated_at DESC NULLS LAST, id DESC`
       case "name_asc":
-        return sql`name ASC, id ASC`
+        // Use REGEXP_REPLACE to remove special chars for natural sorting
+        return sql`REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') ASC, LOWER(name) ASC, id ASC`
       case "name_desc":
-        return sql`name DESC, id DESC`
+        return sql`REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') DESC, LOWER(name) DESC, id DESC`
       default:
         return sql`stars DESC NULLS LAST, id DESC`
+    }
+  })()
+
+  // Build DISTINCT ON ORDER BY - must match the sort order for name sorting
+  const distinctOrderBy = (() => {
+    switch (sortBy) {
+      case "name_asc":
+        return sql`owner, slug, REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') ASC, LOWER(name) ASC, indexed_at DESC NULLS LAST, id DESC`
+      case "name_desc":
+        return sql`owner, slug, REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') DESC, LOWER(name) DESC, indexed_at DESC NULLS LAST, id DESC`
+      default:
+        return sql`owner, slug, indexed_at DESC NULLS LAST, id DESC`
     }
   })()
 
@@ -281,7 +294,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
           is_verified_org, status, file_updated_at, repo_updated_at, indexed_at, security_scan
         FROM skills
         WHERE ${whereClause}
-        ORDER BY owner, slug, indexed_at DESC NULLS LAST, id DESC
+        ORDER BY ${distinctOrderBy}
       )
       SELECT * FROM deduped_skills
       ORDER BY ${orderByClause}

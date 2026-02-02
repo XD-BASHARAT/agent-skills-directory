@@ -4,7 +4,6 @@ import * as React from "react";
 import { Plus } from "lucide-react";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -113,7 +113,15 @@ export const SkillsTab = React.memo(function SkillsTab({ skills: initialSkills }
 
   const handleUpdate = React.useCallback(
     async (skillId: string, updates: Partial<Skill>, categories?: string[]) => {
-      const result = await updateSkill(skillId, updates as any, categories)
+      // Filter out null values and ensure status is the correct type
+      const cleanUpdates: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(updates)) {
+        if (value !== null && value !== undefined) {
+          cleanUpdates[key] = value
+        }
+      }
+      
+      const result = await updateSkill(skillId, cleanUpdates, categories)
       if (result.success) {
         toast.success(result.message ?? "Skill updated successfully")
         setSkills((prev) =>

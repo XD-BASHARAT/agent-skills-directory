@@ -1,5 +1,5 @@
 ﻿import Link from "next/link"
-import { Compass, ArrowRight, Search, Star, Terminal } from "lucide-react"
+import { Search, Star, Terminal } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
