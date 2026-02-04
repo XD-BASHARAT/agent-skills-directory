@@ -45,7 +45,7 @@ function LazyAnalytics() {
       <GoogleAnalytics gaId="G-4FGK21L6LG" />
       <Script
         src="https://datafa.st/js/script.js"
-        data-website-id="dfid_qaH97LcnxJX0elugDYkAa"
+        data-website-id="dfid_gIrbsEdkjx0522cuXC03e"
         data-domain="agnxi.com"
         strategy="lazyOnload"
       />
