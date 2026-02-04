@@ -19,7 +19,7 @@ export type SkillSubmission = z.infer<typeof skillSubmissionSchema>
 export const skillUpdateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
   description: z.string().optional(),
-  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  status: z.enum(["pending", "approved"]).optional(),
   isVerifiedOrg: z.boolean().optional(),
 })
 

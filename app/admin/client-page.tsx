@@ -35,7 +35,6 @@ type AdminClientPageProps = {
     total: number
     approved: number
     pending: number
-    rejected: number
   }
 }
 

@@ -8,7 +8,7 @@ import { skills } from "@/lib/db/schema"
 const getSkillsSchema = z.object({
   page: z.coerce.number().int().min(1).max(100).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(100),
-  status: z.enum(["all", "pending", "approved", "rejected"]).default("all"),
+  status: z.enum(["all", "pending", "approved"]).default("all"),
 })
 
 async function ensureAdmin() {

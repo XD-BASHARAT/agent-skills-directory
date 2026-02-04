@@ -16,6 +16,7 @@ import {
   getSkillsWithoutCategories,
   getSkillsByIds,
   replaceSkillCategories,
+  getOwnerVerification,
 } from "@/lib/db/queries"
 import {
   parseTopics,
@@ -455,7 +456,12 @@ export const syncRepoSkills = inngest.createFunction(
       return Object.fromEntries(data)
     })
 
-    // Step 3: Parse and prepare skills
+    // Step 3: Resolve owner verification (manual only)
+    const isVerifiedOrg = await step.run("resolve-owner-verification", async () => {
+      return getOwnerVerification(owner)
+    })
+
+    // Step 4: Parse and prepare skills
     const parsedSkillsData = await step.run("prepare-skills", async () => {
       const skills: Array<{
         id: string
@@ -512,7 +518,7 @@ export const syncRepoSkills = inngest.createFunction(
           avatarUrl: data.avatarUrl,
           topics: JSON.stringify(data.topics),
           isArchived: data.isArchived,
-          isVerifiedOrg: null,
+          isVerifiedOrg,
           blobSha: data.sha,
           pushedAt: data.pushedAt,
           fileCommittedAt: data.fileCommittedAt,
@@ -628,7 +634,6 @@ export const reindexSkill = inngest.createFunction(
       return { success: false, error: `Parse failed: ${parsed.error}` }
     }
 
-    // Fetch owner verification
     // Update skill in database
     await step.run("update-skill", async () => {
       const skill: NewSkill = {
@@ -650,7 +655,7 @@ export const reindexSkill = inngest.createFunction(
         avatarUrl: skillData.avatarUrl,
         topics: JSON.stringify(skillData.topics),
         isArchived: skillData.isArchived,
-        isVerifiedOrg: null,
+        isVerifiedOrg: await getOwnerVerification(owner),
         blobSha: skillData.sha,
         lastSeenAt: new Date(),
         repoUpdatedAt: skillData.pushedAt ? new Date(skillData.pushedAt) : null,
@@ -692,7 +697,7 @@ export const cleanupStaleSkills = inngest.createFunction(
     const staleSkills = await step.run("get-stale-skills", async () => {
       const { db } = await import("@/lib/db")
       const { skills } = await import("@/lib/db/schema")
-      const { lt, and, ne } = await import("drizzle-orm")
+      const { lt, and, inArray } = await import("drizzle-orm")
 
       const threshold = new Date()
       threshold.setDate(threshold.getDate() - STALE_THRESHOLD_DAYS)
@@ -709,7 +714,7 @@ export const cleanupStaleSkills = inngest.createFunction(
         .where(
           and(
             lt(skills.lastSeenAt, threshold),
-            ne(skills.status, "rejected")
+            inArray(skills.status, ["approved", "pending"])
           )
         )
         .limit(BATCH_SIZE)

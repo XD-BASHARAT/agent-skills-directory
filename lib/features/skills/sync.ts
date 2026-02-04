@@ -1,5 +1,5 @@
 import { indexSingleSkill } from "./indexer"
-import { batchUpsertSkills, batchLinkSkillsToCategories, getSkillById } from "@/lib/db/queries"
+import { batchUpsertSkills, batchLinkSkillsToCategories, getSkillById, getOwnerVerification } from "@/lib/db/queries"
 import { mapSkillToCategories, parseTopics } from "@/lib/categories"
 import { toCanonicalId } from "./canonical"
 import { discoverAllSkillFilesInRepo, batchFetchSkills } from "./github-graphql"
@@ -100,8 +100,9 @@ export async function syncRepoSkills(
 
     // Step 2: Batch fetch all skill contents and owner verification
     const skillItems = skillPaths.map(path => ({ owner, repo, path }))
-    const [skillDataMap] = await Promise.all([
+    const [skillDataMap, isOwnerVerified] = await Promise.all([
       batchFetchSkills(skillItems),
+      getOwnerVerification(owner),
     ])
 
     // Step 3: Process and upsert each skill
@@ -155,7 +156,7 @@ export async function syncRepoSkills(
         avatarUrl: data.avatarUrl,
         topics: JSON.stringify(data.topics),
         isArchived: data.isArchived,
-        isVerifiedOrg: null,
+        isVerifiedOrg: isOwnerVerified,
         blobSha: data.sha,
         lastSeenAt: new Date(),
         repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,

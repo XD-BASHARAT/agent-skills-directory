@@ -8,7 +8,6 @@ import { db } from "@/lib/db"
 import { skills, skillCategories } from "@/lib/db/schema"
 import {
   approveSkill as dbApproveSkill,
-  rejectSkill as dbRejectSkill,
   batchLinkSkillsToCategories,
 } from "@/lib/db/queries"
 import { skillUpdateSchema, type SkillUpdate } from "@/lib/validators/skills"
@@ -182,50 +181,6 @@ export async function approveSkill(skillId: string): Promise<AdminSkillActionRes
 }
 
 /**
- * Reject a skill
- */
-export async function rejectSkill(skillId: string): Promise<AdminSkillActionResult> {
-  try {
-    const isAdmin = await checkAdminAuth()
-    if (!isAdmin) {
-      return { success: false, error: "Unauthorized" }
-    }
-
-    // Check if skill exists
-    const existingSkill = await db
-      .select({ id: skills.id, status: skills.status })
-      .from(skills)
-      .where(eq(skills.id, skillId))
-      .limit(1)
-
-    if (existingSkill.length === 0) {
-      return { success: false, error: "Skill not found" }
-    }
-
-    if (existingSkill[0].status === "rejected") {
-      return { success: false, error: "Skill is already rejected" }
-    }
-
-    await dbRejectSkill(skillId)
-
-    revalidatePath("/admin")
-    revalidatePath("/")
-    revalidatePath(`/[owner]/skills/[name]`, "page")
-
-    return {
-      success: true,
-      message: "Skill rejected successfully",
-    }
-  } catch (error) {
-    console.error("Failed to reject skill:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to reject skill",
-    }
-  }
-}
-
-/**
  * Bulk approve skills
  */
 export async function bulkApproveSkills(
@@ -270,55 +225,6 @@ export async function bulkApproveSkills(
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to bulk approve skills",
-    }
-  }
-}
-
-/**
- * Bulk reject skills
- */
-export async function bulkRejectSkills(
-  skillIds: string[]
-): Promise<AdminSkillActionResult & { rejected?: number }> {
-  try {
-    const isAdmin = await checkAdminAuth()
-    if (!isAdmin) {
-      return { success: false, error: "Unauthorized" }
-    }
-
-    if (!Array.isArray(skillIds) || skillIds.length === 0) {
-      return { success: false, error: "Invalid skill IDs" }
-    }
-
-    // Check which skills exist and are pending
-    const existingSkills = await db
-      .select({ id: skills.id, status: skills.status })
-      .from(skills)
-      .where(inArray(skills.id, skillIds))
-
-    const pendingSkills = existingSkills.filter((s) => s.status === "pending")
-    const pendingIds = pendingSkills.map((s) => s.id)
-
-    if (pendingIds.length === 0) {
-      return { success: false, error: "No pending skills to reject" }
-    }
-
-    // Reject all pending skills
-    await Promise.all(pendingIds.map((id) => dbRejectSkill(id)))
-
-    revalidatePath("/admin")
-    revalidatePath("/")
-
-    return {
-      success: true,
-      message: `${pendingIds.length} skill(s) rejected successfully`,
-      rejected: pendingIds.length,
-    }
-  } catch (error) {
-    console.error("Failed to bulk reject skills:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to bulk reject skills",
     }
   }
 }

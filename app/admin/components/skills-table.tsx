@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ExternalLink, SquarePen, Trash2, X } from "lucide-react"
+import { Check, ExternalLink, SquarePen, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -44,7 +44,6 @@ type SkillsTableProps = {
   skills: Skill[]
   onEdit: (skill: Skill) => void
   onApprove: (skillId: string) => Promise<void>
-  onReject: (skillId: string) => Promise<void>
   onDelete: (skillId: string) => Promise<void>
 }
 
@@ -52,7 +51,6 @@ export const SkillsTable = React.memo(function SkillsTable({
   skills,
   onEdit,
   onApprove,
-  onReject,
   onDelete,
 }: SkillsTableProps) {
   const [processingIds, setProcessingIds] = React.useState<Set<string>>(new Set())
@@ -60,7 +58,7 @@ export const SkillsTable = React.memo(function SkillsTable({
   const handleAction = React.useCallback(
     async (
       skillId: string,
-      action: "approve" | "reject" | "delete",
+      action: "approve" | "delete",
       actionFn: (id: string) => Promise<void>
     ) => {
       if (processingIds.has(skillId)) return
@@ -127,13 +125,11 @@ export const SkillsTable = React.memo(function SkillsTable({
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-          const status = row.original.status
+          const status = row.original.status === "approved" ? "approved" : "pending"
           const colorClass =
             status === "approved"
               ? "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-950"
-              : status === "rejected"
-                ? "text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950"
-                : "text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-950"
+              : "text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-950"
           return (
             <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${colorClass}`}>
               {status}
@@ -194,7 +190,7 @@ export const SkillsTable = React.memo(function SkillsTable({
               >
                 <SquarePen className="size-3.5" aria-hidden="true" />
               </Button>
-              {skill.status === "pending" && (
+              {skill.status !== "approved" && (
                 <Button
                   size="icon-sm"
                   aria-label="Approve skill"
@@ -202,17 +198,6 @@ export const SkillsTable = React.memo(function SkillsTable({
                   disabled={isProcessing}
                 >
                   <Check className="size-3.5" aria-hidden="true" />
-                </Button>
-              )}
-              {skill.status === "pending" && (
-                <Button
-                  size="icon-sm"
-                  variant="outline"
-                  aria-label="Reject skill"
-                  onClick={() => handleAction(skill.id, "reject", onReject)}
-                  disabled={isProcessing}
-                >
-                  <X className="size-3.5" aria-hidden="true" />
                 </Button>
               )}
               <Button
@@ -229,7 +214,7 @@ export const SkillsTable = React.memo(function SkillsTable({
         },
       },
     ],
-    [onEdit, onApprove, onReject, onDelete, handleAction, processingIds]
+    [onEdit, onApprove, onDelete, handleAction, processingIds]
   )
 
   return (

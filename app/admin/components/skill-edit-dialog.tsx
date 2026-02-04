@@ -58,7 +58,7 @@ export function SkillEditDialog({
     if (!skill || !open) return
     setName(skill.name ?? "")
     setDescription(skill.description ?? "")
-    setStatus((skill.status as string) ?? "pending")
+    setStatus(skill.status === "approved" ? "approved" : "pending")
     setError(null)
     setSelectedCategories([])
     setInitialCategories([])
@@ -205,7 +205,6 @@ export function SkillEditDialog({
                 <SelectContent>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
                 </SelectContent>
               </Select>
             </div>

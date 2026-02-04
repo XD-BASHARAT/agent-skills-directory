@@ -16,12 +16,11 @@ import { SkillsTable, type Skill } from "./skills-table"
 import { SkillEditDialog } from "./skill-edit-dialog"
 import {
   approveSkill,
-  rejectSkill,
   deleteSkill,
   updateSkill,
 } from "@/lib/actions/admin-skills"
 
-type SkillFilter = "all" | "pending" | "approved" | "rejected"
+type SkillFilter = "all" | "pending" | "approved"
 
 type SkillsTabProps = {
   skills: Skill[]
@@ -33,7 +32,7 @@ export const SkillsTab = React.memo(function SkillsTab({ skills: initialSkills }
   const pathname = usePathname()
 
   const normalizeFilter = React.useCallback((value: string | null): SkillFilter => {
-    if (value === "pending" || value === "approved" || value === "rejected") {
+    if (value === "pending" || value === "approved") {
       return value
     }
     return "all"
@@ -87,19 +86,6 @@ export const SkillsTab = React.memo(function SkillsTab({ skills: initialSkills }
     }
   }, [])
 
-  const handleReject = React.useCallback(async (skillId: string) => {
-    const result = await rejectSkill(skillId)
-    if (result.success) {
-      toast.success(result.message ?? "Skill rejected successfully")
-      setSkills((prev) =>
-        prev.map((s) => (s.id === skillId ? { ...s, status: "rejected" } : s))
-      )
-    } else {
-      toast.error(result.error ?? "Failed to reject skill")
-      throw new Error(result.error ?? "Failed to reject skill")
-    }
-  }, [])
-
   const handleDelete = React.useCallback(async (skillId: string) => {
     const result = await deleteSkill(skillId)
     if (result.success) {
@@ -137,15 +123,14 @@ export const SkillsTab = React.memo(function SkillsTab({ skills: initialSkills }
 
   const filteredSkills = React.useMemo(() => {
     if (skillFilter === "all") return skills
-    return skills.filter((s) => s.status === skillFilter)
+    return skills.filter((s) => (s.status === "approved" ? "approved" : "pending") === skillFilter)
   }, [skills, skillFilter])
 
   const skillStatusCounts = React.useMemo(
     () => ({
       all: skills.length,
-      pending: skills.filter((s) => s.status === "pending").length,
+      pending: skills.filter((s) => s.status !== "approved").length,
       approved: skills.filter((s) => s.status === "approved").length,
-      rejected: skills.filter((s) => s.status === "rejected").length,
     }),
     [skills]
   )
@@ -162,7 +147,7 @@ export const SkillsTab = React.memo(function SkillsTab({ skills: initialSkills }
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-wrap gap-2 pb-4">
-            {(["all", "pending", "approved", "rejected"] as const).map((status) => (
+            {(["all", "pending", "approved"] as const).map((status) => (
               <Button
                 key={status}
                 type="button"
@@ -180,7 +165,6 @@ export const SkillsTab = React.memo(function SkillsTab({ skills: initialSkills }
             skills={filteredSkills}
             onEdit={openEditDialog}
             onApprove={handleApprove}
-            onReject={handleReject}
             onDelete={handleDelete}
           />
         </CardContent>

@@ -11,7 +11,6 @@ import {
   batchUpsertSkills,
   batchLinkSkillsToCategories,
   approveSkill as dbApproveSkill,
-  rejectSkill as dbRejectSkill
 } from "@/lib/db/queries"
 import { batchFetchSkills, discoverAllSkillFilesInRepo } from "@/lib/features/skills/github-graphql"
 import { parseSkillMd, normalizeAllowedTools } from "@/lib/features/skills/parser"
@@ -92,9 +91,8 @@ export async function submitSkill(data: SkillSubmission): Promise<SubmissionResu
 
       if (skillPaths.length === 0) {
         return {
-          success: false, 
-          status: "rejected",
-          error: "No SKILL.md found in repository" 
+          success: false,
+          error: "No SKILL.md found in repository",
         }
       }
     } else {
@@ -216,8 +214,7 @@ export async function submitSkill(data: SkillSubmission): Promise<SubmissionResu
 
     if (approvedSkills.length === 0) {
       return {
-        success: false, 
-        status: "rejected",
+        success: false,
         error: "No valid skills found",
         failed: failedSkills,
       }
@@ -333,13 +330,3 @@ export async function approveSkill(skillId: string) {
   return { success: true }
 }
 
-export async function rejectSkill(skillId: string) {
-  const isAdmin = await checkAdminAuth()
-  if (!isAdmin) {
-    throw new Error("Unauthorized")
-  }
-
-  await dbRejectSkill(skillId)
-  revalidatePath("/admin")
-  return { success: true }
-}

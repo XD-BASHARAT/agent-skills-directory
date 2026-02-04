@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { approveSkill, rejectSkill, getSkillById } from "@/lib/db/queries"
+import { approveSkill, getSkillById } from "@/lib/db/queries"
 import { requireAdmin } from "@/lib/auth"
 
 type RouteParams = { params: Promise<{ id: string }> }
 
 const patchActionSchema = z.object({
-  action: z.enum(["approve", "reject"]),
+  action: z.enum(["approve"]),
 })
 
 async function ensureAdmin() {
@@ -109,15 +109,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
           )
         }
         await approveSkill(decodedId)
-        break
-      case "reject":
-        if (existingSkill.status === "rejected") {
-          return NextResponse.json(
-            { error: "Skill is already rejected" },
-            { status: 400 }
-          )
-        }
-        await rejectSkill(decodedId)
         break
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 })

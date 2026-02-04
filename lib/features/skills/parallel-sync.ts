@@ -2,7 +2,7 @@ import { env } from "@/lib/env"
 import { batchFetchSkills, batchFetchRepoMetadata } from "./github-graphql"
 import { parseSkillMd, normalizeAllowedTools } from "./parser"
 import { toCanonicalId, createDeduplicationSet, isValidSkillPath } from "./canonical"
-import { batchUpsertSkills, getExistingSkillIds } from "@/lib/db/queries"
+import { batchUpsertSkills, getExistingSkillIds, getOwnerVerificationMap } from "@/lib/db/queries"
 import { slugify } from "@/lib/utils"
 import type { NewSkill } from "@/lib/db/schema"
 
@@ -261,7 +261,11 @@ export async function parallelSync(options: ParallelSyncOptions = {}): Promise<P
   onProgress?.("\n=== Phase 5: Parallel Content Fetch ===")
   const skillDataMap = await parallelContentFetch(qualified, { onProgress })
 
-  onProgress?.("\n=== Phase 6: Parse & Prepare ===")
+  onProgress?.("\n=== Phase 6: Resolve Owner Verification ===")
+  const owners = [...new Set(qualified.map((i) => i.owner))]
+  const ownerVerificationMap = await getOwnerVerificationMap(owners)
+
+  onProgress?.("\n=== Phase 7: Parse & Prepare ===")
   const skillsToUpsert: NewSkill[] = []
 
   for (const item of qualified) {
@@ -300,7 +304,7 @@ export async function parallelSync(options: ParallelSyncOptions = {}): Promise<P
       avatarUrl: data.avatarUrl,
       topics: JSON.stringify(data.topics),
       isArchived: data.isArchived,
-      isVerifiedOrg: null,
+      isVerifiedOrg: ownerVerificationMap.get(item.owner.toLowerCase()) ?? false,
       blobSha: data.sha,
       lastSeenAt: new Date(),
       repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,
@@ -311,7 +315,7 @@ export async function parallelSync(options: ParallelSyncOptions = {}): Promise<P
 
   onProgress?.(`   Prepared ${skillsToUpsert.length} skills`)
 
-  onProgress?.("\n=== Phase 7: Database Upsert ===")
+  onProgress?.("\n=== Phase 8: Database Upsert ===")
   if (useStreaming) {
     result.indexed = await streamingUpsert(skillsToUpsert, 100, onProgress)
   } else {

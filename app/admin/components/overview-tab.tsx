@@ -11,7 +11,6 @@ type OverviewTabProps = {
     total: number
     approved: number
     pending: number
-    rejected: number
   }
 }
 
@@ -26,7 +25,6 @@ export const OverviewTab = React.memo(function OverviewTab({ stats }: OverviewTa
         <StatCard label="Total Skills" value={stats.total} />
         <StatCard label="Approved Skills" value={stats.approved} color="green" />
         <StatCard label="Pending Skills" value={stats.pending} color="yellow" />
-        <StatCard label="Rejected Skills" value={stats.rejected} color="red" />
       </div>
     </div>
   )

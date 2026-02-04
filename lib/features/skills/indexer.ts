@@ -11,6 +11,7 @@ import {
 } from "./canonical"
 import { scanSkillContent, scanAllowedTools, formatSecurityReport } from "./security-scanner"
 import type { NewSkill } from "@/lib/db/schema"
+import { getOwnerVerificationMap } from "@/lib/db/queries"
 import { slugify } from "@/lib/utils"
 
 export type IndexResult = {
@@ -185,8 +186,12 @@ export async function indexSkills(options: IndexOptions = {}): Promise<IndexResu
     qualifiedItems.map(i => ({ owner: i.owner, repo: i.repo, path: i.path }))
   )
   
-  // Step 5: Process and validate results
-  onProgress?.("✅ Step 5: Validating and processing skills...")
+  // Step 5: Resolve owner verification from DB (manual only)
+  const ownersList = [...new Set(qualifiedItems.map(i => i.owner))]
+  const ownerVerificationMap = await getOwnerVerificationMap(ownersList)
+
+  // Step 6: Process and validate results
+  onProgress?.("✅ Step 6: Validating and processing skills...")
   
   for (const item of qualifiedItems) {
     const identity = toSkillIdentity(item.owner, item.repo, item.path)
@@ -295,7 +300,7 @@ export async function indexSkills(options: IndexOptions = {}): Promise<IndexResu
       avatarUrl: data.avatarUrl,
       topics: JSON.stringify(data.topics),
       isArchived: data.isArchived,
-      isVerifiedOrg: null,
+      isVerifiedOrg: ownerVerificationMap.get(identity.owner.toLowerCase()) ?? false,
       blobSha: data.sha,
       lastSeenAt: new Date(),
       repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,
@@ -334,8 +339,9 @@ export async function indexSingleSkill(
 ): Promise<NewSkill> {
   const identity = toSkillIdentity(owner, repo, path)
   
-  const [result] = await Promise.all([
+  const [result, ownerVerificationMap] = await Promise.all([
     batchFetchSkills([{ owner, repo, path }]),
+    getOwnerVerificationMap([owner]),
   ])
   const data = result.get(`${owner}/${repo}/${path}`)
 
@@ -384,7 +390,7 @@ export async function indexSingleSkill(
     avatarUrl: data.avatarUrl,
     topics: JSON.stringify(data.topics),
     isArchived: data.isArchived,
-    isVerifiedOrg: null,
+    isVerifiedOrg: ownerVerificationMap.get(identity.owner.toLowerCase()) ?? false,
     blobSha: data.sha,
     lastSeenAt: new Date(),
     repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,

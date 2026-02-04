@@ -1,4 +1,4 @@
-import { eq, ilike, or, desc, asc, sql, and, inArray, ne } from "drizzle-orm"
+import { eq, ilike, or, desc, asc, sql, and, inArray } from "drizzle-orm"
 import { z } from "zod"
 import { db, dbPool } from "./client"
 import {
@@ -457,7 +457,7 @@ export async function getSkillsForSitemap() {
       avatarUrl: skills.avatarUrl,
     })
     .from(skills)
-    .where(ne(skills.status, "rejected"))
+    .where(inArray(skills.status, ["approved", "pending"]))
     .orderBy(desc(skills.stars), desc(skills.indexedAt))
 
   return dedupeSkillsByOwnerSlug(skillsList)
@@ -659,7 +659,6 @@ export async function batchUpsertSkills(skillsList: NewSkill[]) {
           lastSeenAt: sql`EXCLUDED.last_seen_at`,
           status: sql`CASE
             WHEN EXCLUDED.status = 'approved' THEN 'approved'
-            WHEN EXCLUDED.status = 'rejected' THEN 'rejected'
             ELSE ${skills.status}
           END`,
           submittedBy: sql`COALESCE(EXCLUDED.submitted_by, ${skills.submittedBy})`,
@@ -824,7 +823,7 @@ export async function getSkillsNeedingMetadataSync(limit = 200) {
       repoUpdatedAt: skills.repoUpdatedAt,
     })
     .from(skills)
-    .where(ne(skills.status, "rejected"))
+    .where(inArray(skills.status, ["approved", "pending"]))
     .orderBy(asc(skills.updatedAt))
     .limit(limit)
 }
@@ -857,6 +856,35 @@ export async function updateOwnerVerification(owner: string, isVerifiedOrg: bool
     .update(skills)
     .set({ isVerifiedOrg, updatedAt: now })
     .where(eq(skills.owner, owner.toLowerCase()))
+}
+
+export async function getOwnerVerificationMap(owners: string[]): Promise<Map<string, boolean>> {
+  const normalized = [...new Set(owners.map((o) => o.toLowerCase()))].filter(Boolean)
+  const results = new Map<string, boolean>()
+  if (normalized.length === 0) return results
+
+  const rows = await db.execute(sql`
+    SELECT owner, BOOL_OR(is_verified_org) as is_verified_org
+    FROM skills
+    WHERE owner IN (${sql.join(normalized.map((o) => sql`${o}`), sql`, `)})
+    GROUP BY owner
+  `)
+
+  const ownerVerificationRowSchema = z.object({
+    owner: z.string(),
+    is_verified_org: z.boolean().nullable(),
+  })
+  const parsed = parseDbRows(ownerVerificationRowSchema, rows, "getOwnerVerificationMap")
+  for (const row of parsed) {
+    results.set(row.owner.toLowerCase(), row.is_verified_org ?? false)
+  }
+
+  return results
+}
+
+export async function getOwnerVerification(owner: string): Promise<boolean> {
+  const map = await getOwnerVerificationMap([owner])
+  return map.get(owner.toLowerCase()) ?? false
 }
 
 export async function createSyncJob(job: NewSyncJob) {
@@ -904,16 +932,6 @@ export async function approveSkill(id: string) {
     .where(eq(skills.id, id))
 }
 
-export async function rejectSkill(id: string) {
-  const now = new Date()
-  return db
-    .update(skills)
-    .set({
-      status: "rejected",
-      updatedAt: now,
-    })
-    .where(eq(skills.id, id))
-}
 
 const SYNC_STATE_KEYS = {
   LAST_DISCOVERY_PUSHED_AT: "lastDiscoveryPushedAt",
@@ -994,19 +1012,19 @@ export async function getOwnerRankings(options: {
         MAX(COALESCE(stars, 0)) as stars,
         MAX(COALESCE(forks, 0)) as forks
       FROM skills
-      WHERE status != 'rejected'
+      WHERE status IN ('approved', 'pending')
       GROUP BY owner, repo
     ),
     skill_counts AS (
       SELECT owner, COUNT(DISTINCT slug) as total_skills
       FROM skills
-      WHERE status != 'rejected'
+      WHERE status IN ('approved', 'pending')
       GROUP BY owner
     ),
     owner_verified AS (
       SELECT owner, BOOL_OR(is_verified_org) as is_verified_org
       FROM skills
-      WHERE status != 'rejected'
+      WHERE status IN ('approved', 'pending')
       GROUP BY owner
     )
     SELECT

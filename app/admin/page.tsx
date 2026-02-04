@@ -57,8 +57,7 @@ export default async function AdminPage() {
       .select({
         total: sql<number>`count(*)::int`,
         approved: sql<number>`count(*) filter (where ${skills.status} = 'approved')::int`,
-        pending: sql<number>`count(*) filter (where ${skills.status} = 'pending')::int`,
-        rejected: sql<number>`count(*) filter (where ${skills.status} = 'rejected')::int`,
+        pending: sql<number>`count(*) filter (where ${skills.status} != 'approved')::int`,
       })
       .from(skills),
   ])

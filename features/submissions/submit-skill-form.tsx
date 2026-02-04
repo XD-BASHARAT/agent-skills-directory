@@ -43,7 +43,7 @@ function SubmitSkillForm({ className }: { className?: string }) {
     try {
       const result = await submitSkill({ repoUrl });
 
-      if (!result.success || result.status === "rejected") {
+      if (!result.success) {
         setState("error");
         const msg = result.error || "Submission failed";
         setMessage(msg);

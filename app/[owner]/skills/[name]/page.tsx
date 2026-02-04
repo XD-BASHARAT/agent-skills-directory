@@ -505,6 +505,6 @@ export async function generateMetadata({
     keywords,
     modifiedTime: skill.repoUpdatedAt?.toISOString(),
     author: skill.owner,
-    noIndex: skill.isArchived === true || skill.status === "rejected",
+    noIndex: skill.isArchived === true,
   });
 }
