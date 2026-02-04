@@ -125,25 +125,25 @@ function Footer() {
         </div>
         <div className="flex items-center justify-between">
           <div className="text-muted-foreground flex items-center gap-3 text-xs">
-            <Link href="/about" prefetch={false} className="hover:text-foreground transition-colors">
+            <Link href="/about" prefetch={false} className="text-link hover:text-foreground transition-colors">
               About
             </Link>
             <span className="text-border/50" aria-hidden="true">
               &middot;
             </span>
-            <Link href="/privacy" prefetch={false} className="hover:text-foreground transition-colors">
+            <Link href="/privacy" prefetch={false} className="text-link hover:text-foreground transition-colors">
               Privacy
             </Link>
             <span className="text-border/50" aria-hidden="true">
               &middot;
             </span>
-            <Link href="/cookies" prefetch={false} className="hover:text-foreground transition-colors">
+            <Link href="/cookies" prefetch={false} className="text-link hover:text-foreground transition-colors">
               Cookies
             </Link>
             <span className="text-border/50" aria-hidden="true">
               &middot;
             </span>
-            <Link href="/terms" prefetch={false} className="hover:text-foreground transition-colors">
+            <Link href="/terms" prefetch={false} className="text-link hover:text-foreground transition-colors">
               Terms
             </Link>
           </div>
@@ -151,7 +151,7 @@ function Footer() {
             Built with{" "}
             <a
               href={getExternalUrl("https://github.com/doanbactam/agent-skills-directory")}
-              className="text-foreground/80 hover:text-foreground transition-colors"
+              className="text-link text-foreground/80 hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >

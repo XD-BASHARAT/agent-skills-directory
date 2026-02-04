@@ -50,7 +50,7 @@ function CookieBanner() {
             We use essential cookies to run the site. With your consent, we may use
             non-essential cookies to improve the experience. You can change your choice
             anytime in our{" "}
-            <Link href="/cookies" className="text-primary hover:underline">
+            <Link href="/cookies" className="text-primary text-link">
               Cookie Policy
             </Link>
             .

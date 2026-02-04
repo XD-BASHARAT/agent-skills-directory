@@ -26,7 +26,7 @@ export default async function CategoriesPage() {
         <p className="text-muted-foreground text-sm">Filter agent skills by domain and workflow</p>
         <p className="text-muted-foreground text-xs">
           Not sure where to start? Read the{" "}
-          <Link href="/agent-skills" className="text-primary hover:underline">
+          <Link href="/agent-skills" className="text-primary text-link">
             Agent Skills Guide
           </Link>
           .

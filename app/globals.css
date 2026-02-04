@@ -144,15 +144,21 @@
     @apply bg-background text-foreground;
     -webkit-tap-highlight-color: transparent;
   }
-  main a:not([data-slot="button"]),
-  footer a:not([data-slot="button"]) {
+}
+
+@layer utilities {
+  .text-link {
+    @apply font-medium;
+    text-decoration-line: none;
+  }
+
+  .text-link:hover,
+  .text-link:focus-visible {
     text-decoration-line: underline;
     text-decoration-thickness: 0.08em;
     text-underline-offset: 0.2em;
   }
-}
 
-@layer utilities {
   .animate-marquee {
     animation: marquee 30s linear infinite;
     will-change: transform;

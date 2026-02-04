@@ -68,7 +68,7 @@ export default async function SkillsPage() {
         </p>
         <p className="text-muted-foreground text-xs">
           Need a refresher? Read the{" "}
-          <Link href="/agent-skills" className="text-primary hover:underline">
+          <Link href="/agent-skills" className="text-primary text-link">
             Agent Skills Guide
           </Link>
           .

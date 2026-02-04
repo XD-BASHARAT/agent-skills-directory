@@ -57,7 +57,7 @@ async function MarkdownContent({ content, className }: MarkdownContentProps) {
               href={getExternalUrl(href ?? "")}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-primary text-link"
             >
               {children}
             </a>

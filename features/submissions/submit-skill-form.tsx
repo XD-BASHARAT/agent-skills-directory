@@ -124,7 +124,7 @@ function SubmitSkillForm({ className }: { className?: string }) {
                   <a
                     key={skill.id}
                     href={`/${skill.owner}/skills/${skill.slug}`}
-                    className="text-xs text-primary hover:underline"
+                    className="text-xs text-primary text-link"
                   >
                     {skill.name}
                   </a>

@@ -68,10 +68,10 @@ export default function CookiePolicyPage() {
         </section>
 
         <div className="pt-2 flex gap-3">
-          <Link href="/" className="text-xs text-primary hover:underline">
+          <Link href="/" className="text-xs text-primary text-link">
             {"<- Back to Home"}
           </Link>
-          <Link href="/privacy" className="text-xs text-primary hover:underline">
+          <Link href="/privacy" className="text-xs text-primary text-link">
             Privacy Policy
           </Link>
         </div>

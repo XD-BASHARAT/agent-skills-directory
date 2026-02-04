@@ -30,7 +30,7 @@ export default function AboutPage() {
             An Agent Skill is a SKILL.md file that describes a repeatable workflow for a coding assistant. Skills can also include scripts and templates to make setup and execution consistent.
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            New here? Read the <Link href="/agent-skills" className="text-primary hover:underline">Agent Skills Guide</Link> for a quick overview and installation steps.
+            New here? Read the <Link href="/agent-skills" className="text-primary text-link">Agent Skills Guide</Link> for a quick overview and installation steps.
           </p>
         </section>
 
@@ -47,7 +47,7 @@ export default function AboutPage() {
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">How It Works</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Skills live in GitHub repositories following the <a href={getExternalUrl("https://agentskills.io")} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Agent Skills specification</a>. We parse the SKILL.md frontmatter, pull repo stats, and provide the install command and raw file.
+            Skills live in GitHub repositories following the <a href={getExternalUrl("https://agentskills.io")} target="_blank" rel="noopener noreferrer" className="text-primary text-link">Agent Skills specification</a>. We parse the SKILL.md frontmatter, pull repo stats, and provide the install command and raw file.
           </p>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li><strong className="text-foreground">SKILL.md</strong> - The main skill file with instructions and workflows</li>
@@ -59,7 +59,7 @@ export default function AboutPage() {
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">Contributing</h2>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-            <li><Link href="/skills" className="text-primary hover:underline">Submit a repo or SKILL.md path</Link> using the header button</li>
+            <li><Link href="/skills" className="text-primary text-link">Submit a repo or SKILL.md path</Link> using the header button</li>
             <li>Report broken links or incorrect metadata on GitHub</li>
             <li>Improve existing skills with clearer docs and examples</li>
           </ul>

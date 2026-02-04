@@ -79,10 +79,10 @@ export default function TermsPage() {
         </section>
 
         <div className="flex gap-3 pt-2">
-          <Link href="/" className="text-xs text-primary hover:underline">
+          <Link href="/" className="text-xs text-primary text-link">
             {"<- Back to Home"}
           </Link>
-          <Link href="/privacy" className="text-xs text-primary hover:underline">
+          <Link href="/privacy" className="text-xs text-primary text-link">
             Privacy Policy
           </Link>
         </div>

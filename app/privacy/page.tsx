@@ -55,7 +55,7 @@ export default function PrivacyPage() {
             We use essential cookies to operate the site and to remember your cookie
             preferences. We do not set analytics or marketing cookies by default. For
             details, see our{" "}
-            <Link href="/cookies" className="text-primary hover:underline">
+            <Link href="/cookies" className="text-primary text-link">
               Cookie Policy
             </Link>
             .
@@ -110,7 +110,7 @@ export default function PrivacyPage() {
         </section>
 
         <div className="pt-2">
-          <Link href="/" className="text-xs text-primary hover:underline">
+          <Link href="/" className="text-xs text-primary text-link">
             {"<- Back to Home"}
           </Link>
         </div>

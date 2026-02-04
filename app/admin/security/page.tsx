@@ -241,7 +241,7 @@ export default async function SecurityPage() {
               href="https://safedep.io/agent-skills-threat-model/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-primary hover:underline font-medium"
+              className="text-sm text-primary text-link font-medium"
             >
               Read the full threat model →
             </a>
@@ -249,7 +249,7 @@ export default async function SecurityPage() {
               href="https://arxiv.org/html/2510.26328v1"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-primary hover:underline font-medium"
+              className="text-sm text-primary text-link font-medium"
             >
               Research paper →
             </a>

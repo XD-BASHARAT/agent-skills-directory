@@ -148,7 +148,7 @@ export function SkillEditDialog({
                   href={getExternalUrl(skill.url)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  className="inline-flex items-center gap-1 text-xs text-primary text-link"
                 >
                   Open GitHub
                   <ExternalLink className="size-3" aria-hidden="true" />

@@ -282,7 +282,7 @@ export default async function RankingPage({ searchParams }: PageProps) {
         </p>
         <p className="text-muted-foreground text-xs">
           New to agent skills? Read the{" "}
-          <Link href="/agent-skills" className="text-primary hover:underline">
+          <Link href="/agent-skills" className="text-primary text-link">
             Agent Skills Guide
           </Link>
           .
