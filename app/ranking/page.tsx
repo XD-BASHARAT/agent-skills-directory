@@ -23,6 +23,19 @@ type PageProps = {
   }>
 }
 
+type SortValue = "skills" | "stars" | "forks"
+
+const allowedSorts: SortValue[] = ["skills", "stars", "forks"]
+
+function parseSort(value: string | undefined): SortValue {
+  if (!value) return "skills"
+  const normalized = value.toLowerCase()
+  if (allowedSorts.includes(normalized as SortValue)) {
+    return normalized as SortValue
+  }
+  return "skills"
+}
+
 function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
   const initials = owner.owner.slice(0, 2).toUpperCase()
   
@@ -243,7 +256,7 @@ function RankingCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
 
 export default async function RankingPage({ searchParams }: PageProps) {
   const { sort } = await searchParams
-  const sortBy = sort === "skills" ? "skills" : "skills" // Always sort by skills
+  const sortBy = parseSort(sort)
 
   const owners = await getOwnerRankings({ sortBy, limit: 100 })
   const topThree = owners.slice(0, 3)

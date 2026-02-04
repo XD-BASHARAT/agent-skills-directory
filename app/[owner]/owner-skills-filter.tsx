@@ -132,7 +132,7 @@ function OwnerSkillsFilter({ owner, skills, categories }: OwnerSkillsFilterProps
           cmp = new Date(b.indexedAt ?? 0).getTime() - new Date(a.indexedAt ?? 0).getTime();
           break;
         case "last_commit":
-          cmp = new Date(b.fileUpdatedAt ?? 0).getTime() - new Date(a.fileUpdatedAt ?? 0).getTime();
+          cmp = new Date(b.fileUpdatedAt ?? b.repoUpdatedAt ?? b.indexedAt ?? 0).getTime() - new Date(a.fileUpdatedAt ?? a.repoUpdatedAt ?? a.indexedAt ?? 0).getTime();
           break;
       }
       if (cmp !== 0) return cmp;

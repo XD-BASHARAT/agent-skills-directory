@@ -201,7 +201,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     perPage = 30,
     descriptionLength,
     status,
-    sortBy = "stars_desc",
+    sortBy = "last_commit",
     category,
     categoryList,
   } = options
@@ -256,7 +256,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
       case "recent":
         return sql`indexed_at DESC NULLS LAST, id DESC`
       case "last_commit":
-        return sql`file_updated_at DESC NULLS LAST, id DESC`
+        return sql`COALESCE(file_updated_at, repo_updated_at, indexed_at) DESC NULLS LAST, id DESC`
       case "name_asc":
         // Use REGEXP_REPLACE to remove special chars for natural sorting
         return sql`REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') ASC, LOWER(name) ASC, id ASC`
@@ -274,6 +274,8 @@ export async function getSkills(options: GetSkillsOptions = {}) {
         return sql`owner, slug, REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') ASC, LOWER(name) ASC, indexed_at DESC NULLS LAST, id DESC`
       case "name_desc":
         return sql`owner, slug, REGEXP_REPLACE(LOWER(name), '[^a-z0-9]', '', 'g') DESC, LOWER(name) DESC, indexed_at DESC NULLS LAST, id DESC`
+      case "last_commit":
+        return sql`owner, slug, COALESCE(file_updated_at, repo_updated_at, indexed_at) DESC NULLS LAST, id DESC`
       default:
         return sql`owner, slug, indexed_at DESC NULLS LAST, id DESC`
     }

@@ -46,6 +46,7 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
     searchQuery,
     selectedCategories,
     page,
+    sort,
     sortLabel,
     sortOptions,
     setInputValue,
@@ -136,9 +137,9 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
               <ChevronDown data-icon="inline-end" className="size-4" aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" sideOffset={4}>
+            <DropdownMenuContent align="end" sideOffset={4}>
             <DropdownMenuGroup>
-              <DropdownMenuRadioGroup value={sortLabel} onValueChange={handleSortChange}>
+              <DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
                 {sortOptions.map((option) => (
                   <DropdownMenuRadioItem key={option.value} value={option.value}>
                     {option.label}
