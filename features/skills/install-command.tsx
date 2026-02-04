@@ -2,10 +2,7 @@
 
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { CopyButton } from "@/features/skills/copy-button";
-
-type PackageManager = "bun" | "npx" | "pnpm" | "yarn";
 
 type InstallCommandProps = {
   owner: string;
@@ -14,94 +11,31 @@ type InstallCommandProps = {
   variant?: "default" | "compact";
 };
 
-const PACKAGE_MANAGERS: {
-  id: PackageManager;
-  label: string;
-  color: string;
-}[] = [
-  { id: "bun", label: "bun", color: "text-amber-500" },
-  { id: "npx", label: "npx", color: "text-red-500" },
-  { id: "pnpm", label: "pnpm", color: "text-orange-500" },
-  { id: "yarn", label: "yarn", color: "text-sky-500" },
-];
-
-function getInstallCommand(
-  pm: PackageManager,
-  owner: string,
-  repo: string,
-  skillName: string,
-): string {
-  const args = `${owner}/${repo} -s ${skillName}`;
-  switch (pm) {
-    case "bun":
-      return `bunx add-skill ${args}`;
-    case "npx":
-      return `npx add-skill ${args}`;
-    case "pnpm":
-      return `pnpm dlx add-skill ${args}`;
-    case "yarn":
-      return `yarn dlx add-skill ${args}`;
-  }
+function getInstallCommand(owner: string, repo: string, skillName: string): string {
+  const normalizedSkill = /\s/.test(skillName)
+    ? `"${skillName.replace(/"/g, '\\"')}"`
+    : skillName;
+  return `npx skills add ${owner}/${repo} --skill ${normalizedSkill}`;
 }
 
 function InstallCommand({ owner, repo, skillName, variant = "default" }: InstallCommandProps) {
-  const [selected, setSelected] = React.useState<PackageManager>("bun");
-  const command = getInstallCommand(selected, owner, repo, skillName);
-  const selectedPm = PACKAGE_MANAGERS.find((pm) => pm.id === selected)!;
-  const tabId = React.useId();
-  const panelId = `${tabId}-panel`;
+  const command = getInstallCommand(owner, repo, skillName);
 
   if (variant === "compact") {
     return (
       <div className="space-y-3">
-        {/* Package Manager Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-lg w-fit" role="tablist" aria-label="Package manager">
-          {PACKAGE_MANAGERS.map((pm) => (
-            <button
-              key={pm.id}
-              type="button"
-              onClick={() => setSelected(pm.id)}
-              role="tab"
-              aria-selected={selected === pm.id}
-              aria-controls={panelId}
-              id={`${tabId}-${pm.id}`}
-              tabIndex={selected === pm.id ? 0 : -1}
-              className={cn(
-                "relative flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-[background-color,border-color,box-shadow,color] duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                selected === pm.id
-                  ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
-                  : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-              )}
-            >
-              {selected === pm.id && (
-                <span
-                  className={cn(
-                    "absolute inset-x-2 -bottom-px h-0.5 rounded-full",
-                    pm.color.replace("text-", "bg-"),
-                  )}
-                  aria-hidden="true"
-                />
-              )}
-              <span>{pm.label}</span>
-            </button>
-          ))}
-        </div>
-
         {/* Command Display */}
-        <div id={panelId} role="tabpanel" aria-labelledby={`${tabId}-${selected}`} className="group relative rounded-xl bg-muted/50 dark:bg-muted/30 border border-border/50 p-3 overflow-hidden">
+        <div className="group relative rounded-xl bg-muted/50 dark:bg-muted/30 border border-border/50 p-3 overflow-hidden">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <ChevronRight
-                className={cn(
-                  "size-3.5 shrink-0 transition-colors duration-200 motion-reduce:transition-none",
-                  selectedPm.color,
-                )}
+                className="size-3.5 shrink-0 text-primary transition-colors duration-200 motion-reduce:transition-none"
                 strokeWidth={2.5}
                 aria-hidden="true"
               />
               <pre className="font-mono text-xs leading-relaxed overflow-x-auto scrollbar-none min-w-0 flex-1">
                 <code className="flex items-center gap-1">
-                  <span className={cn("font-semibold shrink-0", selectedPm.color)}>
+                  <span className="font-semibold shrink-0 text-primary">
                     {command.split(" ")[0]}
                   </span>
                   <span className="text-muted-foreground break-words">
@@ -140,56 +74,18 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
         <CopyButton text={command} variant="prominent" label="Copy" />
       </div>
 
-      {/* Package Manager Tabs */}
-      <div className="px-4 pt-3 pb-2">
-        <div className="inline-flex items-center gap-0.5 p-1 bg-muted/60 rounded-lg" role="tablist" aria-label="Package manager">
-          {PACKAGE_MANAGERS.map((pm) => (
-            <button
-              key={pm.id}
-              type="button"
-              onClick={() => setSelected(pm.id)}
-              role="tab"
-              aria-selected={selected === pm.id}
-              aria-controls={panelId}
-              id={`${tabId}-${pm.id}-default`}
-              tabIndex={selected === pm.id ? 0 : -1}
-              className={cn(
-                "relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-[background-color,border-color,box-shadow,color] duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                selected === pm.id
-                  ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
-                  : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-              )}
-            >
-              {selected === pm.id && (
-                <span
-                  className={cn(
-                    "absolute inset-x-2 -bottom-px h-0.5 rounded-full",
-                    pm.color.replace("text-", "bg-"),
-                  )}
-                  aria-hidden="true"
-                />
-              )}
-              <span>{pm.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Command Display */}
       <div className="px-4 pb-4">
-        <div id={panelId} role="tabpanel" aria-labelledby={`${tabId}-${selected}-default`} className="relative rounded-lg bg-muted/40 dark:bg-muted/20 border border-border/50 p-3.5 overflow-hidden">
+        <div className="relative rounded-lg bg-muted/40 dark:bg-muted/20 border border-border/50 p-3.5 overflow-hidden">
           <div className="flex items-start gap-2.5">
             <ChevronRight
-              className={cn(
-                "size-4 mt-0.5 shrink-0 transition-colors duration-200 motion-reduce:transition-none",
-                selectedPm.color,
-              )}
+              className="size-4 mt-0.5 shrink-0 text-primary transition-colors duration-200 motion-reduce:transition-none"
               strokeWidth={2.5}
               aria-hidden="true"
             />
             <pre className="font-mono text-sm leading-relaxed overflow-x-auto scrollbar-none flex-1 min-w-0">
               <code className="flex items-center gap-1">
-                <span className={cn("font-semibold shrink-0", selectedPm.color)}>
+                <span className="font-semibold shrink-0 text-primary">
                   {command.split(" ")[0]}
                 </span>
                 <span className="text-muted-foreground break-words">

@@ -49,7 +49,7 @@ const faqJsonLd = {
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "Open a skill page, copy the install command, and run it in your terminal or coding tool. Some tools also support slash commands like /install owner/repo.",
+          "Open a skill page, copy the install command, and run it in your terminal or coding tool. The standard command is: npx skills add owner/repo. Add --skill \"Skill Name\" to install specific skills.",
       },
     },
     {
@@ -112,7 +112,7 @@ export default function AgentSkillsPage() {
         <h2 className="text-lg font-semibold">How to install agent skills</h2>
         <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
           <li>Open a skill page in the agent skills directory.</li>
-          <li>Copy the install command for your tool.</li>
+          <li>Copy the install command for your tool (e.g. `npx skills add owner/repo`).</li>
           <li>Run the command in your terminal or inside the assistant.</li>
           <li>Start the skill and follow the workflow steps.</li>
         </ol>

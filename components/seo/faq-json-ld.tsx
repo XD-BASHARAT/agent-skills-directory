@@ -27,7 +27,7 @@ function FaqJsonLd() {
         name: "How do I install an Agent Skill?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Copy the install command from the skill page and run it in your terminal or tool. Claude Code users can also use '/install owner/repo'.",
+          text: "Copy the install command from the skill page and run it in your terminal or tool. The standard command is: npx skills add owner/repo. Add --skill \"Skill Name\" to install specific skills.",
         },
       },
       {
