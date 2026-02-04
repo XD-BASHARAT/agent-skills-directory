@@ -493,7 +493,8 @@ export async function getOwnerInfo(owner: string) {
       ot.total_stars,
       ot.total_forks,
       COUNT(*) OVER() as total_skills,
-      BOOL_OR(os.status = 'approved') OVER() as has_verified
+      BOOL_OR(os.status = 'approved') OVER() as has_verified,
+      BOOL_OR(os.is_verified_org) OVER() as owner_verified_org
     FROM owner_skills os
     CROSS JOIN owner_totals ot
     ORDER BY os.stars DESC, os.id DESC
@@ -533,6 +534,7 @@ export async function getOwnerInfo(owner: string) {
     total_forks: dbNumber,
     total_skills: dbNumber,
     has_verified: z.boolean(),
+    owner_verified_org: z.boolean().nullable(),
   })
 
   const rows = parseDbRows(ownerInfoRowSchema, result, "getOwnerInfo")
@@ -582,7 +584,7 @@ export async function getOwnerInfo(owner: string) {
     totalStars: Number(firstRow.total_stars),
     totalForks: Number(firstRow.total_forks),
     hasVerified: firstRow.has_verified,
-    isVerifiedOrg: firstRow.is_verified_org ?? false,
+    isVerifiedOrg: firstRow.owner_verified_org ?? false,
     skills,
   }
 }
@@ -610,6 +612,7 @@ export async function upsertSkill(skill: NewSkill) {
         avatarUrl: skill.avatarUrl,
         topics: skill.topics,
         isArchived: skill.isArchived,
+        isVerifiedOrg: sql`COALESCE(EXCLUDED.is_verified_org, ${skills.isVerifiedOrg})`,
         blobSha: skill.blobSha,
         lastSeenAt: skill.lastSeenAt,
         repoUpdatedAt: skill.repoUpdatedAt,
@@ -649,6 +652,7 @@ export async function batchUpsertSkills(skillsList: NewSkill[]) {
           avatarUrl: sql`EXCLUDED.avatar_url`,
           topics: sql`EXCLUDED.topics`,
           isArchived: sql`EXCLUDED.is_archived`,
+          isVerifiedOrg: sql`COALESCE(EXCLUDED.is_verified_org, ${skills.isVerifiedOrg})`,
           blobSha: sql`EXCLUDED.blob_sha`,
           lastSeenAt: sql`EXCLUDED.last_seen_at`,
           status: sql`CASE
@@ -843,6 +847,14 @@ export async function updateSkillsMetadata(updates: SkillMetadataUpdate[]) {
         .where(eq(skills.id, update.id))
     }
   })
+}
+
+export async function updateOwnerVerification(owner: string, isVerifiedOrg: boolean) {
+  const now = new Date()
+  await db
+    .update(skills)
+    .set({ isVerifiedOrg, updatedAt: now })
+    .where(eq(skills.owner, owner.toLowerCase()))
 }
 
 export async function createSyncJob(job: NewSyncJob) {

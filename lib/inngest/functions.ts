@@ -1,6 +1,5 @@
 import { inngest } from "./client"
 import { batchFetchRepoMetadata, batchFetchSkills } from "@/lib/features/skills/github-graphql"
-import { batchFetchOwnersVerification } from "@/lib/features/skills/github-rest"
 import { syncIfChanged } from "@/lib/features/skills"
 import { parseSkillMd, normalizeAllowedTools } from "@/lib/features/skills/parser"
 import { toCanonicalId } from "@/lib/features/skills/canonical"
@@ -456,13 +455,7 @@ export const syncRepoSkills = inngest.createFunction(
       return Object.fromEntries(data)
     })
 
-    // Step 3: Fetch owner verification
-    const isVerifiedOrg = await step.run("fetch-owner-verification", async () => {
-      const verification = await batchFetchOwnersVerification([owner])
-      return verification.get(owner.toLowerCase()) ?? false
-    })
-
-    // Step 4: Parse and prepare skills
+    // Step 3: Parse and prepare skills
     const parsedSkillsData = await step.run("prepare-skills", async () => {
       const skills: Array<{
         id: string
@@ -481,7 +474,7 @@ export const syncRepoSkills = inngest.createFunction(
         avatarUrl: string
         topics: string
         isArchived: boolean
-        isVerifiedOrg: boolean
+        isVerifiedOrg: boolean | null
         blobSha: string | null
         pushedAt: string | null
         fileCommittedAt: string | null
@@ -519,7 +512,7 @@ export const syncRepoSkills = inngest.createFunction(
           avatarUrl: data.avatarUrl,
           topics: JSON.stringify(data.topics),
           isArchived: data.isArchived,
-          isVerifiedOrg,
+          isVerifiedOrg: null,
           blobSha: data.sha,
           pushedAt: data.pushedAt,
           fileCommittedAt: data.fileCommittedAt,
@@ -636,11 +629,6 @@ export const reindexSkill = inngest.createFunction(
     }
 
     // Fetch owner verification
-    const isVerifiedOrg = await step.run("fetch-verification", async () => {
-      const verification = await batchFetchOwnersVerification([owner])
-      return verification.get(owner.toLowerCase()) ?? false
-    })
-
     // Update skill in database
     await step.run("update-skill", async () => {
       const skill: NewSkill = {
@@ -662,7 +650,7 @@ export const reindexSkill = inngest.createFunction(
         avatarUrl: skillData.avatarUrl,
         topics: JSON.stringify(skillData.topics),
         isArchived: skillData.isArchived,
-        isVerifiedOrg,
+        isVerifiedOrg: null,
         blobSha: skillData.sha,
         lastSeenAt: new Date(),
         repoUpdatedAt: skillData.pushedAt ? new Date(skillData.pushedAt) : null,

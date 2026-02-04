@@ -108,7 +108,7 @@ function TopThreeCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
           {owner.isVerifiedOrg && (
             <span className="inline-flex items-center">
               <ShieldCheck className="size-4 shrink-0 text-blue-500" aria-hidden="true" />
-              <span className="sr-only">Verified organization</span>
+              <span className="sr-only">Verified</span>
             </span>
           )}
         </div>
@@ -167,7 +167,7 @@ function TopTenCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
           {owner.isVerifiedOrg && (
             <span className="inline-flex items-center">
               <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
-              <span className="sr-only">Verified organization</span>
+              <span className="sr-only">Verified</span>
             </span>
           )}
         </div>
@@ -226,7 +226,7 @@ function RankingCard({ owner, rank }: { owner: OwnerRanking; rank: number }) {
           {owner.isVerifiedOrg && (
             <span className="inline-flex items-center">
               <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
-              <span className="sr-only">Verified organization</span>
+              <span className="sr-only">Verified</span>
             </span>
           )}
         </div>

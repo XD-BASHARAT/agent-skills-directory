@@ -1,12 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ExternalLink, Loader2 } from "lucide-react"
-import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { pingIndexNow } from "@/lib/actions/admin"
 import type { Skill } from "./skills-table"
 
 type OverviewTabProps = {
@@ -20,41 +16,10 @@ type OverviewTabProps = {
 }
 
 export const OverviewTab = React.memo(function OverviewTab({ stats }: OverviewTabProps) {
-  const [pinging, setPinging] = React.useState(false)
-
-  const handlePingIndexNow = async () => {
-    if (pinging) return
-    setPinging(true)
-    try {
-      const res = await pingIndexNow()
-      if (res.success) {
-        toast.success(`IndexNow Ping Successful! Submitted ${res.count} URLs.`)
-      } else {
-        toast.error(`Failed: ${res.message}`)
-      }
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error calling IndexNow")
-    } finally {
-      setPinging(false)
-    }
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Dashboard Overview</h3>
-        <Button onClick={handlePingIndexNow} disabled={pinging} size="sm">
-          {pinging ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-              Pinging…
-            </>
-          ) : (
-            <>
-              <ExternalLink className="mr-2 h-4 w-4" aria-hidden="true" /> Ping IndexNow
-            </>
-          )}
-        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

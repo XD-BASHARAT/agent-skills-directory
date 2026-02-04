@@ -220,7 +220,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                 {skill.isVerifiedOrg && (
                   <ShieldCheck
                     className="size-3.5 shrink-0 text-blue-500"
-                    aria-label="Verified organization"
+                    aria-label="Verified"
                   />
                 )}
               </p>
@@ -349,7 +349,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   {skill.isVerifiedOrg && (
                     <ShieldCheck
                       className="size-3.5 shrink-0 text-blue-500"
-                      aria-label="Verified organization"
+                      aria-label="Verified"
                     />
                   )}
                 </p>

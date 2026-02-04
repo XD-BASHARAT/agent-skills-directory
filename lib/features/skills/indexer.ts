@@ -2,7 +2,6 @@ import { searchSkillFiles } from "./github"
 import { discoverSkillFiles, discoverSkillsSince } from "./discovery"
 import { parseSkillMd, normalizeAllowedTools } from "./parser"
 import { batchFetchSkills, batchFetchRepoMetadata } from "@/lib/features/skills/github-graphql"
-import { batchFetchOwnersVerification } from "@/lib/features/skills/github-rest"
 import { 
   toSkillIdentity, 
   validateSkillName, 
@@ -186,12 +185,6 @@ export async function indexSkills(options: IndexOptions = {}): Promise<IndexResu
     qualifiedItems.map(i => ({ owner: i.owner, repo: i.repo, path: i.path }))
   )
   
-  // Phase 3: Fetch organization verification status
-  onProgress?.(`🔐 Step 4.5: Checking GitHub organization verification status...`)
-  const ownersList = [...new Set(qualifiedItems.map(i => i.owner))]
-  const ownerVerificationMap = await batchFetchOwnersVerification(ownersList)
-  onProgress?.(`   Checked ${ownersList.length} unique owners`)
-
   // Step 5: Process and validate results
   onProgress?.("✅ Step 5: Validating and processing skills...")
   
@@ -302,7 +295,7 @@ export async function indexSkills(options: IndexOptions = {}): Promise<IndexResu
       avatarUrl: data.avatarUrl,
       topics: JSON.stringify(data.topics),
       isArchived: data.isArchived,
-      isVerifiedOrg: ownerVerificationMap.get(identity.owner.toLowerCase()) ?? false,
+      isVerifiedOrg: null,
       blobSha: data.sha,
       lastSeenAt: new Date(),
       repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,
@@ -341,9 +334,8 @@ export async function indexSingleSkill(
 ): Promise<NewSkill> {
   const identity = toSkillIdentity(owner, repo, path)
   
-  const [result, ownerVerificationMap] = await Promise.all([
+  const [result] = await Promise.all([
     batchFetchSkills([{ owner, repo, path }]),
-    batchFetchOwnersVerification([owner]),
   ])
   const data = result.get(`${owner}/${repo}/${path}`)
 
@@ -392,7 +384,7 @@ export async function indexSingleSkill(
     avatarUrl: data.avatarUrl,
     topics: JSON.stringify(data.topics),
     isArchived: data.isArchived,
-    isVerifiedOrg: ownerVerificationMap.get(identity.owner.toLowerCase()) ?? false,
+    isVerifiedOrg: null,
     blobSha: data.sha,
     lastSeenAt: new Date(),
     repoUpdatedAt: data.pushedAt ? new Date(data.pushedAt) : null,

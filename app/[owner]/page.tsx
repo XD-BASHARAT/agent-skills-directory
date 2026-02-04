@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Star, GitFork, Github, Boxes, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 
+import { checkAdminAuth } from "@/lib/auth";
 import { getCategories, getOwnerInfo } from "@/lib/db/queries";
+import { setOwnerVerified } from "@/lib/actions/admin-owners";
 import { getSiteUrl } from "@/lib/site-url";
 import { buildMetadata } from "@/lib/seo";
 import { getExternalUrl } from "@/lib/utils";
@@ -17,6 +19,15 @@ import { OwnerSkillsFilter } from "./owner-skills-filter";
 
 const getOwner = React.cache(async (owner: string) => getOwnerInfo(owner));
 const getAllCategories = React.cache(async () => getCategories());
+
+async function updateOwnerVerified(formData: FormData) {
+  "use server";
+  const owner = String(formData.get("owner") ?? "");
+  const verified = String(formData.get("verified") ?? "") === "true";
+
+  if (!owner) return;
+  await setOwnerVerified(owner, verified);
+}
 
 type PageProps = {
   params: Promise<{
@@ -33,9 +44,10 @@ function formatNumber(num: number): string {
 
 export default async function OwnerPage({ params }: PageProps) {
   const { owner } = await params;
-  const [ownerInfo, categories] = await Promise.all([
+  const [ownerInfo, categories, isAdmin] = await Promise.all([
     getOwner(owner),
     getAllCategories(),
+    checkAdminAuth(),
   ]);
 
   if (!ownerInfo) {
@@ -118,17 +130,30 @@ export default async function OwnerPage({ params }: PageProps) {
                 {ownerInfo.isVerifiedOrg && (
                   <ShieldCheck
                     className="size-5 shrink-0 text-blue-500"
-                    aria-label="Verified organization"
+                    aria-label="Verified"
                   />
                 )}
               </h1>
               <p className="text-xs text-muted-foreground">
-                GitHub {ownerInfo.isVerifiedOrg ? "Verified Organization" : "Organization"}
+                {ownerInfo.isVerifiedOrg ? "Verified" : "Unverified"}
               </p>
             </div>
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
+              {isAdmin && (
+                <form action={updateOwnerVerified}>
+                  <input type="hidden" name="owner" value={ownerInfo.owner} />
+                  <input type="hidden" name="verified" value={ownerInfo.isVerifiedOrg ? "false" : "true"} />
+                  <Button
+                    size="sm"
+                    variant={ownerInfo.isVerifiedOrg ? "outline" : "default"}
+                    className="gap-1.5 h-7 text-xs"
+                  >
+                    {ownerInfo.isVerifiedOrg ? "Unverify Owner" : "Verify Owner"}
+                  </Button>
+                </form>
+              )}
               <Button
                 size="sm"
                 variant="outline"
