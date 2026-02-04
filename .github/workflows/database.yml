@@ -60,7 +60,7 @@ jobs:
         run: |
           if [ -f "lib/db/schema.ts" ]; then
             echo "✅ Schema file exists"
-            bunx tsc --noEmit lib/db/schema.ts
+            bunx tsc -p tsconfig.schema.json --noEmit
           else
             echo "❌ Schema file not found"
             exit 1
