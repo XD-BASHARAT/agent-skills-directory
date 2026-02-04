@@ -51,3 +51,4 @@ next-env.d.ts
 # IndexNow verification key
 public/*.txt
 !public/llms.txt
+!public/robots.txt

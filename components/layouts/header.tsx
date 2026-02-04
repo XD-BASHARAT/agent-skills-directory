@@ -12,7 +12,7 @@ const HeaderAuth = dynamic(
   () => import("@/components/layouts/header-auth").then((mod) => mod.HeaderAuth),
   {
     ssr: false,
-    loading: () => <div className="ml-2 h-8 w-16" aria-hidden="true" />,
+    loading: () => <div className="ml-2 h-8 min-w-[112px]" aria-hidden="true" />,
   },
 )
 

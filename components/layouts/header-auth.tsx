@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 
 function HeaderAuth() {
   return (
-    <div className="ml-2 flex items-center gap-2">
+    <div className="ml-2 flex min-w-[112px] items-center justify-end gap-2">
       <SignedOut>
         <SignInButton mode="modal">
           <Button variant="outline" size="sm" className="gap-1.5">

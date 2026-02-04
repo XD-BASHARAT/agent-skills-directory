@@ -17,6 +17,11 @@ function LazyAnalytics() {
     setIsMounted(true)
     // Skip loading analytics on admin pages
     if (isAdminPage) return
+    // Skip analytics on localhost to avoid noisy 403s from third-party trackers.
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname
+      if (hostname === "localhost" || hostname === "127.0.0.1") return
+    }
 
     // Defer loading analytics until after initial page load
     // This improves LCP by not blocking the main thread during initial render
