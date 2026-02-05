@@ -36,7 +36,9 @@ export async function withServerCache<T>(
 
   if (existing && existing.expiresAt > now) {
     cacheStats.hits++
-    // Return resolved value, not promise
+    // Refresh LRU order on hit
+    cache.delete(key)
+    cache.set(key, existing)
     return existing.value as T
   }
 

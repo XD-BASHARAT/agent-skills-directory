@@ -15,6 +15,17 @@ function getHeaders(): HeadersInit {
   }
 }
 
+function getRestHeaders(): HeadersInit {
+  const headers: HeadersInit = {
+    Accept: "application/vnd.github.v3+json",
+    "User-Agent": "Skills-Directory",
+  }
+  if (env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`
+  }
+  return headers
+}
+
 export type RepoMetadata = {
   owner: string
   repo: string
@@ -265,11 +276,7 @@ export async function shardedCodeSearch(
         const response = await fetch(
           `https://api.github.com/search/code?q=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`,
           {
-            headers: {
-              Accept: "application/vnd.github.v3+json",
-              Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-              "User-Agent": "Skills-Directory",
-            },
+            headers: getRestHeaders(),
           }
         )
 
@@ -467,11 +474,7 @@ export async function discoverAllSkillFilesInRepo(
     const treeResponse = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/git/trees/${treeOid}?recursive=1`,
       {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-          Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-          "User-Agent": "Skills-Directory",
-        },
+        headers: getRestHeaders(),
       }
     )
 

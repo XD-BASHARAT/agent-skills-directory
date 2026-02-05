@@ -16,6 +16,7 @@ import type { CategorySummary } from "@/types"
 
 const BATCH_SIZE = 50
 const MAX_PER_PAGE = 100
+const MAX_IDS = 500
 const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
@@ -77,6 +78,7 @@ export type GetSkillsOptions = {
   sortBy?: "stars_desc" | "name_asc" | "name_desc" | "recent" | "last_commit"
   category?: string
   categoryList?: string[]
+  ids?: string[]
 }
 
 /**
@@ -204,6 +206,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     sortBy = "last_commit",
     category,
     categoryList,
+    ids,
   } = options
 
   // Validate and sanitize inputs
@@ -215,6 +218,20 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     typeof descriptionLength === "number" && Number.isFinite(descriptionLength) && descriptionLength > 0
       ? Math.min(Math.floor(descriptionLength), 1000)
       : undefined
+  const safeIds = ids
+    ?.map((id) => id.trim())
+    .filter(Boolean)
+    .slice(0, MAX_IDS)
+
+  if (ids && (!safeIds || safeIds.length === 0)) {
+    return {
+      skills: [],
+      total: 0,
+      page: safePage,
+      perPage: safePerPage,
+      totalPages: 0,
+    }
+  }
 
   const conditions = []
 
@@ -242,6 +259,10 @@ export async function getSkills(options: GetSkillsOptions = {}) {
   // Only show approved skills by default (for public pages)
   // Admin pages can explicitly filter by status if needed
   conditions.push(status ? eq(skills.status, status) : eq(skills.status, "approved"))
+
+  if (safeIds && safeIds.length > 0) {
+    conditions.push(inArray(skills.id, safeIds))
+  }
 
   const categorySlugs = categoryList?.length ? categoryList : category ? [category] : []
   if (categorySlugs.length > 0) {

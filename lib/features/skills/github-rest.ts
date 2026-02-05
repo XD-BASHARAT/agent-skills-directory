@@ -160,7 +160,12 @@ export function parseSkillMd(content: string): Pick<LegacySkill, "name" | "descr
   const getAllowedTools = (text: string): string[] | undefined => {
     const match = text.match(/^allowed-tools:\s*["']?([^"'\n]+)["']?\s*$/m)
     if (match) {
-      return match[1].trim().split(/\s+/)
+      return match[1]
+        .trim()
+        .replace(/^\[|\]$/g, "")
+        .split(/[\s,]+/)
+        .map((entry) => entry.replace(/^["']|["']$/g, ""))
+        .filter(Boolean)
     }
     return undefined
   }

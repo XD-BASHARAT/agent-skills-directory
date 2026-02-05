@@ -28,23 +28,27 @@ export async function POST(request: Request) {
     while (page <= maxPages) {
       const { skills, total } = await searchSkills("", page, 30)
 
-      const dbSkills: NewSkill[] = skills.map((skill) => ({
-        id: `${skill.owner}/${skill.repo}/${skill.path}`,
-        name: skill.name,
-        slug: slugify(skill.name),
-        description: skill.description,
-        owner: skill.owner,
-        repo: skill.repo,
-        path: skill.path,
-        url: skill.url,
-        rawUrl: skill.rawUrl,
+      const dbSkills: NewSkill[] = skills.map((skill) => {
+        const owner = skill.owner.toLowerCase()
+        const repo = skill.repo.toLowerCase()
+        return ({
+          id: `${owner}/${repo}/${skill.path}`,
+          name: skill.name,
+          slug: slugify(skill.name),
+          description: skill.description,
+          owner,
+          repo,
+          path: skill.path,
+          url: skill.url,
+          rawUrl: skill.rawUrl,
         compatibility: skill.compatibility ?? null,
         allowedTools: skill.allowedTools ? JSON.stringify(skill.allowedTools) : null,
         stars: skill.stars ?? 0,
         forks: skill.forks ?? 0,
         avatarUrl: skill.avatarUrl ?? null,
         repoUpdatedAt: skill.updatedAt ? new Date(skill.updatedAt) : null,
-      }))
+        })
+      })
 
       allSkills.push(...dbSkills)
 

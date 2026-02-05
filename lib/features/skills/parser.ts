@@ -82,10 +82,26 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
       continue
     }
 
+    if (inMultiline) {
+      if (line.startsWith("  ") || line.startsWith("\t")) {
+        // Continuation of multiline
+        multilineValue.push(line.replace(/^(\s\s|\t)/, ""))
+        continue
+      }
+
+      // End multiline and fall through to process current line
+      if (currentKey) {
+        result[currentKey] = multilineValue.join("\n").trim()
+      }
+      inMultiline = false
+      currentKey = null
+      multilineValue = []
+    }
+
     // Check for key: value
     const keyMatch = line.match(/^([a-zA-Z][\w-]*)\s*:\s*(.*)$/)
 
-    if (keyMatch && !inMultiline) {
+    if (keyMatch) {
       // Save previous multiline value
       if (currentKey && multilineValue.length > 0) {
         result[currentKey] = multilineValue.join("\n").trim()
@@ -108,17 +124,6 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
       } else {
         multilineValue = []
       }
-    } else if (inMultiline && (line.startsWith("  ") || line.startsWith("\t"))) {
-      // Continuation of multiline
-      multilineValue.push(line.replace(/^(\s\s|\t)/, ""))
-    } else if (inMultiline) {
-      // End multiline
-      if (currentKey) {
-        result[currentKey] = multilineValue.join("\n").trim()
-      }
-      inMultiline = false
-      currentKey = null
-      multilineValue = []
     }
   }
 
@@ -150,7 +155,11 @@ function stripQuotes(s: string): string {
 export function normalizeAllowedTools(value: string | string[] | undefined): string[] | undefined {
   if (!value) return undefined
   if (Array.isArray(value)) return value
-  return value.split(/\s+/).filter(Boolean)
+  return value
+    .replace(/^\[|\]$/g, "")
+    .split(/[\s,]+/)
+    .map((entry) => entry.replace(/^["']|["']$/g, ""))
+    .filter(Boolean)
 }
 
 /**

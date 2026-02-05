@@ -36,6 +36,9 @@ type SkillsGridProps = {
 }
 
 function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false }: SkillsGridProps) {
+  const favoritesContext = useFavoritesContext()
+  const favoriteIds = favoritesContext.favorites
+
   const {
     skills,
     categories,
@@ -56,12 +59,16 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
     handleClearSearch,
     handleCategoryToggle,
     handlePageChange,
-  } = useSkillsSearch({ initialData, initialCategories })
+  } = useSkillsSearch({
+    initialData,
+    initialCategories,
+    ids: showFavoritesOnly ? favoriteIds : undefined,
+  })
 
-  const { isFavorite } = useFavoritesContext()
+  const { isFavorite } = favoritesContext
 
   const displayedSkills = showFavoritesOnly
-    ? skills.filter((skill) => isFavorite(skill.id))
+    ? skills.filter((skill) => favoriteIds.includes(skill.id) && isFavorite(skill.id))
     : skills
 
   return (

@@ -38,9 +38,10 @@ type InitialData = {
 type UseSkillsSearchOptions = {
   initialData?: InitialData
   initialCategories?: Category[]
+  ids?: string[]
 }
 
-function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOptions = {}) {
+function useSkillsSearch({ initialData, initialCategories, ids }: UseSkillsSearchOptions = {}) {
   const [mounted, setMounted] = React.useState(false)
   const [skills, setSkills] = React.useState<SkillListItem[]>(initialData?.skills ?? [])
   const [categories, setCategories] = React.useState<Category[]>(initialCategories ?? [])
@@ -64,6 +65,8 @@ function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOpti
   const activeSortLabel = sortOptions.find((o) => o.value === activeSort)?.label ?? "Last Commit"
   const totalPages = Math.ceil(total / pageSize)
   const isDefaultView = !debouncedQuery && queryState.categories.length === 0 && queryState.page === 1 && activeSort === DEFAULT_SORT
+  const idsKey = React.useMemo(() => (ids && ids.length > 0 ? ids.join(",") : ""), [ids])
+  const hasIdsParam = ids !== undefined
 
   // Mark as mounted after hydration
   React.useEffect(() => {
@@ -111,6 +114,12 @@ function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOpti
     }
     if (!mounted) return
 
+    if (hasIdsParam && idsKey.length === 0) {
+      setSkills([])
+      setTotal(0)
+      return
+    }
+
     const abortController = new AbortController()
 
     async function fetchSkills() {
@@ -124,6 +133,9 @@ function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOpti
         params.set("page", queryState.page.toString())
         params.set("perPage", pageSize.toString())
         params.set("sort", activeSort)
+        if (idsKey.length > 0) {
+          params.set("ids", idsKey)
+        }
 
         const response = await fetch(`/api/skills?${params}`, {
           signal: abortController.signal,
@@ -158,7 +170,7 @@ function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOpti
 
     fetchSkills()
     return () => abortController.abort()
-  }, [debouncedQuery, queryState.page, queryState.categories, activeSort, pageSize, isDefaultView, mounted])
+  }, [debouncedQuery, queryState.page, queryState.categories, activeSort, pageSize, isDefaultView, mounted, idsKey, hasIdsParam])
 
   // Auto-correct page if exceeds totalPages
   React.useEffect(() => {
@@ -166,6 +178,13 @@ function useSkillsSearch({ initialData, initialCategories }: UseSkillsSearchOpti
       setQuery({ page: totalPages })
     }
   }, [totalPages, queryState.page, setQuery])
+
+  React.useEffect(() => {
+    if (!mounted) return
+    if (idsKey.length > 0 && queryState.page !== 1) {
+      setQuery({ page: 1 })
+    }
+  }, [idsKey, mounted, queryState.page, setQuery])
 
   // Scroll to top on page change
   React.useEffect(() => {

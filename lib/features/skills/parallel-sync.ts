@@ -29,11 +29,14 @@ export type ParallelSyncResult = {
 }
 
 function getHeaders(): HeadersInit {
-  return {
+  const headers: HeadersInit = {
     Accept: "application/vnd.github.v3+json",
-    Authorization: `Bearer ${env.GITHUB_TOKEN}`,
     "User-Agent": "Skills-Directory",
   }
+  if (env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`
+  }
+  return headers
 }
 
 async function sleep(ms: number): Promise<void> {

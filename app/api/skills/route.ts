@@ -61,6 +61,9 @@ export async function GET(request: Request) {
   const category = searchParams.get("category")
   const categories = searchParams.get("categories")
   const categoryList = categories ? categories.split(",").map((s) => s.trim()).filter(Boolean) : undefined
+  const idsParam = searchParams.get("ids")
+  const ids = idsParam ? idsParam.split(",").map((s) => s.trim()).filter(Boolean) : undefined
+  const normalizedIds = ids?.length ? Array.from(new Set(ids)).sort() : undefined
   const normalizedCategoryList = categoryList?.length
     ? [...categoryList].sort()
     : undefined
@@ -87,6 +90,13 @@ export async function GET(request: Request) {
     )
   }
 
+  if (normalizedIds && normalizedIds.length > 500) {
+    return NextResponse.json(
+      { error: "Too many IDs", details: "ids must contain 500 or fewer items" },
+      { status: 400 }
+    )
+  }
+
   try {
     const cacheKey = [
       "skills",
@@ -97,6 +107,7 @@ export async function GET(request: Request) {
       sortBy,
       category ?? "",
       normalizedCategoryList?.join(",") ?? "",
+      normalizedIds?.join(",") ?? "",
     ].join("|")
 
     const result = await withServerCache(cacheKey, 60_000, () =>
@@ -108,6 +119,7 @@ export async function GET(request: Request) {
         sortBy,
         category: category || undefined,
         categoryList: normalizedCategoryList,
+        ids: normalizedIds,
       })
     )
 
