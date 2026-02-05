@@ -53,7 +53,7 @@ function SkillCard({ skill, className }: SkillCardProps) {
               />
             </div>
           ) : (
-            <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-muted/50">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-muted/70">
               <span className="text-xs font-semibold text-muted-foreground">
                 {skill.owner.charAt(0).toUpperCase()}
               </span>
@@ -78,14 +78,14 @@ function SkillCard({ skill, className }: SkillCardProps) {
       </div>
 
       {/* Description */}
-      <p className="mt-3 flex-1 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
+      <p className="mt-3 flex-1 text-[13px] leading-relaxed text-muted-foreground line-clamp-2 text-pretty">
         {skill.description}
       </p>
 
       {/* Footer */}
       <div className="mt-3 flex items-center gap-3 border-t border-border/30 pt-3 text-xs text-muted-foreground">
         {skill.stars !== null && skill.stars > 0 && (
-          <span className="inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1 tabular-nums">
             <Star
               className="size-3.5 fill-amber-400 text-amber-400"
               aria-hidden="true"

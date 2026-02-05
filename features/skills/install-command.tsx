@@ -52,7 +52,7 @@ function InstallCommand({ owner, repo, skillName, variant = "default" }: Install
   }
 
   return (
-    <div className="rounded-xl border border-border/60 bg-gradient-to-b from-card to-card/50 overflow-hidden">
+    <div className="rounded-xl border border-border/60 bg-card/50 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-muted/20">
         <div className="flex items-center gap-2">

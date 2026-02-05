@@ -184,14 +184,14 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
           <PackageSearch className="size-6 opacity-50" aria-hidden="true" />
           {showFavoritesOnly ? (
             <>
-              <p className="text-sm">No favorite skills yet</p>
-              <p className="text-xs text-center max-w-sm">
+              <p className="text-sm text-pretty">No favorite skills yet</p>
+              <p className="text-xs text-center max-w-sm text-pretty">
                 Browse skills and click the heart icon to add them to your favorites
               </p>
             </>
           ) : (
             <>
-              <p className="text-sm">No skills found</p>
+              <p className="text-sm text-pretty">No skills found</p>
               {(searchQuery || selectedCategories.length > 0) && (
                 <Button variant="ghost" size="sm" onClick={handleClearFilters}>
                   Clear Filters

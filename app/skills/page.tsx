@@ -2,6 +2,7 @@ import * as React from "react"
 import Link from "next/link"
 import { SkillsGrid } from "@/features/skills/skills-grid"
 import { Container } from "@/components/layouts/container"
+import { Section } from "@/components/layouts/section"
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld"
 import { buildMetadata } from "@/lib/seo"
 import { getSkills, getCategories } from "@/lib/db/queries"
@@ -61,22 +62,26 @@ export default async function SkillsPage() {
           { name: "Browse Skills", url: "/skills" },
         ]}
       />
-      <header className="space-y-1">
-        <h1 className="text-balance text-2xl font-bold tracking-tight">Browse Agent Skills</h1>
-        <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
-          Search agent skills by name, filter by category, and sort by recent updates or stars.
-        </p>
-        <p className="text-muted-foreground text-xs">
-          Need a refresher? Read the{" "}
-          <Link href="/agent-skills" className="text-primary text-link">
-            Agent Skills Guide
-          </Link>
-          .
-        </p>
-      </header>
-      <React.Suspense fallback={<SkillsGridSkeleton />}>
-        <SkillsGrid initialData={initialData} initialCategories={categories} />
-      </React.Suspense>
+      <Section spacing="sm" className="space-y-2">
+        <header className="space-y-1">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Browse Agent Skills</h1>
+          <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl text-pretty">
+            Search agent skills by name, filter by category, and sort by recent updates or stars.
+          </p>
+          <p className="text-muted-foreground text-xs text-pretty">
+            Need a refresher? Read the{" "}
+            <Link href="/agent-skills" className="text-primary text-link">
+              Agent Skills Guide
+            </Link>
+            .
+          </p>
+        </header>
+      </Section>
+      <Section spacing="lg">
+        <React.Suspense fallback={<SkillsGridSkeleton />}>
+          <SkillsGrid initialData={initialData} initialCategories={categories} />
+        </React.Suspense>
+      </Section>
     </Container>
   )
 }

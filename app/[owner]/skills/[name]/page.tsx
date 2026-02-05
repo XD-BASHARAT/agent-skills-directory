@@ -26,6 +26,7 @@ import { MarkdownContent } from "@/features/skills/markdown-content";
 import { RelatedSkillsSection } from "@/features/skills/related-skills-section";
 import { SecurityBadge } from "@/features/skills/security-badge";
 import { Container } from "@/components/layouts/container";
+import { Section } from "@/components/layouts/section";
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { SkillStructuredData } from "@/components/seo/skill-structured-data";
 import { BadgeSnippet } from "@/features/skills/badge-snippet";
@@ -161,31 +162,34 @@ export default async function SkillDetailPage({ params }: PageProps) {
       />
       <SkillStructuredData skill={skill} categories={skillCategories} />
 
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="size-3" aria-hidden="true" />
-        <Link href="/skills" className="hover:text-foreground transition-colors">
-          Skills
-        </Link>
-        {primaryCategory && (
-          <>
-            <ChevronRight className="size-3" aria-hidden="true" />
-            <Link
-              href={`/categories/${primaryCategory.slug}`}
-              className="hover:text-foreground transition-colors"
-            >
-              {primaryCategory.name}
-            </Link>
-          </>
-        )}
-        <ChevronRight className="size-3" aria-hidden="true" />
-        <span className="text-foreground">{skill.name}</span>
-      </nav>
+      <Section spacing="sm">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            Home
+          </Link>
+          <ChevronRight className="size-3" aria-hidden="true" />
+          <Link href="/skills" className="hover:text-foreground transition-colors">
+            Skills
+          </Link>
+          {primaryCategory && (
+            <>
+              <ChevronRight className="size-3" aria-hidden="true" />
+              <Link
+                href={`/categories/${primaryCategory.slug}`}
+                className="hover:text-foreground transition-colors"
+              >
+                {primaryCategory.name}
+              </Link>
+            </>
+          )}
+          <ChevronRight className="size-3" aria-hidden="true" />
+          <span className="text-foreground">{skill.name}</span>
+        </nav>
+      </Section>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
+      <Section spacing="md">
+        <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
         {/* Main Content */}
         <div className="space-y-4 min-w-0">
           {/* Header */}
@@ -208,7 +212,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-semibold truncate leading-tight">{skill.name}</h1>
+                <h1 className="text-lg font-semibold truncate leading-tight text-balance">{skill.name}</h1>
                 {skill.securityScan && (
                   <div className="lg:hidden shrink-0">
                     <SecurityBadge securityScan={skill.securityScan} variant="icon" />
@@ -229,7 +233,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
           </div>
 
           {skill.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed break-words">
+            <p className="text-sm text-muted-foreground leading-relaxed break-words text-pretty">
               {skill.description}
             </p>
           )}
@@ -373,7 +377,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                     <Star className="size-3 text-amber-500/80 fill-amber-500/80" aria-hidden="true" />
                     Stars
                   </span>
-                  <span className="font-medium">{formatStars(skill.stars ?? 0)}</span>
+                  <span className="font-medium tabular-nums">{formatStars(skill.stars ?? 0)}</span>
                 </div>
 
                 {/* Forks */}
@@ -382,7 +386,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                     <GitFork className="size-3" aria-hidden="true" />
                     Forks
                   </span>
-                  <span className="font-medium">{skill.forks ?? 0}</span>
+                  <span className="font-medium tabular-nums">{skill.forks ?? 0}</span>
                 </div>
 
                 {/* Updated */}
@@ -391,7 +395,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                     <Clock className="size-3" aria-hidden="true" />
                     Updated
                   </span>
-                  <span className="font-medium">{formatRelativeDate(skill.repoUpdatedAt) ?? "N/A"}</span>
+                  <span className="font-medium tabular-nums">{formatRelativeDate(skill.repoUpdatedAt) ?? "N/A"}</span>
                 </div>
 
                 {/* Actions */}
@@ -445,6 +449,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
           </div>
         </aside>
       </div>
+      </Section>
     </Container>
   );
 }

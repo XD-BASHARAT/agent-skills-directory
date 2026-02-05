@@ -12,6 +12,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getExternalUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layouts/container";
+import { Section } from "@/components/layouts/section";
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ExternalImage } from "@/components/ui/external-image";
@@ -81,23 +82,25 @@ export default async function OwnerPage({ params }: PageProps) {
         }}
       />
 
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="size-3" aria-hidden="true" />
-        <Link href="/skills" className="hover:text-foreground transition-colors">
-          Skills
-        </Link>
-        <ChevronRight className="size-3" aria-hidden="true" />
-        <span className="text-foreground">{ownerInfo.owner}</span>
-      </nav>
+      <Section spacing="sm">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            Home
+          </Link>
+          <ChevronRight className="size-3" aria-hidden="true" />
+          <Link href="/skills" className="hover:text-foreground transition-colors">
+            Skills
+          </Link>
+          <ChevronRight className="size-3" aria-hidden="true" />
+          <span className="text-foreground">{ownerInfo.owner}</span>
+        </nav>
+      </Section>
 
       {/* Profile Card */}
-      <section className="rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden">
-        {/* Header with gradient */}
-        <div className="h-16 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5" />
+      <Section spacing="md">
+        <section className="rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden">
+        <div className="h-16 bg-muted/30" />
         
         <div className="px-4 pb-4 -mt-8">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4">
@@ -125,7 +128,7 @@ export default async function OwnerPage({ params }: PageProps) {
 
             {/* Info */}
             <div className="flex-1 min-w-0 space-y-1">
-              <h1 className="flex items-center gap-1.5 text-xl font-bold">
+              <h1 className="flex items-center gap-1.5 text-xl font-bold text-balance">
                 <span className="truncate">{ownerInfo.owner}</span>
                 {ownerInfo.isVerifiedOrg && (
                   <ShieldCheck
@@ -134,7 +137,7 @@ export default async function OwnerPage({ params }: PageProps) {
                   />
                 )}
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground text-pretty">
                 {ownerInfo.isVerifiedOrg ? "Verified" : "Unverified"}
               </p>
             </div>
@@ -179,7 +182,7 @@ export default async function OwnerPage({ params }: PageProps) {
                 <p className="text-lg font-bold tabular-nums leading-tight">
                   {ownerInfo.totalSkills}
                 </p>
-                <p className="text-[10px] text-muted-foreground">Skills</p>
+                <p className="text-[10px] text-muted-foreground text-pretty">Skills</p>
               </div>
             </div>
 
@@ -191,7 +194,7 @@ export default async function OwnerPage({ params }: PageProps) {
                 <p className="text-lg font-bold tabular-nums leading-tight">
                   {formatNumber(ownerInfo.totalStars)}
                 </p>
-                <p className="text-[10px] text-muted-foreground">Stars</p>
+                <p className="text-[10px] text-muted-foreground text-pretty">Stars</p>
               </div>
             </div>
 
@@ -203,21 +206,24 @@ export default async function OwnerPage({ params }: PageProps) {
                 <p className="text-lg font-bold tabular-nums leading-tight">
                   {formatNumber(ownerInfo.totalForks)}
                 </p>
-                <p className="text-[10px] text-muted-foreground">Forks</p>
+                <p className="text-[10px] text-muted-foreground text-pretty">Forks</p>
               </div>
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      </Section>
 
       {/* Skills Section */}
-      <section className="space-y-3">
-        <OwnerSkillsFilter
-          owner={ownerInfo.owner}
-          skills={ownerInfo.skills}
-          categories={categories}
-        />
-      </section>
+      <Section spacing="lg">
+        <section className="space-y-3">
+          <OwnerSkillsFilter
+            owner={ownerInfo.owner}
+            skills={ownerInfo.skills}
+            categories={categories}
+          />
+        </section>
+      </Section>
     </Container>
   );
 }
