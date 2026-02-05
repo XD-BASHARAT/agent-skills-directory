@@ -203,7 +203,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
     perPage = 30,
     descriptionLength,
     status,
-    sortBy = "last_commit",
+    sortBy = "recent",
     category,
     categoryList,
     ids,

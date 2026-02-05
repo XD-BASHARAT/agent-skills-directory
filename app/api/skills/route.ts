@@ -9,7 +9,7 @@ type SortBy = "stars_desc" | "name_asc" | "name_desc" | "recent" | "last_commit"
 
 function normalizeSort(value: string | null): SortBy {
   const normalized = value?.toLowerCase()
-  if (!normalized) return "last_commit"
+  if (!normalized) return "recent"
   if (normalized === "name" || normalized === "name_asc" || normalized === "a-z" || normalized === "az") {
     return "name_asc"
   }
@@ -25,7 +25,7 @@ function normalizeSort(value: string | null): SortBy {
   if (normalized === "last_commit" || normalized === "commit" || normalized === "repo_updated") {
     return "last_commit"
   }
-  return "last_commit"
+  return "recent"
 }
 
 function formatValidationIssues(

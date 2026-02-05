@@ -8,7 +8,7 @@ export const searchParamsParsers = {
   q: parseAsString.withDefault(""),
   page: parseAsInteger.withDefault(1),
   category: parseAsString.withDefault(""),
-  sort: parseAsString.withDefault("last_commit"),
+  sort: parseAsString.withDefault("recent"),
 }
 
 export const searchParamsCache = createSearchParamsCache(searchParamsParsers)

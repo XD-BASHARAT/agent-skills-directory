@@ -7,7 +7,6 @@ import {
   Star,
   GitFork,
   ExternalLink,
-  ChevronRight,
   FileText,
   Clock,
   ShieldCheck,
@@ -31,6 +30,7 @@ import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { SkillStructuredData } from "@/components/seo/skill-structured-data";
 import { BadgeSnippet } from "@/features/skills/badge-snippet";
 import { ExternalImage } from "@/components/ui/external-image";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { FavoriteButton } from "@/features/skills/favorite-button";
 import { ReportSkillDialog } from "@/features/skills/report-skill-dialog";
 
@@ -82,7 +82,6 @@ const relativeDateCache = new Map<string, string>();
 export default async function SkillDetailPage({ params }: PageProps) {
   const rawParams = await params;
   
-  // Validate route parameters
   const paramsResult = skillRouteParamsSchema.safeParse({
     owner: rawParams.owner,
     name: rawParams.name,
@@ -109,6 +108,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   const githubUrl = `https://github.com/${skill.owner}/${skill.repo}/tree/main/${skill.path}`;
   const ownerUrl = `/${skill.owner}`;
+  const ownerInitial = skill.owner.charAt(0).toUpperCase();
 
   const formatRelativeDate = (date?: Date | null) => {
     if (!date) return null;
@@ -134,6 +134,9 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   const allowedTools = safeParseAllowedTools(skill.allowedTools);
   const topics = repoInfo?.topics ?? [];
+  const hasBody = bodyContent.trim().length > 0;
+  const hasTags = Boolean(skill.compatibility) || allowedTools.length > 0 || topics.length > 0;
+  const displayTopics = topics.slice(0, 6);
 
   const formatStars = (stars: number): string => {
     if (stars >= 1000) {
@@ -141,6 +144,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
     }
     return stars.toString();
   };
+  const updatedLabel = formatRelativeDate(skill.repoUpdatedAt) ?? "N/A";
 
   return (
     <Container>
@@ -163,36 +167,21 @@ export default async function SkillDetailPage({ params }: PageProps) {
       <SkillStructuredData skill={skill} categories={skillCategories} />
 
       <Section spacing="sm">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="size-3" aria-hidden="true" />
-          <Link href="/skills" className="hover:text-foreground transition-colors">
-            Skills
-          </Link>
-          {primaryCategory && (
-            <>
-              <ChevronRight className="size-3" aria-hidden="true" />
-              <Link
-                href={`/categories/${primaryCategory.slug}`}
-                className="hover:text-foreground transition-colors"
-              >
-                {primaryCategory.name}
-              </Link>
-            </>
-          )}
-          <ChevronRight className="size-3" aria-hidden="true" />
-          <span className="text-foreground">{skill.name}</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Skills", href: "/skills" },
+            ...(primaryCategory
+              ? [{ label: primaryCategory.name, href: `/categories/${primaryCategory.slug}` }]
+              : []),
+            { label: skill.name },
+          ]}
+        />
       </Section>
 
       <Section spacing="md">
-        <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
-        {/* Main Content */}
-        <div className="space-y-4 min-w-0">
-          {/* Header */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+        <div className="space-y-5 min-w-0">
           <div className="relative flex items-center gap-3 group">
             <div className="size-10 rounded-lg bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
               {skill.avatarUrl ? (
@@ -206,7 +195,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                 />
               ) : (
                 <span className="text-sm font-medium text-muted-foreground">
-                  {skill.owner.charAt(0).toUpperCase()}
+                  {ownerInitial}
                 </span>
               )}
             </div>
@@ -238,28 +227,25 @@ export default async function SkillDetailPage({ params }: PageProps) {
             </p>
           )}
 
-          {/* Install Command */}
           <InstallCommand
             owner={skill.owner}
             repo={skill.repo}
             skillName={skill.name}
           />
 
-          {/* Security Badge (Mobile) */}
           {skill.securityScan && (
             <div className="lg:hidden">
               <SecurityBadge securityScan={skill.securityScan} variant="full" />
             </div>
           )}
 
-          {/* Instructions */}
           <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
             <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
               <FileText className="size-3.5 text-muted-foreground" aria-hidden="true" />
               <span className="text-xs font-medium">Instructions</span>
             </div>
             <div className="p-3.5">
-              {bodyContent.trim() ? (
+              {hasBody ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none text-[13px]">
                   <React.Suspense
                     fallback={
@@ -279,21 +265,19 @@ export default async function SkillDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Related Skills (Mobile) */}
           <div className="lg:hidden">
             <React.Suspense fallback={<RelatedSkillsFallback />}>
               <RelatedSkillsSection skillId={skill.id} />
             </React.Suspense>
           </div>
 
-          {/* Tags */}
-          {(skill.compatibility || allowedTools.length > 0 || topics.length > 0) && (
-            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-              <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
-                <Tag className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                <span className="text-xs font-medium">Tags & Topics</span>
-              </div>
-              <div className="p-3.5">
+          {hasTags && (
+          <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+            <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
+              <Tag className="size-3.5 text-muted-foreground" aria-hidden="true" />
+              <span className="text-xs font-medium">Tags & Topics</span>
+            </div>
+            <div className="p-3.5">
                 <div className="flex flex-wrap gap-1.5">
                   {skill.compatibility && (
                     <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-full">
@@ -305,7 +289,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                       {tool}
                     </Badge>
                   ))}
-                  {topics.slice(0, 6).map((topic) => (
+                  {displayTopics.map((topic) => (
                     <Badge key={topic} variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">
                       {topic}
                     </Badge>
@@ -316,20 +300,17 @@ export default async function SkillDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Sidebar */}
-        <aside className="space-y-3 lg:relative">
-          <div className="lg:sticky lg:top-20 space-y-3">
-            {/* Security Badge (Sidebar) */}
+        <aside className="space-y-4 lg:relative">
+          <div className="lg:sticky lg:top-20 space-y-4">
             {skill.securityScan && (
               <div className="lg:block hidden">
                 <SecurityBadge securityScan={skill.securityScan} variant="full" />
               </div>
             )}
 
-            {/* Owner Card */}
             <Link
               href={ownerUrl}
-              className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card/40 p-3 hover:border-border hover:bg-card/80 transition-[background-color,border-color,box-shadow,color] group"
+              className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card/40 p-3.5 hover:border-border hover:bg-card/80 transition-[background-color,border-color,box-shadow,color] group"
             >
               <div className="size-8 rounded-md bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
                 {skill.avatarUrl ? (
@@ -343,7 +324,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   />
                 ) : (
                   <span className="text-[10px] font-medium text-muted-foreground">
-                    {skill.owner.charAt(0).toUpperCase()}
+                    {ownerInitial}
                   </span>
                 )}
               </div>
@@ -363,16 +344,14 @@ export default async function SkillDetailPage({ params }: PageProps) {
               </div>
             </Link>
 
-            {/* Repository Stats */}
             <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-muted/30">
+              <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
                 <Github className="size-3.5 text-muted-foreground" aria-hidden="true" />
                 <span className="text-[11px] font-medium">Repository</span>
               </div>
 
               <div className="divide-y divide-border/40">
-                {/* Stars */}
-                <div className="flex items-center justify-between px-3 py-2 text-[11px]">
+                <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
                   <span className="flex items-center gap-1.5 text-muted-foreground">
                     <Star className="size-3 text-amber-500/80 fill-amber-500/80" aria-hidden="true" />
                     Stars
@@ -380,8 +359,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   <span className="font-medium tabular-nums">{formatStars(skill.stars ?? 0)}</span>
                 </div>
 
-                {/* Forks */}
-                <div className="flex items-center justify-between px-3 py-2 text-[11px]">
+                <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
                   <span className="flex items-center gap-1.5 text-muted-foreground">
                     <GitFork className="size-3" aria-hidden="true" />
                     Forks
@@ -389,17 +367,15 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   <span className="font-medium tabular-nums">{skill.forks ?? 0}</span>
                 </div>
 
-                {/* Updated */}
-                <div className="flex items-center justify-between px-3 py-2 text-[11px]">
+                <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
                   <span className="flex items-center gap-1.5 text-muted-foreground">
                     <Clock className="size-3" aria-hidden="true" />
                     Updated
                   </span>
-                  <span className="font-medium tabular-nums">{formatRelativeDate(skill.repoUpdatedAt) ?? "N/A"}</span>
+                  <span className="font-medium tabular-nums">{updatedLabel}</span>
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 p-2.5">
+                <div className="flex gap-2 p-3.5">
                   <a
                     href={getExternalUrl(githubUrl)}
                     target="_blank"
@@ -422,27 +398,24 @@ export default async function SkillDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Badge Snippet */}
             <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-muted/30">
+              <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
                 <Share2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
                 <span className="text-[11px] font-medium">Share this skill</span>
               </div>
-              <div className="p-3">
+              <div className="p-3.5">
                 <BadgeSnippet owner={skill.owner} slug={skill.slug} />
               </div>
             </div>
 
-            {/* Related Skills (Desktop) */}
             <div className="hidden lg:block">
               <React.Suspense fallback={<RelatedSkillsFallback />}>
                 <RelatedSkillsSection skillId={skill.id} />
               </React.Suspense>
             </div>
 
-            {/* Report Skill */}
             <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-              <div className="p-3">
+              <div className="p-3.5">
                 <ReportSkillDialog skillId={skill.id} skillName={skill.name} />
               </div>
             </div>
@@ -459,7 +432,6 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const rawParams = await params;
   
-  // Validate route parameters
   const paramsResult = skillRouteParamsSchema.safeParse({
     owner: rawParams.owner,
     name: rawParams.name,

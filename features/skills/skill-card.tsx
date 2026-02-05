@@ -23,7 +23,7 @@ function SkillCard({ skill, className }: SkillCardProps) {
       prefetch={false}
       data-slot="skill-card"
       className={cn(
-        "group relative flex h-full flex-col rounded-xl border border-border/40 bg-card/30 p-4",
+        "group relative flex h-full flex-col rounded-xl border border-border/40 bg-card/30 p-3.5",
         "backdrop-blur-sm",
         "transition-[box-shadow,background-color,border-color] duration-200 ease-out motion-reduce:transition-none",
         "hover:border-border/60 hover:bg-card/50 hover:shadow-md hover:shadow-black/5",

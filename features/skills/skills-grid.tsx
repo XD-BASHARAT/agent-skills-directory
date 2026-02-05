@@ -74,7 +74,7 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
   return (
     <section className="space-y-4" aria-busy={loading} aria-label="Skills">
       {/* Search + Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <form onSubmit={handleSearch} className="relative flex-1">
           <Search
             className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
@@ -103,59 +103,61 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
           )}
         </form>
 
-        {categories.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {categories.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9">
+                  {selectedCategories.length === 0
+                    ? "All Categories"
+                    : selectedCategories.length === 1
+                      ? categories.find((cat) => cat.slug === selectedCategories[0])?.name || "Category"
+                      : `${selectedCategories.length} Categories`}
+                  <ChevronDown data-icon="inline-end" className="size-4" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" sideOffset={4} className="w-56">
+                <DropdownMenuGroup>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedCategories.length === 0}
+                    onCheckedChange={() => handleClearFilters()}
+                  >
+                    All Categories
+                  </DropdownMenuCheckboxItem>
+                  {categories.map((cat) => (
+                    <DropdownMenuCheckboxItem
+                      key={cat.id}
+                      checked={selectedCategories.includes(cat.slug)}
+                      onCheckedChange={() => handleCategoryToggle(cat.slug)}
+                    >
+                      {cat.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-9">
-                {selectedCategories.length === 0
-                  ? "All Categories"
-                  : selectedCategories.length === 1
-                    ? categories.find((cat) => cat.slug === selectedCategories[0])?.name || "Category"
-                    : `${selectedCategories.length} Categories`}
+                {sortLabel}
                 <ChevronDown data-icon="inline-end" className="size-4" aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" sideOffset={4} className="w-56">
+            <DropdownMenuContent align="end" sideOffset={4}>
               <DropdownMenuGroup>
-                <DropdownMenuCheckboxItem
-                  checked={selectedCategories.length === 0}
-                  onCheckedChange={() => handleClearFilters()}
-                >
-                  All Categories
-                </DropdownMenuCheckboxItem>
-                {categories.map((cat) => (
-                  <DropdownMenuCheckboxItem
-                    key={cat.id}
-                    checked={selectedCategories.includes(cat.slug)}
-                    onCheckedChange={() => handleCategoryToggle(cat.slug)}
-                  >
-                    {cat.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
+                <DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
+                  {sortOptions.map((option) => (
+                    <DropdownMenuRadioItem key={option.value} value={option.value}>
+                      {option.label}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-        )}
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9">
-              {sortLabel}
-              <ChevronDown data-icon="inline-end" className="size-4" aria-hidden="true" />
-            </Button>
-          </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={4}>
-            <DropdownMenuGroup>
-              <DropdownMenuRadioGroup value={sort} onValueChange={handleSortChange}>
-                {sortOptions.map((option) => (
-                  <DropdownMenuRadioItem key={option.value} value={option.value}>
-                    {option.label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        </div>
       </div>
 
       {/* Loading */}
@@ -205,7 +207,7 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
       {/* Results */}
       {!loading && !error && displayedSkills.length > 0 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {displayedSkills.map((skill) => (
               <SkillCard key={skill.id} skill={skill} />
             ))}
@@ -213,7 +215,9 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+            <div className="pt-2">
+              <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+            </div>
           )}
         </div>
       )}

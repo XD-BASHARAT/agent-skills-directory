@@ -1,11 +1,17 @@
 import * as React from "react"
 import Link from "next/link"
 import { SkillsGrid } from "@/features/skills/skills-grid"
+import dynamic from "next/dynamic"
 import { Container } from "@/components/layouts/container"
 import { Section } from "@/components/layouts/section"
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld"
 import { buildMetadata } from "@/lib/seo"
 import { getSkills, getCategories } from "@/lib/db/queries"
+
+const SkillsFaq = dynamic(() => import("@/components/faq/skills-faq").then((mod) => mod.SkillsFaq), {
+  ssr: false,
+  loading: () => <div className="rounded-lg border border-border/50 bg-card/40 px-3.5 py-3 text-xs text-muted-foreground">Loading FAQâ€¦</div>,
+})
 
 export const metadata = buildMetadata({
   title: "Browse Agent Skills",
@@ -27,7 +33,7 @@ function SkillsGridSkeleton() {
       <div className="flex items-center gap-2">
         <div className="flex-1 h-9 bg-muted rounded-md animate-pulse motion-reduce:animate-none" />
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="rounded-lg border border-border/60 bg-card p-4 space-y-3">
             <div className="flex items-start gap-3">
@@ -50,7 +56,7 @@ function SkillsGridSkeleton() {
 
 export default async function SkillsPage() {
   const [initialData, categories] = await Promise.all([
-    getSkills({ page: 1, perPage: 30, descriptionLength: 200, sortBy: "last_commit" }),
+    getSkills({ page: 1, perPage: 30, descriptionLength: 200, sortBy: "recent" }),
     getCategories(),
   ])
 
@@ -81,6 +87,9 @@ export default async function SkillsPage() {
         <React.Suspense fallback={<SkillsGridSkeleton />}>
           <SkillsGrid initialData={initialData} initialCategories={categories} />
         </React.Suspense>
+      </Section>
+      <Section spacing="sm">
+        <SkillsFaq />
       </Section>
     </Container>
   )

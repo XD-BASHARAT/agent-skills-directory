@@ -5,10 +5,10 @@ type ContainerSize = "sm" | "md" | "lg" | "xl" | "full"
 
 const containerSizes: Record<ContainerSize, string> = {
   sm: "max-w-2xl",
-  md: "max-w-4xl", 
-  lg: "max-w-5xl",
-  xl: "max-w-6xl",
-  full: "max-w-6xl",
+  md: "max-w-4xl",
+  lg: "max-w-4xl",
+  xl: "max-w-4xl",
+  full: "max-w-4xl",
 }
 
 interface ContainerProps extends React.ComponentProps<"div"> {

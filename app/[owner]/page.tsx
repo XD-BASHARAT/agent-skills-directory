@@ -1,8 +1,7 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Star, GitFork, Github, Boxes, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
+import { Star, GitFork, Github, Boxes, ExternalLink, ShieldCheck } from "lucide-react";
 
 import { checkAdminAuth } from "@/lib/auth";
 import { getCategories, getOwnerInfo } from "@/lib/db/queries";
@@ -16,6 +15,7 @@ import { Section } from "@/components/layouts/section";
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ExternalImage } from "@/components/ui/external-image";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { OwnerSkillsFilter } from "./owner-skills-filter";
 
 const getOwner = React.cache(async (owner: string) => getOwnerInfo(owner));
@@ -84,17 +84,13 @@ export default async function OwnerPage({ params }: PageProps) {
 
       <Section spacing="sm">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1 text-[11px] text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="size-3" aria-hidden="true" />
-          <Link href="/skills" className="hover:text-foreground transition-colors">
-            Skills
-          </Link>
-          <ChevronRight className="size-3" aria-hidden="true" />
-          <span className="text-foreground">{ownerInfo.owner}</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Skills", href: "/skills" },
+            { label: ownerInfo.owner },
+          ]}
+        />
       </Section>
 
       {/* Profile Card */}
@@ -173,7 +169,7 @@ export default async function OwnerPage({ params }: PageProps) {
           </div>
 
           {/* Stats Row */}
-          <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border/40">
+          <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-border/40">
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
                 <Boxes className="size-4 text-primary" aria-hidden="true" />

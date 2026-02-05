@@ -7,7 +7,7 @@ import type { SkillListItem, Category } from "@/types"
 
 const DEFAULT_PAGE_SIZE = 32
 const SEARCH_DEBOUNCE_MS = 400
-const DEFAULT_SORT = "last_commit"
+const DEFAULT_SORT = "recent"
 
 const sortOptions = [
   { value: "recent", label: "Recently Added", aliases: ["recent", "recently_added", "newest"] },
