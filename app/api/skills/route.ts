@@ -69,14 +69,14 @@ export async function GET(request: Request) {
     : undefined
 
   // Validate inputs
-  if (page < 1 || page > 10000) {
+  if (!Number.isFinite(page) || page < 1 || page > 10000) {
     return NextResponse.json(
       { error: "Invalid page number", details: "Page must be between 1 and 10000" },
       { status: 400 }
     )
   }
 
-  if (perPage < 1 || perPage > 100) {
+  if (!Number.isFinite(perPage) || perPage < 1 || perPage > 100) {
     return NextResponse.json(
       { error: "Invalid perPage value", details: "perPage must be between 1 and 100" },
       { status: 400 }

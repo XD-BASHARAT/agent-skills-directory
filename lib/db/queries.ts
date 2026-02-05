@@ -210,8 +210,10 @@ export async function getSkills(options: GetSkillsOptions = {}) {
   } = options
 
   // Validate and sanitize inputs
-  const safePage = Math.max(1, Math.min(10000, Math.floor(page)))
-  const safePerPage = Math.min(Math.max(1, Math.floor(perPage)), MAX_PER_PAGE)
+  const safePage = Number.isFinite(page) ? Math.max(1, Math.min(10000, Math.floor(page))) : 1
+  const safePerPage = Number.isFinite(perPage)
+    ? Math.min(Math.max(1, Math.floor(perPage)), MAX_PER_PAGE)
+    : 30
   const safeQuery = query.slice(0, 200).trim() // Limit query length
   const offset = (safePage - 1) * safePerPage
   const safeDescriptionLength =
