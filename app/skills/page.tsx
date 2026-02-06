@@ -1,17 +1,13 @@
 import * as React from "react"
 import Link from "next/link"
+import { SkillsFaq } from "@/components/faq/skills-faq-loader"
 import { SkillsGrid } from "@/features/skills/skills-grid"
-import dynamic from "next/dynamic"
 import { Container } from "@/components/layouts/container"
 import { Section } from "@/components/layouts/section"
 import { BreadcrumbsJsonLd } from "@/components/seo/breadcrumbs-json-ld"
 import { buildMetadata } from "@/lib/seo"
 import { getSkills, getCategories } from "@/lib/db/queries"
 
-const SkillsFaq = dynamic(() => import("@/components/faq/skills-faq").then((mod) => mod.SkillsFaq), {
-  ssr: false,
-  loading: () => <div className="rounded-lg border border-border/50 bg-card/40 px-3.5 py-3 text-xs text-muted-foreground">Loading FAQâ€¦</div>,
-})
 
 export const metadata = buildMetadata({
   title: "Browse Agent Skills",
