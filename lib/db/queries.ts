@@ -622,9 +622,13 @@ export async function upsertSkill(skill: NewSkill) {
   const searchText = buildSearchText(skill)
   const now = new Date()
 
+  // Check if any existing skill of this owner is verified
+  const ownerVerificationMap = await getOwnerVerificationMap([skill.owner])
+  const isOwnerVerified = ownerVerificationMap.get(skill.owner.toLowerCase()) ?? false
+
   return db
     .insert(skills)
-    .values({ ...skill, searchText })
+    .values({ ...skill, searchText, isVerifiedOrg: isOwnerVerified })
     .onConflictDoUpdate({
       target: skills.id,
       set: {
@@ -637,7 +641,9 @@ export async function upsertSkill(skill: NewSkill) {
         avatarUrl: skill.avatarUrl,
         topics: skill.topics,
         isArchived: skill.isArchived,
-        isVerifiedOrg: sql`COALESCE(EXCLUDED.is_verified_org, ${skills.isVerifiedOrg})`,
+        // Preserve existing verification status if it was explicitly set (e.g., by admin)
+        // Otherwise, inherit from owner's verification status
+        isVerifiedOrg: sql`COALESCE(EXCLUDED.is_verified_org, ${skills.isVerifiedOrg}, ${isOwnerVerified})`,
         blobSha: skill.blobSha,
         lastSeenAt: skill.lastSeenAt,
         repoUpdatedAt: skill.repoUpdatedAt,
@@ -652,6 +658,10 @@ export async function upsertSkill(skill: NewSkill) {
 export async function batchUpsertSkills(skillsList: NewSkill[]) {
   if (skillsList.length === 0) return { inserted: 0 }
 
+  // Get unique owners and check their verification status
+  const uniqueOwners = [...new Set(skillsList.map((s) => s.owner.toLowerCase()))]
+  const ownerVerificationMap = await getOwnerVerificationMap(uniqueOwners)
+
   let totalInserted = 0
   const now = new Date()
 
@@ -660,6 +670,7 @@ export async function batchUpsertSkills(skillsList: NewSkill[]) {
     const values = chunk.map((skill) => ({
       ...skill,
       searchText: buildSearchText(skill),
+      isVerifiedOrg: ownerVerificationMap.get(skill.owner.toLowerCase()) ?? false,
     }))
 
     await db
@@ -677,7 +688,9 @@ export async function batchUpsertSkills(skillsList: NewSkill[]) {
           avatarUrl: sql`EXCLUDED.avatar_url`,
           topics: sql`EXCLUDED.topics`,
           isArchived: sql`EXCLUDED.is_archived`,
-          isVerifiedOrg: sql`COALESCE(EXCLUDED.is_verified_org, ${skills.isVerifiedOrg})`,
+          // Preserve existing verification status if it was explicitly set (e.g., by admin)
+          // Otherwise, inherit from owner's verification status passed in values
+          isVerifiedOrg: sql`COALESCE(${skills.isVerifiedOrg}, EXCLUDED.is_verified_org)`,
           blobSha: sql`EXCLUDED.blob_sha`,
           lastSeenAt: sql`EXCLUDED.last_seen_at`,
           status: sql`CASE
