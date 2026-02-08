@@ -19,6 +19,8 @@ function SecurityBadge({ securityScan, variant = "compact", className }: Securit
     return null
   }
 
+  if (!scan || typeof scan !== "object") return null
+
   const { safe, riskScore, threats } = scan
 
   // Determine severity level
