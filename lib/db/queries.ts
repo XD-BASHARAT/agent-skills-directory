@@ -195,6 +195,17 @@ function formatShortDate(value: Date | string | null | undefined): string | null
 }
 
 export async function getSkills(options: GetSkillsOptions = {}) {
+  // If skipping env validation (build time), return mock data
+  if (process.env.SKIP_ENV_VALIDATION) {
+    return {
+      skills: [],
+      total: 0,
+      page: options.page || 1,
+      perPage: options.perPage || 30,
+      totalPages: 0,
+    }
+  }
+
   const perfEnabled = process.env.PERF_LOG === "true"
   const perfStart = perfEnabled ? performance.now() : 0
   const {
@@ -399,15 +410,18 @@ export async function getSkills(options: GetSkillsOptions = {}) {
 }
 
 export async function getSkillById(id: string) {
+  if (process.env.SKIP_ENV_VALIDATION) return null
   const [result] = await db.select().from(skills).where(eq(skills.id, id)).limit(1)
   return result ?? null
 }
 
 export async function getSkillByPath(owner: string, repo: string, path: string) {
+  if (process.env.SKIP_ENV_VALIDATION) return null
   return getSkillById(`${owner}/${repo}/${path}`)
 }
 
 export async function getSkillBySlug(owner: string, slug: string) {
+  if (process.env.SKIP_ENV_VALIDATION) return null
   const [result] = await db
     .select()
     .from(skills)
@@ -418,6 +432,7 @@ export async function getSkillBySlug(owner: string, slug: string) {
 }
 
 export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { categories: CategorySummary[]; category: CategorySummary | null; updatedAtLabel: string | null }>> {
+  if (process.env.SKIP_ENV_VALIDATION) return []
   const skillsList = await db.select().from(skills).where(eq(skills.owner, owner)).orderBy(desc(skills.stars), desc(skills.id))
   
   const dedupedSkills: Array<Skill & { updatedAtLabel: string | null }> = dedupeSkillsByOwnerSlug(skillsList).map((skill) => ({
@@ -468,6 +483,7 @@ export async function getSkillsByOwner(owner: string): Promise<Array<Skill & { c
 }
 
 export async function getSkillsForSitemap() {
+  if (process.env.SKIP_ENV_VALIDATION) return []
   const skillsList = await db
     .select({
       owner: skills.owner,
@@ -487,6 +503,7 @@ export async function getSkillsForSitemap() {
 }
 
 export async function getOwnerInfo(owner: string) {
+  if (process.env.SKIP_ENV_VALIDATION) return null
   // Single optimized query with aggregations
   const result = await db.execute(sql`
     WITH owner_skills AS (
@@ -720,15 +737,18 @@ export async function clearAllSkills() {
 }
 
 export async function getCategories() {
+  if (process.env.SKIP_ENV_VALIDATION) return []
   return db.select().from(categories).orderBy(asc(categories.order), asc(categories.name))
 }
 
 export async function getCategoryBySlug(slug: string) {
+  if (process.env.SKIP_ENV_VALIDATION) return null
   const [result] = await db.select().from(categories).where(eq(categories.slug, slug)).limit(1)
   return result ?? null
 }
 
 export async function getSkillCategories(skillId: string) {
+  if (process.env.SKIP_ENV_VALIDATION) return []
   return db
     .select({
       id: categories.id,
@@ -1028,6 +1048,7 @@ export async function getOwnerRankings(options: {
   sortBy?: "stars" | "skills" | "forks"
   limit?: number
 } = {}): Promise<OwnerRanking[]> {
+  if (process.env.SKIP_ENV_VALIDATION) return []
   const { sortBy = "stars", limit = 100 } = options
 
   const orderColumn =
