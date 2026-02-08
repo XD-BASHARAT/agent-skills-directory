@@ -49,13 +49,13 @@ export async function batchFetchRepoMetadata(
   const results = new Map<string, RepoMetadata>()
 
   for (const chunk of chunks) {
-    const query = buildBatchQuery(chunk)
+    const { query, variables } = buildBatchQuery(chunk)
 
     try {
       const response = await fetch(GITHUB_GRAPHQL_URL, {
         method: "POST",
         headers: getHeaders(),
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, variables }),
       })
 
       if (!response.ok) {
@@ -120,13 +120,13 @@ export async function batchFetchSkills(
   const results = new Map<string, SkillFullData>()
 
   for (const chunk of chunks) {
-    const query = buildFullBatchQuery(chunk)
+    const { query, variables } = buildFullBatchQuery(chunk)
 
     try {
       const response = await fetch(GITHUB_GRAPHQL_URL, {
         method: "POST",
         headers: getHeaders(),
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, variables }),
       })
 
       if (!response.ok) {
@@ -181,11 +181,17 @@ export async function batchFetchSkills(
   return results
 }
 
-function buildBatchQuery(repos: Array<{ owner: string; repo: string }>): string {
+function buildBatchQuery(repos: Array<{ owner: string; repo: string }>): {
+  query: string
+  variables: Record<string, string>
+} {
+  const variables: Record<string, string> = {}
   const repoQueries = repos
-    .map(
-      ({ owner, repo }, i) => `
-    repo${i}: repository(owner: "${owner}", name: "${repo}") {
+    .map(({ owner, repo }, i) => {
+      variables[`owner${i}`] = owner
+      variables[`repo${i}`] = repo
+      return `
+    repo${i}: repository(owner: $owner${i}, name: $repo${i}) {
       stargazerCount
       forkCount
       pushedAt
@@ -198,17 +204,28 @@ function buildBatchQuery(repos: Array<{ owner: string; repo: string }>): string 
       }
     }
   `
-    )
+    })
     .join("\n")
 
-  return `query { ${repoQueries} }`
+  const variableDefs = repos.map((_, i) => `$owner${i}: String!, $repo${i}: String!`).join(", ")
+  const query = `query(${variableDefs}) { ${repoQueries} }`
+
+  return { query, variables }
 }
 
-function buildFullBatchQuery(items: Array<{ owner: string; repo: string; path: string }>): string {
+function buildFullBatchQuery(items: Array<{ owner: string; repo: string; path: string }>): {
+  query: string
+  variables: Record<string, string>
+} {
+  const variables: Record<string, string> = {}
   const repoQueries = items
-    .map(
-      ({ owner, repo, path }, i) => `
-    repo${i}: repository(owner: "${owner}", name: "${repo}") {
+    .map(({ owner, repo, path }, i) => {
+      variables[`owner${i}`] = owner
+      variables[`repo${i}`] = repo
+      variables[`path${i}`] = path
+      variables[`expression${i}`] = `HEAD:${path}`
+      return `
+    repo${i}: repository(owner: $owner${i}, name: $repo${i}) {
       stargazerCount
       forkCount
       pushedAt
@@ -222,13 +239,13 @@ function buildFullBatchQuery(items: Array<{ owner: string; repo: string; path: s
       defaultBranchRef {
         target {
           ... on Commit {
-            history(first: 1, path: "${path}") {
+            history(first: 1, path: $path${i}) {
               edges { node { committedDate } }
             }
           }
         }
       }
-      object(expression: "HEAD:${path}") {
+      object(expression: $expression${i}) {
         ... on Blob {
           text
           oid
@@ -236,10 +253,18 @@ function buildFullBatchQuery(items: Array<{ owner: string; repo: string; path: s
       }
     }
   `
-    )
+    })
     .join("\n")
 
-  return `query { ${repoQueries} }`
+  const variableDefs = items
+    .map(
+      (_, i) =>
+        `$owner${i}: String!, $repo${i}: String!, $path${i}: String!, $expression${i}: String!`
+    )
+    .join(", ")
+  const query = `query(${variableDefs}) { ${repoQueries} }`
+
+  return { query, variables }
 }
 
 // Search with date-based pagination to bypass 1000 results limit
