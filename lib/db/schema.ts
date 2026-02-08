@@ -55,6 +55,7 @@ export const skills = pgTable(
     index("skills_owner_repo_idx").on(table.owner, table.repo),
     index("skills_owner_slug_idx").on(table.owner, table.slug),
     index("skills_indexed_at_idx").on(table.indexedAt),
+    index("skills_search_text_idx").using("gin", table.searchText.op("gin_trgm_ops")),
   ]
 )
 

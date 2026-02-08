@@ -1,0 +1,1 @@
+CREATE INDEX "skills_search_text_idx" ON "skills" USING gin ("search_text" gin_trgm_ops);
