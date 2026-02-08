@@ -22,6 +22,13 @@
       "when": 1770559765426,
       "tag": "0002_greedy_zemo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770569395756,
+      "tag": "0003_free_thor",
+      "breakpoints": true
     }
   ]
 }
