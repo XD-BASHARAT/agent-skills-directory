@@ -7,7 +7,7 @@ import { ExternalImage } from "@/components/ui/external-image"
 function Footer() {
   return (
     <footer className="border-border-subtle bg-background/95 supports-[backdrop-filter]:bg-background/60 border-t backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2">
         <div className="flex flex-nowrap md:flex-wrap items-center justify-start md:justify-center gap-1.5 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
           <a href={getExternalUrl("https://wired.business")} target="_blank" rel="noopener noreferrer" className="shrink-0">
             <Image
