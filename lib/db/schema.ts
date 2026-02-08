@@ -78,7 +78,10 @@ export const skillCategories = pgTable(
       .notNull()
       .references(() => categories.id, { onDelete: "cascade" }),
   },
-  (table) => [primaryKey({ columns: [table.skillId, table.categoryId] })]
+  (table) => [
+    primaryKey({ columns: [table.skillId, table.categoryId] }),
+    index("skill_categories_category_id_idx").on(table.categoryId),
+  ]
 )
 
 export const syncJobs = pgTable("sync_jobs", {
@@ -113,7 +116,6 @@ export const userFavorites = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.skillId] }),
-    index("user_favorites_user_id_idx").on(table.userId),
   ]
 )
 
