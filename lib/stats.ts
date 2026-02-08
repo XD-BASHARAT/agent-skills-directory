@@ -12,6 +12,10 @@ type StatsResult = {
 }
 
 async function getStats(): Promise<StatsResult> {
+  if (process.env.SKIP_ENV_VALIDATION) {
+    return { total: 0, updatedToday: 0 }
+  }
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 

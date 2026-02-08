@@ -51,6 +51,11 @@ jobs:
         env:
           # Add required env vars for build
           SKIP_ENV_VALIDATION: true
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuZHVtbXkuY29tJA
+          CLERK_SECRET_KEY: sk_test_mock
+          UPSTASH_REDIS_REST_URL: https://mock.upstash.io
+          UPSTASH_REDIS_REST_TOKEN: mock_token
+          DATABASE_URL: postgres://mock:mock@localhost:5432/mock
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

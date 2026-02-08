@@ -6,6 +6,9 @@ function getDatabaseUrl(): string {
   const url = process.env.DATABASE_URL
 
   if (!url) {
+    if (process.env.SKIP_ENV_VALIDATION) {
+      return "postgres://mock:mock@localhost:5432/mock"
+    }
     throw new Error(
       "DATABASE_URL environment variable is not set. " +
         "Please add it to your .env.local file."
