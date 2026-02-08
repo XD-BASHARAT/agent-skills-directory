@@ -11,6 +11,7 @@ import {
   type NewSyncJob,
   type Skill,
 } from "./schema"
+import { escapeLikePattern } from "./utils"
 import { CATEGORIES, toDatabaseCategory } from "@/lib/categories"
 import type { CategorySummary } from "@/types"
 
@@ -124,7 +125,7 @@ function buildSearchConditions(query: string) {
   
   // Sanitize query for ILIKE - escape special SQL LIKE characters (% _ \)
   // This prevents SQL injection via LIKE pattern matching
-  const likeEscaped = query.replace(/[%_\\]/g, '\\$&')
+  const likeEscaped = escapeLikePattern(query)
   
   // Sanitize query for full-text search - remove special characters that break tsquery
   // Keep only alphanumeric and spaces (Unicode-aware)
@@ -258,7 +259,7 @@ export async function getSkills(options: GetSkillsOptions = {}) {
       
       // Defense in depth: If buildSearchConditions fails, use safe fallback
       // Escape the query to prevent SQL injection even in fallback path
-      const escapedQuery = safeQuery.replace(/[%_\\]/g, '\\$&')
+      const escapedQuery = escapeLikePattern(safeQuery)
       conditions.push(
         or(
           ilike(skills.name, `%${escapedQuery}%`),
