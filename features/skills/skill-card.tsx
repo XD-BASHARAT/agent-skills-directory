@@ -31,13 +31,6 @@ function SkillCard({ skill, className }: SkillCardProps) {
         className,
       )}
     >
-      {/* Security Badge (top-right) */}
-      {skill.securityScan && (
-        <div className="absolute top-3 right-3">
-          <SecurityBadge securityScan={skill.securityScan} variant="icon" />
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex items-start gap-3">
         <div className="shrink-0">
@@ -61,7 +54,7 @@ function SkillCard({ skill, className }: SkillCardProps) {
           )}
         </div>
 
-        <div className="min-w-0 flex-1 space-y-0.5 pr-6">
+        <div className="min-w-0 flex-1 space-y-0.5">
           <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-foreground">
             {skill.name}
           </h3>
@@ -72,6 +65,9 @@ function SkillCard({ skill, className }: SkillCardProps) {
                 <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
                 <span className="sr-only">Verified organization</span>
               </span>
+            )}
+            {skill.securityScan && (
+              <SecurityBadge securityScan={skill.securityScan} variant="icon" />
             )}
           </p>
         </div>
