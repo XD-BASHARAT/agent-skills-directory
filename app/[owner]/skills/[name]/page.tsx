@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import { getSkillBySlug, getSkillCategories } from "@/lib/db/queries";
-import { fetchRepoInfo } from "@/lib/features/skills/github-rest";
+import { parseTopics } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import { getExternalUrl } from "@/lib/utils";
 import { skillRouteParamsSchema, safeParseAllowedTools } from "@/lib/validators/skills";
@@ -99,8 +99,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const [repoInfo, skillCategories, bodyContent] = await Promise.all([
-    fetchRepoInfo(skill.owner, skill.repo),
+  const [skillCategories, bodyContent] = await Promise.all([
     getSkillCategories(skill.id),
     fetchSkillBody(skill.rawUrl),
   ]);
@@ -133,7 +132,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
   };
 
   const allowedTools = safeParseAllowedTools(skill.allowedTools);
-  const topics = repoInfo?.topics ?? [];
+  const topics = parseTopics(skill.topics) ?? [];
   const hasBody = bodyContent.trim().length > 0;
   const hasTags = Boolean(skill.compatibility) || allowedTools.length > 0 || topics.length > 0;
   const displayTopics = topics.slice(0, 6);
