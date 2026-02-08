@@ -98,6 +98,25 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
       multilineValue = []
     }
 
+    // Check for list item "- value" (indented or not, but strictly speaking YAML lists are often indented under keys)
+    // However, in this simple parser, we might see:
+    // key:
+    //   - value
+    // OR
+    // key:
+    // - value
+    // We'll support both if we have a currentKey with empty value
+    if (currentKey && (line.trim().startsWith("- ") || line.trim() === "-")) {
+      const item = line.trim().substring(1).trim()
+      if (Array.isArray(result[currentKey])) {
+        (result[currentKey] as string[]).push(stripQuotes(item))
+      } else {
+        // Initialize array, potentially overwriting empty string if key was "key:"
+        result[currentKey] = [stripQuotes(item)]
+      }
+      continue
+    }
+
     // Check for key: value
     const keyMatch = line.match(/^([a-zA-Z][\w-]*)\s*:\s*(.*)$/)
 

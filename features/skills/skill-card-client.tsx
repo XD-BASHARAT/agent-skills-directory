@@ -7,6 +7,7 @@ import { ShieldCheck, Star } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { ExternalImage } from "@/components/ui/external-image";
+import { SecurityBadge } from "./security-badge";
 import type { SkillListItem } from "@/types";
 
 const FavoriteButton = dynamic(
@@ -62,7 +63,7 @@ function SkillCard({ skill, className }: SkillCardProps) {
           )}
         </div>
 
-        <div className="min-w-0 flex-1 space-y-0.5">
+        <div className="min-w-0 flex-1 space-y-0.5 pr-12">
           <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-foreground">
             {skill.name}
           </h3>
@@ -73,6 +74,9 @@ function SkillCard({ skill, className }: SkillCardProps) {
                 <ShieldCheck className="size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
                 <span className="sr-only">Verified organization</span>
               </span>
+            )}
+            {skill.securityScan && (
+              <SecurityBadge securityScan={skill.securityScan} variant="icon" />
             )}
           </p>
         </div>
