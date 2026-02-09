@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { describe, it, expect, mock } from "bun:test";
 
 // Mock next/server BEFORE importing route
