@@ -39,6 +39,8 @@ function ReportSkillDialog({ skillId, skillName }: ReportSkillDialogProps) {
   const [description, setDescription] = React.useState("")
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
+  const buttonRefs = React.useRef<(HTMLButtonElement | null)[]>([])
+
   const handleSubmit = async () => {
     if (!reason) {
       toast.error("Please select a reason")
@@ -92,18 +94,34 @@ function ReportSkillDialog({ skillId, skillName }: ReportSkillDialogProps) {
           <div className="space-y-2">
             <label id="report-reason-label" className="text-sm font-medium">Reason</label>
             <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="report-reason-label">
-              {REPORT_REASONS.map((r) => (
+              {REPORT_REASONS.map((r, index) => (
                 <button
                   key={r.value}
+                  ref={(el) => {
+                    buttonRefs.current[index] = el
+                  }}
                   type="button"
                   onClick={() => setReason(r.value)}
                   role="radio"
                   aria-checked={reason === r.value}
-                  tabIndex={reason === r.value ? 0 : -1}
+                  tabIndex={reason === r.value || (reason === null && index === 0) ? 0 : -1}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault()
                       setReason(r.value)
+                    }
+
+                    // Arrow key navigation
+                    let nextIndex = -1
+                    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                      nextIndex = (index + 1) % REPORT_REASONS.length
+                    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                      nextIndex = (index - 1 + REPORT_REASONS.length) % REPORT_REASONS.length
+                    }
+
+                    if (nextIndex !== -1) {
+                      e.preventDefault()
+                      buttonRefs.current[nextIndex]?.focus()
                     }
                   }}
                   className={cn(
