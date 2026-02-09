@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { ShieldCheck, Star } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -10,10 +9,6 @@ import { ExternalImage } from "@/components/ui/external-image";
 import { SecurityBadge } from "./security-badge";
 import type { SkillListItem } from "@/types";
 
-const FavoriteButton = dynamic(
-  () => import("@/features/skills/favorite-button").then((mod) => mod.FavoriteButton),
-  { ssr: false },
-);
 
 type SkillCardProps = {
   skill: SkillListItem;
@@ -38,7 +33,6 @@ function SkillCard({ skill, className }: SkillCardProps) {
         className,
       )}
     >
-      <FavoriteButton skillId={skill.id} />
 
       {/* Header */}
       <div className="flex items-start gap-3">

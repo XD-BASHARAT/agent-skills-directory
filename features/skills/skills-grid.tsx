@@ -25,20 +25,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SkillCard } from "@/features/skills/skill-card-client"
-import { useFavoritesContext } from "@/lib/contexts/favorites-context"
 import { useSkillsSearch, type InitialData } from "@/lib/hooks/use-skills-search"
 import type { Category } from "@/types"
 
 type SkillsGridProps = {
   initialData?: InitialData
   initialCategories?: Category[]
-  showFavoritesOnly?: boolean
 }
 
-function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false }: SkillsGridProps) {
-  const favoritesContext = useFavoritesContext()
-  const favoriteIds = favoritesContext.favorites
-
+function SkillsGrid({ initialData, initialCategories }: SkillsGridProps) {
   const {
     skills,
     categories,
@@ -62,14 +57,7 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
   } = useSkillsSearch({
     initialData,
     initialCategories,
-    ids: showFavoritesOnly ? favoriteIds : undefined,
   })
-
-  const { isFavorite } = favoritesContext
-
-  const displayedSkills = showFavoritesOnly
-    ? skills.filter((skill) => favoriteIds.includes(skill.id) && isFavorite(skill.id))
-    : skills
 
   return (
     <section className="space-y-4" aria-busy={loading} aria-label="Skills">
@@ -177,38 +165,27 @@ function SkillsGrid({ initialData, initialCategories, showFavoritesOnly = false 
       )}
 
       {/* Empty */}
-      {!loading && !error && displayedSkills.length === 0 && (
+      {!loading && !error && skills.length === 0 && (
         <div
           className="flex flex-col items-center justify-center gap-2 py-12 text-muted-foreground"
           role="status"
           aria-live="polite"
         >
           <PackageSearch className="size-6 opacity-50" aria-hidden="true" />
-          {showFavoritesOnly ? (
-            <>
-              <p className="text-sm text-pretty">No favorite skills yet</p>
-              <p className="text-xs text-center max-w-sm text-pretty">
-                Browse skills and click the heart icon to add them to your favorites
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-pretty">No skills found</p>
-              {(searchQuery || selectedCategories.length > 0) && (
-                <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-                  Clear Filters
-                </Button>
-              )}
-            </>
+          <p className="text-sm text-pretty">No skills found</p>
+          {(searchQuery || selectedCategories.length > 0) && (
+            <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+              Clear Filters
+            </Button>
           )}
         </div>
       )}
 
       {/* Results */}
-      {!loading && !error && displayedSkills.length > 0 && (
+      {!loading && !error && skills.length > 0 && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {displayedSkills.map((skill) => (
+            {skills.map((skill) => (
               <SkillCard key={skill.id} skill={skill} />
             ))}
           </div>

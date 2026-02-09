@@ -21,7 +21,6 @@ function Header() {
   const navItems: Array<{ label: string; href: string }> = [
     { label: "Browse", href: "/skills" },
     { label: "Categories", href: "/categories" },
-    { label: "Favorites", href: "/favorites" },
     { label: "Ranking", href: "/ranking" },
   ];
 

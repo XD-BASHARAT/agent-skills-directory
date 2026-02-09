@@ -44,7 +44,7 @@ export const skills = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 
     searchText: text("search_text"),
-    
+
     // Security scan results
     securityScan: text("security_scan"), // JSON: { safe: boolean, riskScore: number, threats: SecurityThreat[] }
     securityScannedAt: timestamp("security_scanned_at", { withTimezone: true }),
@@ -106,19 +106,6 @@ export const syncState = pgTable("sync_state", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 })
 
-export const userFavorites = pgTable(
-  "user_favorites",
-  {
-    userId: text("user_id").notNull(),
-    skillId: text("skill_id")
-      .notNull()
-      .references(() => skills.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  },
-  (table) => [
-    primaryKey({ columns: [table.userId, table.skillId] }),
-  ]
-)
 
 export type Skill = typeof skills.$inferSelect
 export type NewSkill = typeof skills.$inferInsert
@@ -128,8 +115,6 @@ export type SyncJob = typeof syncJobs.$inferSelect
 export type NewSyncJob = typeof syncJobs.$inferInsert
 export type SyncState = typeof syncState.$inferSelect
 export type NewSyncState = typeof syncState.$inferInsert
-export type UserFavorite = typeof userFavorites.$inferSelect
-export type NewUserFavorite = typeof userFavorites.$inferInsert
 
 export const skillReports = pgTable(
   "skill_reports",

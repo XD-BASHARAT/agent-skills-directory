@@ -11,7 +11,7 @@ import { CookieBanner } from "@/features/marketing/cookie-banner"
 import { SiteStructuredData } from "@/components/seo/site-structured-data"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { FavoritesProvider } from "@/lib/contexts/favorites-context"
+
 import { baseMetadata } from "@/lib/seo"
 import { siteConfig } from "@/config/site"
 
@@ -85,25 +85,23 @@ export default function RootLayout({ children }: RootLayoutProps) {
           className="antialiased bg-background text-foreground flex min-h-screen flex-col"
         >
           <NuqsAdapter>
-            <FavoritesProvider>
-              <TooltipProvider delay={350} closeDelay={100}>
-                <SiteStructuredData />
-                <a
-                  href="#main-content"
-                  className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow-md focus:ring-2 focus:ring-primary"
-                >
-                  Skip to main content
-                </a>
-                <Header />
-                <main id="main-content" className="flex-1" role="main">
-                  {children}
-                </main>
-                <Footer />
-                <CookieBanner />
-                <Toaster />
-                <AnalyticsWrapper />
-              </TooltipProvider>
-            </FavoritesProvider>
+            <TooltipProvider delay={350} closeDelay={100}>
+              <SiteStructuredData />
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow-md focus:ring-2 focus:ring-primary"
+              >
+                Skip to main content
+              </a>
+              <Header />
+              <main id="main-content" className="flex-1" role="main">
+                {children}
+              </main>
+              <Footer />
+              <CookieBanner />
+              <Toaster />
+              <AnalyticsWrapper />
+            </TooltipProvider>
           </NuqsAdapter>
         </body>
       </html>

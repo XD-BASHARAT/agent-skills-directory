@@ -31,7 +31,6 @@ import { SkillStructuredData } from "@/components/seo/skill-structured-data";
 import { BadgeSnippet } from "@/features/skills/badge-snippet";
 import { ExternalImage } from "@/components/ui/external-image";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { FavoriteButton } from "@/features/skills/favorite-button";
 import { ReportSkillDialog } from "@/features/skills/report-skill-dialog";
 
 export const revalidate = 300;
@@ -81,7 +80,7 @@ const relativeDateCache = new Map<string, string>();
 
 export default async function SkillDetailPage({ params }: PageProps) {
   const rawParams = await params;
-  
+
   const paramsResult = skillRouteParamsSchema.safeParse({
     owner: rawParams.owner,
     name: rawParams.name,
@@ -153,11 +152,11 @@ export default async function SkillDetailPage({ params }: PageProps) {
           { name: "Skills", url: "/skills" },
           ...(primaryCategory
             ? [
-                {
-                  name: primaryCategory.name,
-                  url: `/categories/${primaryCategory.slug}`,
-                },
-              ]
+              {
+                name: primaryCategory.name,
+                url: `/categories/${primaryCategory.slug}`,
+              },
+            ]
             : []),
           { name: skill.owner, url: `/${skill.owner}` },
           { name: skill.name, url: `/${skill.owner}/skills/${skill.slug}` },
@@ -180,156 +179,35 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
       <Section spacing="md">
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-        <div className="space-y-5 min-w-0">
-          <div className="relative flex items-center gap-3 group">
-            <div className="size-10 rounded-lg bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
-              {skill.avatarUrl ? (
-                <ExternalImage
-                  src={skill.avatarUrl}
-                  alt={`${skill.name} by ${skill.owner}`}
-                  width={40}
-                  height={40}
-                  quality={75}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <span className="text-sm font-medium text-muted-foreground">
-                  {ownerInitial}
-                </span>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-semibold truncate leading-tight text-balance">{skill.name}</h1>
-                {skill.securityScan && (
-                  <div className="lg:hidden shrink-0">
-                    <SecurityBadge securityScan={skill.securityScan} variant="icon" />
-                  </div>
-                )}
-              </div>
-              <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                <span>{skill.owner}</span>
-                {skill.isVerifiedOrg && (
-                  <ShieldCheck
-                    className="size-3.5 shrink-0 text-blue-500"
-                    aria-label="Verified"
-                  />
-                )}
-              </p>
-            </div>
-            <FavoriteButton skillId={skill.id} />
-          </div>
-
-          {skill.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed break-words text-pretty">
-              {skill.description}
-            </p>
-          )}
-
-          <InstallCommand
-            owner={skill.owner}
-            repo={skill.repo}
-            skillName={skill.name}
-          />
-
-          {skill.securityScan && (
-            <div className="lg:hidden">
-              <SecurityBadge securityScan={skill.securityScan} variant="full" />
-            </div>
-          )}
-
-          <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-            <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
-              <FileText className="size-3.5 text-muted-foreground" aria-hidden="true" />
-              <span className="text-xs font-medium">Instructions</span>
-            </div>
-            <div className="p-3.5">
-              {hasBody ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none text-[13px]">
-                  <React.Suspense
-                    fallback={
-                      <p className="text-xs text-muted-foreground/60 text-center py-6">
-                        Loading…
-                      </p>
-                    }
-                  >
-                    <MarkdownContent content={bodyContent} />
-                  </React.Suspense>
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground/60 text-center py-6">
-                  No instructions available
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="lg:hidden">
-            <React.Suspense fallback={<RelatedSkillsFallback />}>
-              <RelatedSkillsSection skillId={skill.id} />
-            </React.Suspense>
-          </div>
-
-          {hasTags && (
-          <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-            <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
-              <Tag className="size-3.5 text-muted-foreground" aria-hidden="true" />
-              <span className="text-xs font-medium">Tags & Topics</span>
-            </div>
-            <div className="p-3.5">
-                <div className="flex flex-wrap gap-1.5">
-                  {skill.compatibility && (
-                    <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-full">
-                      {skill.compatibility}
-                    </Badge>
-                  )}
-                  {allowedTools.map((tool: string) => (
-                    <Badge key={tool} variant="secondary" className="text-[10px] px-2 py-0.5 font-mono rounded-full">
-                      {tool}
-                    </Badge>
-                  ))}
-                  {displayTopics.map((topic) => (
-                    <Badge key={topic} variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">
-                      {topic}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <aside className="space-y-4 lg:relative">
-          <div className="lg:sticky lg:top-20 space-y-4">
-            {skill.securityScan && (
-              <div className="lg:block hidden">
-                <SecurityBadge securityScan={skill.securityScan} variant="full" />
-              </div>
-            )}
-
-            <Link
-              href={ownerUrl}
-              className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card/40 p-3.5 hover:border-border hover:bg-card/80 transition-[background-color,border-color,box-shadow,color] group"
-            >
-              <div className="size-8 rounded-md bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
+          <div className="space-y-5 min-w-0">
+            <div className="relative flex items-center gap-3 group">
+              <div className="size-10 rounded-lg bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
                 {skill.avatarUrl ? (
                   <ExternalImage
                     src={skill.avatarUrl}
-                    alt={`${skill.owner} avatar`}
-                    width={32}
-                    height={32}
+                    alt={`${skill.name} by ${skill.owner}`}
+                    width={40}
+                    height={40}
                     quality={75}
                     className="size-full object-cover"
                   />
                 ) : (
-                  <span className="text-[10px] font-medium text-muted-foreground">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {ownerInitial}
                   </span>
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-1 text-[13px] font-medium truncate group-hover:text-primary transition-colors">
-                  <span className="truncate">{skill.owner}</span>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-semibold truncate leading-tight text-balance">{skill.name}</h1>
+                  {skill.securityScan && (
+                    <div className="lg:hidden shrink-0">
+                      <SecurityBadge securityScan={skill.securityScan} variant="icon" />
+                    </div>
+                  )}
+                </div>
+                <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                  <span>{skill.owner}</span>
                   {skill.isVerifiedOrg && (
                     <ShieldCheck
                       className="size-3.5 shrink-0 text-blue-500"
@@ -337,90 +215,210 @@ export default async function SkillDetailPage({ params }: PageProps) {
                     />
                   )}
                 </p>
-                <p className="text-[10px] text-muted-foreground/60">
-                  View all skills
-                </p>
-              </div>
-            </Link>
-
-            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-              <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
-                <Github className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                <span className="text-[11px] font-medium">Repository</span>
-              </div>
-
-              <div className="divide-y divide-border/40">
-                <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <Star className="size-3 text-amber-500/80 fill-amber-500/80" aria-hidden="true" />
-                    Stars
-                  </span>
-                  <span className="font-medium tabular-nums">{formatStars(skill.stars ?? 0)}</span>
-                </div>
-
-                <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <GitFork className="size-3" aria-hidden="true" />
-                    Forks
-                  </span>
-                  <span className="font-medium tabular-nums">{skill.forks ?? 0}</span>
-                </div>
-
-                <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <Clock className="size-3" aria-hidden="true" />
-                    Updated
-                  </span>
-                  <span className="font-medium tabular-nums">{updatedLabel}</span>
-                </div>
-
-                <div className="flex gap-2 p-3.5">
-                  <a
-                    href={getExternalUrl(githubUrl)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-md border border-border/50 bg-background/50 hover:bg-muted/50 transition-colors"
-                  >
-                    <Github className="size-3" aria-hidden="true" />
-                    Source
-                  </a>
-                  <a
-                    href={getExternalUrl(skill.rawUrl)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-md border border-border/50 bg-background/50 hover:bg-muted/50 transition-colors"
-                  >
-                    <ExternalLink className="size-3" aria-hidden="true" />
-                    Raw
-                  </a>
-                </div>
               </div>
             </div>
 
+            {skill.description && (
+              <p className="text-sm text-muted-foreground leading-relaxed break-words text-pretty">
+                {skill.description}
+              </p>
+            )}
+
+            <InstallCommand
+              owner={skill.owner}
+              repo={skill.repo}
+              skillName={skill.name}
+            />
+
+            {skill.securityScan && (
+              <div className="lg:hidden">
+                <SecurityBadge securityScan={skill.securityScan} variant="full" />
+              </div>
+            )}
+
             <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
               <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
-                <Share2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                <span className="text-[11px] font-medium">Share this skill</span>
+                <FileText className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                <span className="text-xs font-medium">Instructions</span>
               </div>
               <div className="p-3.5">
-                <BadgeSnippet owner={skill.owner} slug={skill.slug} />
+                {hasBody ? (
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-[13px]">
+                    <React.Suspense
+                      fallback={
+                        <p className="text-xs text-muted-foreground/60 text-center py-6">
+                          Loading…
+                        </p>
+                      }
+                    >
+                      <MarkdownContent content={bodyContent} />
+                    </React.Suspense>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground/60 text-center py-6">
+                    No instructions available
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="hidden lg:block">
+            <div className="lg:hidden">
               <React.Suspense fallback={<RelatedSkillsFallback />}>
                 <RelatedSkillsSection skillId={skill.id} />
               </React.Suspense>
             </div>
 
-            <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
-              <div className="p-3.5">
-                <ReportSkillDialog skillId={skill.id} skillName={skill.name} />
+            {hasTags && (
+              <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+                <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
+                  <Tag className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                  <span className="text-xs font-medium">Tags & Topics</span>
+                </div>
+                <div className="p-3.5">
+                  <div className="flex flex-wrap gap-1.5">
+                    {skill.compatibility && (
+                      <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-full">
+                        {skill.compatibility}
+                      </Badge>
+                    )}
+                    {allowedTools.map((tool: string) => (
+                      <Badge key={tool} variant="secondary" className="text-[10px] px-2 py-0.5 font-mono rounded-full">
+                        {tool}
+                      </Badge>
+                    ))}
+                    {displayTopics.map((topic) => (
+                      <Badge key={topic} variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">
+                        {topic}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <aside className="space-y-4 lg:relative">
+            <div className="lg:sticky lg:top-20 space-y-4">
+              {skill.securityScan && (
+                <div className="lg:block hidden">
+                  <SecurityBadge securityScan={skill.securityScan} variant="full" />
+                </div>
+              )}
+
+              <Link
+                href={ownerUrl}
+                className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card/40 p-3.5 hover:border-border hover:bg-card/80 transition-[background-color,border-color,box-shadow,color] group"
+              >
+                <div className="size-8 rounded-md bg-muted/80 overflow-hidden flex items-center justify-center shrink-0">
+                  {skill.avatarUrl ? (
+                    <ExternalImage
+                      src={skill.avatarUrl}
+                      alt={`${skill.owner} avatar`}
+                      width={32}
+                      height={32}
+                      quality={75}
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-[10px] font-medium text-muted-foreground">
+                      {ownerInitial}
+                    </span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-1 text-[13px] font-medium truncate group-hover:text-primary transition-colors">
+                    <span className="truncate">{skill.owner}</span>
+                    {skill.isVerifiedOrg && (
+                      <ShieldCheck
+                        className="size-3.5 shrink-0 text-blue-500"
+                        aria-label="Verified"
+                      />
+                    )}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/60">
+                    View all skills
+                  </p>
+                </div>
+              </Link>
+
+              <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+                <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
+                  <Github className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                  <span className="text-[11px] font-medium">Repository</span>
+                </div>
+
+                <div className="divide-y divide-border/40">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
+                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                      <Star className="size-3 text-amber-500/80 fill-amber-500/80" aria-hidden="true" />
+                      Stars
+                    </span>
+                    <span className="font-medium tabular-nums">{formatStars(skill.stars ?? 0)}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
+                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                      <GitFork className="size-3" aria-hidden="true" />
+                      Forks
+                    </span>
+                    <span className="font-medium tabular-nums">{skill.forks ?? 0}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px]">
+                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                      <Clock className="size-3" aria-hidden="true" />
+                      Updated
+                    </span>
+                    <span className="font-medium tabular-nums">{updatedLabel}</span>
+                  </div>
+
+                  <div className="flex gap-2 p-3.5">
+                    <a
+                      href={getExternalUrl(githubUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-md border border-border/50 bg-background/50 hover:bg-muted/50 transition-colors"
+                    >
+                      <Github className="size-3" aria-hidden="true" />
+                      Source
+                    </a>
+                    <a
+                      href={getExternalUrl(skill.rawUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-md border border-border/50 bg-background/50 hover:bg-muted/50 transition-colors"
+                    >
+                      <ExternalLink className="size-3" aria-hidden="true" />
+                      Raw
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+                <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
+                  <Share2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                  <span className="text-[11px] font-medium">Share this skill</span>
+                </div>
+                <div className="p-3.5">
+                  <BadgeSnippet owner={skill.owner} slug={skill.slug} />
+                </div>
+              </div>
+
+              <div className="hidden lg:block">
+                <React.Suspense fallback={<RelatedSkillsFallback />}>
+                  <RelatedSkillsSection skillId={skill.id} />
+                </React.Suspense>
+              </div>
+
+              <div className="rounded-lg border border-border/50 bg-card/40 overflow-hidden">
+                <div className="p-3.5">
+                  <ReportSkillDialog skillId={skill.id} skillName={skill.name} />
+                </div>
               </div>
             </div>
-          </div>
-        </aside>
-      </div>
+          </aside>
+        </div>
       </Section>
     </Container>
   );
@@ -430,7 +428,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const rawParams = await params;
-  
+
   const paramsResult = skillRouteParamsSchema.safeParse({
     owner: rawParams.owner,
     name: rawParams.name,
