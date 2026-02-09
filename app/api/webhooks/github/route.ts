@@ -64,11 +64,14 @@ export async function POST(request: Request) {
     const rawBody = await request.text()
     const signature = request.headers.get("x-hub-signature-256")
     const eventType = request.headers.get("x-github-event")
+
+    if (!env.GITHUB_WEBHOOK_SECRET) {
+      console.error("GITHUB_WEBHOOK_SECRET is not set. Cannot verify webhook signature.")
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
+    }
     
-    if (env.GITHUB_WEBHOOK_SECRET) {
-      if (!verifySignature(rawBody, signature, env.GITHUB_WEBHOOK_SECRET)) {
-        return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
-      }
+    if (!verifySignature(rawBody, signature, env.GITHUB_WEBHOOK_SECRET)) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
     
     if (eventType === "ping") {
