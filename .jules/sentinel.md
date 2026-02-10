@@ -4,3 +4,13 @@
 **Vulnerability:** The GitHub webhook endpoint (`app/api/webhooks/github/route.ts`) skipped signature verification if `GITHUB_WEBHOOK_SECRET` environment variable was missing. This allowed unauthenticated requests to trigger internal processes (Inngest events) simply by omitting the secret in configuration.
 **Learning:** Optional environment variables for security secrets can lead to silent failures where security controls are bypassed entirely if configuration is incomplete.
 **Prevention:** Always enforce strict validation for security-critical secrets. If a secret is missing, the application should fail securely (reject requests or crash on startup) rather than degrading to an insecure state. Use `zod` schema validation to ensure secrets are present in production.
+
+## 2024-05-24 - Auto-Generated Destructive Migrations
+**Vulnerability:** `bun install` triggers `drizzle-kit generate` which may create destructive migrations (e.g., dropping tables) if the local schema is out of sync with the database or migration history. This can lead to accidental data loss if these migrations are committed and run.
+**Learning:** The project's `postinstall` script runs `drizzle-kit generate`. This is convenient for development but risky if it generates changes that are not intended.
+**Prevention:** Always review generated migration files before committing. Be cautious when running `bun install` in environments where schema changes are not expected.
+
+## 2024-05-24 - Robust Rate Limiting Pattern
+**Vulnerability:** Webhook endpoints were vulnerable to DoS attacks due to lack of rate limiting.
+**Learning:** Implemented a robust rate limiting pattern using Redis (primary) with an in-memory fallback. This ensures protection even if the Redis service is temporarily unavailable or misconfigured.
+**Prevention:** Use the `apiRateLimit` with `try-catch` and fallback to `checkRateLimitInMemory` for critical endpoints where availability is key but protection is needed.
