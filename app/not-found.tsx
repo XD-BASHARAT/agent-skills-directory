@@ -30,18 +30,18 @@ export default function NotFoundPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/">
-              <Button size="lg" className="gap-2 rounded-full px-6">
+            <Button size="lg" className="gap-2 rounded-full px-6" asChild>
+              <Link href="/">
                 <Home className="size-4" aria-hidden="true" />
                 Go Home
-              </Button>
-            </Link>
-            <Link href="/skills">
-              <Button variant="outline" size="lg" className="gap-2 rounded-full px-6">
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2 rounded-full px-6" asChild>
+              <Link href="/skills">
                 <Compass className="size-4" aria-hidden="true" />
                 Explore Skills
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
