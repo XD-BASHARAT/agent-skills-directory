@@ -1,7 +1,9 @@
 import Link from "next/link"
+
 import { Container } from "@/components/layouts/container"
-import { buildMetadata } from "@/lib/seo"
+import { Button } from "@/components/ui/button"
 import { SubmitSkillDialog } from "@/features/submissions/submit-skill-dialog"
+import { buildMetadata } from "@/lib/seo"
 import { getExternalUrl } from "@/lib/utils"
 
 export const metadata = buildMetadata({
@@ -73,13 +75,10 @@ export default function AboutPage() {
         </section>
 
         <div className="flex gap-2 pt-2">
-          <Link
-            href="/skills"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-7 items-center rounded-md px-3 text-xs font-medium transition-colors"
-          >
-            Browse Skills
-          </Link>
-<SubmitSkillDialog buttonSize="sm" />
+          <Button size="sm" asChild>
+            <Link href="/skills">Browse Skills</Link>
+          </Button>
+          <SubmitSkillDialog buttonSize="sm" />
         </div>
       </div>
     </Container>
