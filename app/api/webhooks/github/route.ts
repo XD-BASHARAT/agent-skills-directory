@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { inngest } from "@/lib/inngest/client"
 import { env } from "@/lib/env"
 import { createHmac, timingSafeEqual } from "crypto"
+import { apiRateLimit, checkRateLimitInMemory, getClientIdentifier } from "@/lib/rate-limit"
 
 type PushEvent = {
   ref: string
@@ -61,6 +62,30 @@ function extractSkillPaths(event: PushEvent): string[] {
 
 export async function POST(request: Request) {
   try {
+    // Rate Limiting
+    const identifier = getClientIdentifier(request)
+    const hasRedis = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+
+    let allowed = true
+    if (hasRedis) {
+      try {
+        const { success } = await apiRateLimit.limit(identifier)
+        allowed = success
+      } catch (error) {
+        console.error("Rate limit error (Redis), falling back to in-memory:", error)
+        const fallback = checkRateLimitInMemory({ key: identifier, max: 100, windowMs: 60000 })
+        allowed = fallback.allowed
+      }
+    } else {
+      const fallback = checkRateLimitInMemory({ key: identifier, max: 100, windowMs: 60000 })
+      allowed = fallback.allowed
+    }
+
+    if (!allowed) {
+      console.warn(`Rate limit exceeded for webhook from ${identifier}`)
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 })
+    }
+
     const rawBody = await request.text()
     const signature = request.headers.get("x-hub-signature-256")
     const eventType = request.headers.get("x-github-event")
