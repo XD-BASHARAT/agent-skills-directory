@@ -4,7 +4,7 @@ import { describe, it, expect, mock } from "bun:test";
 mock.module("next/server", () => {
   return {
     NextResponse: {
-      json: (body: any, init: any) => ({
+      json: (body: unknown, init?: { status?: number }) => ({
         status: init?.status || 200,
         json: () => Promise.resolve(body),
       }),

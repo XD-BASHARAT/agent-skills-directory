@@ -6,7 +6,7 @@ import dynamic from "next/dynamic"
 import { Menu } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
