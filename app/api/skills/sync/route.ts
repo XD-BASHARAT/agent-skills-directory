@@ -10,13 +10,14 @@ export async function POST(request: Request) {
   const expectedToken = env.SYNC_SECRET_TOKEN
 
   if (!expectedToken) {
-    if (process.env.NODE_ENV !== "development") {
-      return NextResponse.json(
-        { error: "SYNC_SECRET_TOKEN not configured" },
-        { status: 500 }
-      )
-    }
-  } else if (authHeader !== `Bearer ${expectedToken}`) {
+    console.error("SYNC_SECRET_TOKEN is not set")
+    return NextResponse.json(
+      { error: "Server configuration error" },
+      { status: 500 }
+    )
+  }
+
+  if (authHeader !== `Bearer ${expectedToken}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
